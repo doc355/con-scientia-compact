@@ -5,9 +5,10 @@ scope: user
 tags: [compact, homonian-accords, epistemics]
 version: 0.1.0
 provenance:
-  source_repo: <placeholder — populate after repo creation>
-  source_commit: <placeholder — populate after first commit>
+  source_repo: https://github.com/doc355/con-scientia-compact
+  source_commit: 18ef3af2e847ea86e085801c8a4e33968b5bd7e3
   source_file: skills/instrument-naming.md
+  source_url: https://github.com/doc355/con-scientia-compact/blob/master/skills/instrument-naming.md
   origin_date: 2026-08-15
 license: CC-BY-SA-4.0
 ---
