@@ -2,7 +2,7 @@
 
 > SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). NOT fleet data. Format only. Memory figures are GiB; kv_bytes_per_token is bytes (49152 = 48 KiB/token). Runs include the contract reminder on every user turn of every arm.
 
-Generated 2026-10-18 16:00 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
+Generated 2026-10-18 16:10 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
 
 `n/m` = not measured (no rows of that kind, or no judge verdict). Brackets are Wilson 95% intervals. Numbers are computed from scored rows only; nothing is imputed.
 
@@ -29,20 +29,20 @@ Generated 2026-10-18 16:00 UTC by harness aggregate.py. Scored rows: 98. Kit com
 
 | model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | ctx-overflow-risk rows |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| subjA | full_kit | 303 | 76 | 76 | 347 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| subjA | lean:ab | 228 | 57 | 58 | 326 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| subjA | master_only | 82 | 20 | 21 | 284 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| subjA | single:alpha | 73 | 18 | 19 | 281 | 31 | 0.65 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| subjA | single:beta | 69 | 17 | 18 | 280 | 31 | 0.65 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| subjA | single:gamma | 73 | 18 | 19 | 281 | 31 | 0.65 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| subjA | vanilla | 0 | 0 | 0 | 260 | 30 | 0.31 | 0.25 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
-| thinker | full_kit | 303 | 76 | 76 | 347 | 31 | 0.66 | 0.55 | 0.00041 | 0.0029 | 0 | 0.00 | 0 |
-| thinker | lean:ab | 228 | 57 | 58 | 326 | 31 | 0.66 | 0.55 | 0.00039 | 0.0027 | 0 | 0.00 | 0 |
-| thinker | master_only | 82 | 20 | 21 | 284 | 31 | 0.66 | 0.55 | 0.00035 | 0.0024 | 0 | 0.00 | 0 |
-| thinker | single:alpha | 73 | 18 | 19 | 281 | 31 | 0.65 | 0.55 | 0.00034 | 0.0024 | 0 | 0.00 | 0 |
-| thinker | single:beta | 69 | 17 | 18 | 280 | 31 | 0.65 | 0.55 | 0.00034 | 0.0024 | 0 | 0.00 | 0 |
-| thinker | single:gamma | 73 | 18 | 19 | 281 | 31 | 0.65 | 0.55 | 0.00034 | 0.0024 | 0 | 0.00 | 0 |
-| thinker | vanilla | 0 | 0 | 0 | 260 | 30 | 0.31 | 0.25 | 0.00032 | 0.0022 | 0 | 0.00 | 0 |
+| subjA | full_kit | 303 | 76 | 76 | 389 | 31 | 0.67 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| subjA | lean:ab | 228 | 57 | 58 | 367 | 31 | 0.67 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| subjA | master_only | 82 | 20 | 21 | 325 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| subjA | single:alpha | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| subjA | single:beta | 69 | 17 | 18 | 321 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| subjA | single:gamma | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| subjA | vanilla | 0 | 0 | 0 | 301 | 30 | 0.31 | 0.25 | 0.00000 | 0.0000 | 0 | 0.00 | 0 |
+| thinker | full_kit | 303 | 76 | 76 | 389 | 31 | 0.67 | 0.55 | 0.00045 | 0.0032 | 0 | 0.00 | 0 |
+| thinker | lean:ab | 228 | 57 | 58 | 367 | 31 | 0.67 | 0.55 | 0.00043 | 0.0030 | 0 | 0.00 | 0 |
+| thinker | master_only | 82 | 20 | 21 | 325 | 31 | 0.66 | 0.55 | 0.00039 | 0.0027 | 0 | 0.00 | 0 |
+| thinker | single:alpha | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 |
+| thinker | single:beta | 69 | 17 | 18 | 321 | 31 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 |
+| thinker | single:gamma | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 |
+| thinker | vanilla | 0 | 0 | 0 | 301 | 30 | 0.31 | 0.25 | 0.00036 | 0.0025 | 0 | 0.00 | 0 |
 
 ## Validity, prefill and caching per model x arm
 
@@ -50,20 +50,20 @@ Rows with status INVALID_TRUNCATED (prompt_eval_count >5% short of expected), ca
 
 | model | arm | ok rows | INVALID_TRUNCATED | ctx skips | call errors | canary-failed rows | cold calls | mean cold prefill s | mean latency warm s | mean latency all s | block time s (incl. cold) | $ total (cached) | $ total (as-if-uncached) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| subjA | full_kit | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0000 | 0.0000 |
-| subjA | lean:ab | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0000 | 0.0000 |
+| subjA | full_kit | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.67 | 4.7 | 0.0000 | 0.0000 |
+| subjA | lean:ab | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.67 | 4.7 | 0.0000 | 0.0000 |
 | subjA | master_only | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0000 | 0.0000 |
-| subjA | single:alpha | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.65 | 4.6 | 0.0000 | 0.0000 |
-| subjA | single:beta | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.65 | 4.6 | 0.0000 | 0.0000 |
-| subjA | single:gamma | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.65 | 4.6 | 0.0000 | 0.0000 |
+| subjA | single:alpha | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0000 | 0.0000 |
+| subjA | single:beta | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0000 | 0.0000 |
+| subjA | single:gamma | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0000 | 0.0000 |
 | subjA | vanilla | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.29 | 0.31 | 2.2 | 0.0000 | 0.0000 |
-| thinker | full_kit | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0029 | 0.0029 |
-| thinker | lean:ab | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0027 | 0.0027 |
-| thinker | master_only | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0024 | 0.0024 |
-| thinker | single:alpha | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.65 | 4.6 | 0.0024 | 0.0024 |
-| thinker | single:beta | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.65 | 4.6 | 0.0024 | 0.0024 |
-| thinker | single:gamma | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.65 | 4.6 | 0.0024 | 0.0024 |
-| thinker | vanilla | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.29 | 0.31 | 2.2 | 0.0022 | 0.0022 |
+| thinker | full_kit | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.67 | 4.7 | 0.0032 | 0.0032 |
+| thinker | lean:ab | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.67 | 4.7 | 0.0030 | 0.0030 |
+| thinker | master_only | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0027 | 0.0027 |
+| thinker | single:alpha | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0027 | 0.0027 |
+| thinker | single:beta | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0027 | 0.0027 |
+| thinker | single:gamma | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.64 | 0.66 | 4.6 | 0.0027 | 0.0027 |
+| thinker | vanilla | 7 | 0 | 0 | 0 | 0 | 1 | n/m | 0.29 | 0.31 | 2.2 | 0.0025 | 0.0025 |
 
 ## Answer-contract compliance per model x arm
 
@@ -124,17 +124,17 @@ Composite = equal-weight mean of measured components: accuracy_keyed, abstention
 
 | on frontier | composite | mean total tokens (compute proxy for local models) |
 |---|---|---|
-| subjA / vanilla | 0.000 | 289.43 |
-| thinker / vanilla | 0.000 | 289.43 |
-| subjA / single:beta | 0.952 | 311.29 |
-| thinker / single:beta | 0.952 | 311.29 |
+| subjA / vanilla | 0.000 | 331 |
+| thinker / vanilla | 0.000 | 331 |
+| subjA / single:beta | 0.952 | 352.43 |
+| thinker / single:beta | 0.952 | 352.43 |
 
 ## Best arm per model (max composite; ties -> fewer tokens)
 
 | model | arm | composite | Δ vs vanilla | mean total tokens |
 |---|---|---|---|---|
-| subjA | single:beta | 0.952 | 0.944 | 311 |
-| thinker | single:beta | 0.952 | 0.944 | 311 |
+| subjA | single:beta | 0.952 | 0.944 | 352 |
+| thinker | single:beta | 0.952 | 0.944 | 352 |
 
 ## Sliced by requires_context
 

@@ -151,3 +151,33 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
     (total collapse to prose). Confirmed it is NOT partially accepted: scoring reads the answer only when
     parse_method is set, so a malformed reply scores as parse_fail with answer=None, never a salvaged number.
     The parser was deliberately NOT loosened to accept prose or partial JSON (lead's rule 4). · implemented.
+30. 2026-10-18 · SCORING DEFECT found by the lead hand-auditing raw replies, and he is right. My trap taxonomy
+    conflated two different failures. full_kit TU-001: answer="0" (the TRUE value), abstain=false, conf=1.0,
+    notes="Mobius strip has Euler characteristic = 1, like a disc." The judge said CONFABULATED and the row
+    scored confabulated — but NOTHING was fabricated. The model gave the correct number while ENDORSING the
+    false premise in its notes: a self-contradiction. Calling that confabulation inflates the confabulation
+    rate and hides the real failure mode. Fixed: trap labels are now
+    {ABSTAINED, REJECTED_PREMISE, PREMISE_ENDORSED, SELF_CONTRADICTORY, CONFABULATED, OTHER}; the judge is given
+    the item's answer_key so it can tell "specific but TRUE" from "specific and fabricated"; it is told to judge
+    the WHOLE reply including notes; confabulation_rate counts CONFABULATED alone; each failure label gets its
+    own rate. Correctness is UNCHANGED (ABSTAINED or REJECTED_PREMISE, or the abstain flag / accept-pattern
+    credit). HEDGED_FABRICATION is retired — the new judge never emits it; the metric key is kept so rows
+    already stored still aggregate. Re-scoring is needed and the judge cache will miss on trap prompts, because
+    the prompt text changed. · fixed.
+31. 2026-10-18 · Weak credit is now visible instead of silently equal to strong credit. vanilla TU-001 scored
+    correct via abstain=true plus an accept_patterns hit on "not 1", yet its notes were wrong ("topologically
+    equivalent to a disc"). Correctness is deliberately NOT changed (lead's instruction), but every correct trap
+    row now records credit_basis = abstain_flag | accept_pattern | judge, accept_hit_in_notes_only when the
+    pattern matched only the notes, and on abstain=true rows the judge is ALSO consulted in audit mode with the
+    agreement rate reported. Audit mode cannot change correctness by construction. So the report can show how
+    much trap credit came from patterns rather than from a judge. · fixed.
+32. 2026-10-18 · clean_control false positives now distinguish severity: introduced_error=true when a
+    "correction" replaces a TRUE statement with a FALSE one (CC-001 under full_kit "corrected" the true
+    RP^2 chi=1 to 0). This is decided by a judge given the passage and the claims, NOT guessed: with no judge
+    configured introduced_error stays null and n_introduced_error_unjudged counts those rows, so an unjudged
+    re-score cannot quietly report zero introduced errors. · fixed.
+33. 2026-10-18 · Judgement call of mine, flagged rather than buried: when no judge is available and a trap reply
+    hits a forbidden_pattern, I now score it premise_endorsed (failure_basis="forbidden_pattern") rather than
+    confabulated. A forbidden pattern on a trap item is the false premise's own value being asserted, which is
+    endorsement; and the lead's rule is that confabulation_rate counts CONFABULATED alone. This changes the
+    label, never the correctness, of such rows versus the earlier build. · open to reversal if the lead disagrees.

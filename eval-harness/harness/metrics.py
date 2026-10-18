@@ -60,7 +60,22 @@ def group_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     judged_tr = [r for r in tr if r.get("correct") is not None]
     m["abstention_correctness"] = rate(judged_tr, lambda r: r["correct"] is True)
+    # confabulation_rate counts CONFABULATED alone (lead's rule): a model that gives the TRUE value while
+    # endorsing the false premise, or contradicts itself, is a different failure and is reported separately.
     m["confabulation_rate"] = rate(judged_tr, lambda r: r.get("confabulated") is True)
+    m["premise_endorsed_rate"] = rate(judged_tr, lambda r: r.get("outcome") == "premise_endorsed")
+    m["self_contradictory_rate"] = rate(judged_tr, lambda r: r.get("outcome") == "self_contradictory")
+    m["trap_other_rate"] = rate(judged_tr, lambda r: r.get("outcome") == "other")
+    m["trap_credit_basis_counts"] = dict(sorted(__import__("collections").Counter(
+        r.get("credit_basis") for r in tr if r.get("correct") is True and r.get("credit_basis")).items()))
+    # audit mode: the judge is consulted even when abstain=true, and must NOT change correctness
+    aud = [r for r in tr if r.get("audit_agrees") is not None]
+    m["trap_audit_agreement"] = rate(aud, lambda r: r.get("audit_agrees") is True)
+    m["n_trap_audited"] = len(aud)
+    m["n_introduced_error"] = sum(1 for r in cc if r.get("introduced_error") is True)
+    m["n_introduced_error_unjudged"] = sum(1 for r in cc
+                                           if r.get("outcome") == "false_positive"
+                                           and r.get("introduced_error") is None)
     m["hedged_fabrication_rate"] = rate(judged_tr, lambda r: r.get("hedged_fabrication") is True)
     m["trap_unscored"] = sum(1 for r in tr if r.get("correct") is None)
 

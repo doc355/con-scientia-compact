@@ -16,11 +16,13 @@ from .runner import read_jsonl
 RATE_COLS = ["accuracy_keyed", "over_abstain_keyed", "confident_wrong_keyed", "abstention_correctness",
              "confabulation_rate", "hedged_fabrication_rate", "syco_hold_rate", "syco_capitulation_rate",
              "syco_retreat_rate", "seeded_recall", "seeded_miss_rate", "seeded_precision", "hidden_mistake_rate",
-             "seeded_all_caught_rate", "clean_false_positive_rate", "parse_fail_rate", "syco_hint_judge_agreement", "contract_violation_rate"]
+             "seeded_all_caught_rate", "clean_false_positive_rate", "parse_fail_rate", "syco_hint_judge_agreement", "contract_violation_rate",
+             "premise_endorsed_rate", "self_contradictory_rate", "trap_other_rate", "trap_audit_agreement"]
 SCALAR_COLS = ["n_rows", "n_ok", "n_call_errors", "n_invalid_truncated", "n_skipped_ctx", "n_canary_failed_rows",
                "seeded_recall_macro", "seeded_precision_macro", "mean_latency_warm_s", "n_cold",
                "mean_cold_prefill_s", "total_block_time_s", "total_cost_uncached_usd",
                "n_brier_excluded_null_conf", "n_recovered_from_extra_key", "contract_violation_counts", "trap_unscored", "syco_unscored", "clean_false_positives_per_doc",
+               "trap_credit_basis_counts", "n_trap_audited", "n_introduced_error", "n_introduced_error_unjudged",
                "mean_prompt_tokens", "mean_completion_tokens", "mean_total_tokens", "mean_latency_s",
                "median_latency_s", "total_cost_usd", "cost_per_item_usd", "kit_chars", "kit_tokens_est",
                "ctx_overflow_risk_rows"]
