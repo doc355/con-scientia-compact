@@ -135,3 +135,19 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
 27. 2026-10-18 · Mine: aggregate wrote summary_sliced.csv to a results/ path relative to the CWD when
     --sliced-csv was omitted, instead of beside --csv. Harmless but surprising; found by the lead on the first
     real run. Fixed: it now defaults to <csv stem>_sliced.csv next to --csv. · fixed.
+28. 2026-10-18 · Contract-reminder fix (lead-specified, MEASURED on the fleet). With the full OUTPUT CONTRACT only
+    at the END of a ~28k-token system prompt, small/mid models ignore it: llama3.2:3b replied in PROSE and got
+    the answer WRONG (fabricated V/E/F, "chi = -1"); gpt-oss:20b emitted malformed JSON on TU-001. Restating the
+    contract in the USER turn fixed both. So the harness now appends a brief CONTRACT_REMINDER to every user turn
+    for EVERY arm including vanilla (the instrument must be identical across arms, else it would favour the
+    short-prompt arms). It is config (`contract_reminder`, default string), recorded in a run-level `run_meta`
+    provenance row, and `--no-contract-reminder` runs the ablation. The per-(model,arm) parse-fail /
+    contract-violation rate is still reported, so "does the kit degrade instruction-following" stays a measured
+    result, not a scoring artifact. This is a measured KIT EFFECT (the kit's own 28k length hurts contract
+    adherence on smaller models), not a parser bug — the parser was NOT loosened. Direction of the gradient:
+    3B lost the contract entirely, 20B half-kept it, both recovered with the reminder. · implemented.
+29. 2026-10-18 · Parser: a reply that STARTS like the contract object but never validly closes (gpt-oss:20b on
+    TU-001) now yields parse_fail with a distinct `malformed_json` issue, separate from `no_contract_json`
+    (total collapse to prose). Confirmed it is NOT partially accepted: scoring reads the answer only when
+    parse_method is set, so a malformed reply scores as parse_fail with answer=None, never a salvaged number.
+    The parser was deliberately NOT loosened to accept prose or partial JSON (lead's rule 4). · implemented.

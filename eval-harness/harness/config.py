@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from .contract import CONTRACT_REMINDER
 from .client import ModelSpec
 
 REGISTRY_MODEL_KEYS = {"id", "backend", "lineage", "price_in", "price_out", "tier", "thinking", "needs_instance",
@@ -48,6 +49,15 @@ class Config:
     ollama_base: Optional[str] = None
     raw: Dict[str, Any] = field(default_factory=dict)
     registry_raw: Dict[str, Any] = field(default_factory=dict)
+    contract_reminder: Optional[str] = CONTRACT_REMINDER   # part of the instrument; see contract.py
+
+
+def _reminder_from(d: Dict[str, Any]) -> Optional[str]:
+    """Absent -> default reminder. Explicit "" or null -> disabled (the ablation)."""
+    if "contract_reminder" not in d:
+        return CONTRACT_REMINDER
+    v = d["contract_reminder"]
+    return None if v in ("", None) else str(v)
 
 
 def kit_chars_per_token(reg: Dict[str, Any], kit_chars: Optional[int]) -> Optional[float]:
@@ -133,7 +143,7 @@ def load_config(path: str | Path) -> Config:
     for j in judge_pool:
         if j not in models:
             raise ValueError(f"judge {j} not in models")
-    return Config(registry_raw=reg if isinstance(reg, dict) else {}, 
+    return Config(contract_reminder=_reminder_from(d), registry_raw=reg if isinstance(reg, dict) else {}, 
         kit_root=rel(d["kit_root"]),
         models=models,
         arms=d.get("arms", [{"type": "vanilla"}, {"type": "full_kit"}, {"type": "master_only"}]),

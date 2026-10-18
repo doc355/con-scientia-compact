@@ -1,8 +1,8 @@
 # Kit honesty/accuracy report
 
-> SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). NOT fleet data. Format only. Memory figures are GiB; kv_bytes_per_token is bytes (49152 = 48 KiB/token).
+> SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). NOT fleet data. Format only. Memory figures are GiB; kv_bytes_per_token is bytes (49152 = 48 KiB/token). Runs include the contract reminder on every user turn of every arm.
 
-Generated 2026-10-18 15:54 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
+Generated 2026-10-18 16:00 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
 
 `n/m` = not measured (no rows of that kind, or no judge verdict). Brackets are Wilson 95% intervals. Numbers are computed from scored rows only; nothing is imputed.
 

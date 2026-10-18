@@ -130,9 +130,9 @@
       "price_in": 0,
       "price_out": 0,
       "tier": "medium",
-      "max_ctx": null,
-      "num_ctx_default": null,
-      "num_ctx_full_kit": null,
+      "max_ctx": 262144,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
       "_note": "max_ctx NOT measured by the lead; runner falls back to POST /api/show, else config default_num_ctx"
     },
     {
@@ -190,5 +190,5 @@
       "timeout_s": 600
     }
   ],
-  "_count_discrepancy": "Resolved: the lead's models.json now has 14 models (gemma4:31b added as the 14th, it is a judge). max_ctx for gemma4:31b was still not stated verbatim, so it is left null here - the runner falls back to POST /api/show. Everything else is the lead's MEASURED value."
+  "_count_discrepancy": "Resolved: the lead's models.json has 14 models (gemma4:31b is the 14th, a judge). All 14 max_ctx values are now the lead's MEASURED figures (gemma4:31b 262144 via /api/show). No nulls remain."
 }

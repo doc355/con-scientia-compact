@@ -98,10 +98,13 @@ def _call(spec: ModelSpec, messages, chat_fn: ChatFn, temperature: float, retrie
 def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: ChatFn,
             temperature: float, retries: int, num_ctx: Optional[int], cpt: float,
             prefill: Optional[PrefillTracker], block_canary_ok: Optional[bool],
-            trunc_tolerance: float, cpt_measured: bool = False) -> Dict[str, Any]:
-    first_user = first_user_message(item)
+            trunc_tolerance: float, cpt_measured: bool = False,
+            contract_reminder: Optional[str] = None) -> Dict[str, Any]:
+    def with_reminder(u: str) -> str:
+        return f"{u}\n\n{contract_reminder}" if contract_reminder else u
+    first_user = with_reminder(first_user_message(item))
     messages = [{"role": "system", "content": arm.system_prompt}, {"role": "user", "content": first_user}]
-    user_turns = [first_user] + list(item.get("pressure_turns") or []) \
+    user_turns = [first_user] + [with_reminder(t) for t in (item.get("pressure_turns") or [])] \
         if item["category"] == "sycophancy_pressure" else [first_user]
     turns: List[Dict[str, Any]] = []
     error, trunc = None, {}
@@ -234,7 +237,8 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
         arm_ids: Optional[List[str]] = None, reps: int = 1, chat_fn: ChatFn = chat,
         dry_run: bool = False, do_canary: bool = True, fetch_show: bool = True,
         lifecycle_log: Optional[Path] = None, scheduler: Optional[ExoScheduler] = None,
-        keep_alive: Optional[str] = "60m", log=print) -> Dict[str, int]:
+        keep_alive: Optional[str] = "60m", contract_reminder: Any = "__cfg__",
+        log=print) -> Dict[str, int]:
     items = load_battery(battery_path)
     arms = build_arms(cfg.kit_root, cfg.arms, cfg.strip_frontmatter)
     if arm_ids:
@@ -246,7 +250,14 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
     longest_user = max((len(first_user_message(it)) + sum(len(t) for t in it.get("pressure_turns") or []))
                        for it in items)
     done = completed_keys(out)
+    reminder = cfg.contract_reminder if contract_reminder == "__cfg__" else contract_reminder
     w = JsonlWriter(out)
+    # run-level provenance: the contract reminder is part of the measurement instrument (lead's requirement),
+    # so record it. status "run_meta" is skipped by every consumer (latest_rows/metrics filter on status).
+    w.write({"status": "run_meta", "kind": "provenance",
+             "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+             "contract_reminder": reminder, "contract_reminder_enabled": reminder is not None,
+             "arms": [a.get("id") or a.get("type") for a in cfg.arms]})
     lcw = JsonlWriter(lifecycle_log) if lifecycle_log else None
     exo_lc = ExoLifecycle(cfg.exo_base, lcw, log=log) if cfg.exo_base else None
     if scheduler is None and cfg.exo_base and cfg.raw.get("exo_scheduler", True):
@@ -320,7 +331,8 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
                         emit(_skip_row(s, a, it, rep, "kv_estimate_invalid", {"detail": aborted}))
                         continue
                     row = run_one(s, a, it, rep, chat_fn, cfg.temperature, cfg.retries, num_ctx, bcpt,
-                                  prefill, block_ok, cfg.raw.get("trunc_tolerance", 0.05), measured)
+                                  prefill, block_ok, cfg.raw.get("trunc_tolerance", 0.05), measured,
+                                  contract_reminder=reminder)
                     if not measured and row["status"] == "ok" and row["turns"][0].get("prompt_tokens") \
                             and row["turns"][0].get("prefill") == "cold":
                         chars = len(a.system_prompt) + len(row["turns"][0]["user"])
@@ -360,6 +372,8 @@ def main(argv=None):
     ap.add_argument("--no-show", action="store_true", help="skip POST /api/show model-max lookups")
     ap.add_argument("--keep-alive", default="60m", help="ollama keep_alive held for a model's blocks; '' disables")
     ap.add_argument("--lifecycle-log", default="results/exo_lifecycle.jsonl")
+    ap.add_argument("--no-contract-reminder", action="store_true",
+                    help="ablation: do NOT append the contract reminder to user turns")
     a = ap.parse_args(argv)
     cfg = load_config(a.config)
     mids = a.models.split(",") if a.models else None
@@ -370,6 +384,7 @@ def main(argv=None):
     s = run(cfg, Path(a.battery), Path(a.out), mids, a.arms.split(",") if a.arms else None, a.reps,
             dry_run=a.dry_run, do_canary=not a.no_canary, fetch_show=not a.no_show,
             keep_alive=a.keep_alive or None,
+            contract_reminder=(None if a.no_contract_reminder else "__cfg__"),
             lifecycle_log=Path(a.lifecycle_log))
     print(json.dumps(s))
 

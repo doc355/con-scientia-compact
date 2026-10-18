@@ -16,7 +16,7 @@ from harness import aggregate, runner, score  # noqa: E402
 from harness.arms import build_arms  # noqa: E402
 from harness.client import ModelSpec, chat  # noqa: E402
 from harness.config import load_config  # noqa: E402
-from harness.contract import parse_response  # noqa: E402
+from harness.contract import CONTRACT_REMINDER, parse_response  # noqa: E402
 from harness.score import first_number, keyed, match_planted, overlap  # noqa: E402
 from harness import tokens  # noqa: E402
 import mock  # noqa: E402
@@ -242,7 +242,8 @@ class TestPipeline(unittest.TestCase):
         canaries = [r for r in rows if r["status"] == "canary"]
         self.assertEqual(len(canaries), 14)
         self.assertTrue(all(c["ok"] for c in canaries))
-        items = [r for r in rows if r["status"] != "canary"]
+        self.assertEqual(len([r for r in rows if r["status"] == "run_meta"]), 2)  # one per run() incl. the resume
+        items = [r for r in rows if r["status"] not in ("canary", "run_meta")]
         # byte-identical system prompt within a block; context goes to the user message
         for (m, a) in {(r["model_id"], r["arm_id"]) for r in items}:
             self.assertEqual(len({r["system_prompt_sha256"] for r in items if (r["model_id"], r["arm_id"]) == (m, a)}), 1)
@@ -668,3 +669,79 @@ class TestRegistrySchemaAndAggregateDefaults(unittest.TestCase):
             self.assertFalse(
                 any(f.stat().st_mtime > os.stat(out / "summary.csv").st_mtime - 5
                     for f in stray.glob("summary_sliced.csv")))
+
+
+class TestContractReminder(unittest.TestCase):
+    """The reminder is part of the measurement instrument: identical on every arm, recorded, ablatable."""
+
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        self.kit = make_kit(self.td / "kit")
+        self.cfg = load_config(write_cfg(self.td, self.kit))
+        self.seen = []
+
+    def _capture(self, spec, messages):
+        self.seen += [m["content"] for m in messages if m["role"] == "user"]
+        return mock_chat(spec, messages)
+
+    def _run(self, out_name, **kw):
+        out = self.td / out_name
+        runner.run(self.cfg, BATTERY, out, chat_fn=self._capture,
+                   fetch_show=False, keep_alive=None, do_canary=False,
+                   log=lambda *a: None, **kw)
+        return out
+
+    def test_reminder_on_every_user_turn_of_every_arm(self):
+        self._run("r.jsonl")
+        self.assertTrue(self.seen)
+        bad = [u for u in self.seen if not u.rstrip().endswith(CONTRACT_REMINDER)]
+        self.assertEqual(bad, [], f"{len(bad)} user turns lacked the reminder")
+
+    def test_ablation_flag_removes_it(self):
+        self._run("r2.jsonl", contract_reminder=None)
+        self.assertTrue(self.seen)
+        self.assertFalse([u for u in self.seen if CONTRACT_REMINDER in u])
+
+    def test_reminder_recorded_in_provenance_row_and_ignored_by_scorer(self):
+        out = self._run("r3.jsonl")
+        rows = runner.read_jsonl(out)
+        meta = [r for r in rows if r.get("status") == "run_meta"]
+        self.assertEqual(len(meta), 1)
+        self.assertEqual(meta[0]["contract_reminder"], CONTRACT_REMINDER)
+        self.assertTrue(meta[0]["contract_reminder_enabled"])
+        # a provenance row is not a result row: it must not reach scoring (it has no item_id)
+        self.assertFalse([r for r in score.latest_rows(out) if r.get("status") == "run_meta"])
+
+    def test_provenance_records_the_ablation(self):
+        out = self._run("r4.jsonl", contract_reminder=None)
+        meta = [r for r in runner.read_jsonl(out) if r.get("status") == "run_meta"][0]
+        self.assertIsNone(meta["contract_reminder"])
+        self.assertFalse(meta["contract_reminder_enabled"])
+
+
+class TestMalformedJson(unittest.TestCase):
+    MALFORMED = '{"answer":"The M\u00f6bius strip is **not** a disc, so its Euler characteristic is 0 not 1, because'
+
+    def test_malformed_json_is_parse_fail_not_partial_accept(self):
+        """Lead's gpt-oss:20b TU-001 reply: starts like the object, never validly closes."""
+        p = parse_response(self.MALFORMED)
+        self.assertFalse(p["parse_ok"])
+        self.assertIn("malformed_json", p["parse_issues"])
+        self.assertIn("malformed_json", p["contract_violations"])
+        # parse_method is the gate score.py uses (ans = answer only if parse_method): no salvaged answer
+        self.assertIsNone(p["parse_method"])
+        self.assertIsNone(p["abstain"])
+        self.assertIsNone(p["confidence"])
+
+    def test_malformed_is_distinct_from_prose(self):
+        prose = parse_response("The Euler characteristic is -1, since V=1, E=2, F=1.")
+        self.assertEqual(prose["parse_issues"], ["no_contract_json"])
+        self.assertNotIn("malformed_json", prose["parse_issues"])
+
+    def test_no_number_is_salvaged_from_a_malformed_reply(self):
+        """FK-001 has answer_numeric 0 and the malformed text contains '0': it must still not score correct."""
+        p = parse_response(self.MALFORMED)
+        ans = p["answer"] if p.get("parse_method") else None
+        self.assertIsNone(ans)
+        self.assertEqual(keyed({"answer_numeric": 0, "tolerance": 0, "answer_key": "0"}, ans),
+                         {"key_correct": False, "key_method": "no_parsed_answer"})

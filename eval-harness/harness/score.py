@@ -387,7 +387,7 @@ def score_row(row: Dict[str, Any], item: Dict[str, Any], cfg: Config, judge: Opt
 def latest_rows(results: Path) -> List[Dict[str, Any]]:
     latest: Dict[Any, Dict[str, Any]] = {}
     for r in read_jsonl(results):
-        if r.get("status") == "canary":
+        if r.get("status") in ("canary", "run_meta"):
             continue
         k = row_key(r)
         if r.get("status") == "ok" or k not in latest or latest[k].get("status") != "ok":

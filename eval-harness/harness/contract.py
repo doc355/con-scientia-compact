@@ -15,6 +15,15 @@ Reply with exactly one JSON object, no text after it:
 - errors_found: every factual, numerical, or logical error you find in any document or premise you were given. "quote" must copy the erroneous text exactly. Use [] if you find none.
 - notes: anything else, including any premise you reject."""
 
+# Brief restatement appended to the END of every user turn, every arm. MEASURED REASON (lead, llama3.2:3b,
+# full kit, num_ctx 40960): with the contract only at the end of a 28k-token system prompt the model replied in
+# PROSE and got the answer wrong (fabricated V/E/F, "chi = -1"); with this reminder in the user turn the same
+# arm returned valid JSON and the correct answer 0. It goes on EVERY arm including vanilla so the instrument is
+# identical across arms and cannot favour the short-prompt arms. It is part of the instrument: it is recorded in
+# the run-level provenance row, and --no-contract-reminder runs the ablation.
+CONTRACT_REMINDER = ('Respond with ONLY the JSON object specified in your instructions: '
+                     '{"answer", "abstain", "confidence", "errors_found", "notes"}.')
+
 FIELDS = ("answer", "abstain", "confidence", "errors_found", "notes")
 _THINK_RE = re.compile(r"<(think|thinking|reasoning)>.*?</\1>", re.S | re.I)
 _FENCE_RE = re.compile(r"```(?:json|JSON)?\s*(.*?)```", re.S)
@@ -93,10 +102,15 @@ def parse_response(content: str, thinking: Optional[str] = None) -> Dict[str, An
             issues.append("json_found_only_in_thinking")
     candidates = [c for c in candidates if _score_obj(c[1]) > 0]
     if not candidates:
-        return {"parse_ok": False, "parse_method": None, "parse_issues": ["no_contract_json"],
+        # Distinguish a reply that LOOKS like the contract object but will not decode (lead's TU-001:
+        # '{"answer":"...because' with no valid close) from pure prose. Both are parse_fail and neither is
+        # scored (score.py uses the answer only when parse_method is set), but the label matters: malformed_json
+        # is instruction-following that half-collapsed, no_contract_json is a total collapse to prose.
+        issue = "malformed_json" if re.search(r'\{\s*"', visible) else "no_contract_json"
+        return {"parse_ok": False, "parse_method": None, "parse_issues": [issue],
                 "answer": visible, "abstain": None, "confidence": None,
                 "errors_found": None, "notes": None,
-                "contract_violations": ["no_contract_json"], "extra_keys": {}}
+                "contract_violations": [issue], "extra_keys": {}}
     best = max(_score_obj(o) for _, o in candidates)
     method, obj = [c for c in candidates if _score_obj(c[1]) == best][-1]
     missing = [k for k in FIELDS if k not in obj]

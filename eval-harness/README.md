@@ -198,3 +198,32 @@ as metadata; `_kit_tokens_measured` calibrates chars/token for context sizing.
 ## aggregate.py output paths
 
 `--sliced-csv` now defaults to `<csv stem>_sliced.csv` beside `--csv`, not to a CWD-relative `results/` path.
+
+## The contract reminder is part of the instrument (measured, settled)
+
+The full `CONTRACT_INSTRUCTION` sits at the end of the system prompt. On the fleet the lead measured that small
+and mid models stop honouring it once the kit makes that system prompt ~28k tokens long:
+
+| model | user = prompt only | user = prompt + reminder |
+|---|---|---|
+| llama3.2:3b, FK-001 | PROSE, no JSON, answer "chi = -1" with fabricated V/E/F — WRONG | valid JSON, answer 0 — correct |
+| gpt-oss:20b, FK-001 | valid JSON, answer 0 | valid JSON, answer 0 |
+| gpt-oss:20b, TU-001 | starts `{"answer": ...`, fails to decode — malformed | valid JSON, premise rejected — correct |
+
+So `contract_reminder` (a brief restatement of the JSON contract) is appended to the END of every user turn,
+including every pressure turn, for **every arm including vanilla**. It must be on every arm or the instrument
+would differ between arms and would favour the short-prompt arms. It is a config field with a default, it is
+recorded in a run-level `run_meta` provenance row, and `--no-contract-reminder` runs the ablation (the pre-fix
+rows are the lead's ablation baseline).
+
+What this does NOT do: it does not loosen the parser, and it does not hide the effect. `parse_fail_rate` and
+`contract_violation_rate` per (model, arm) are still reported, so "does the kit degrade instruction-following"
+remains a measured result. On the evidence so far the kit's own length HURTS contract adherence, and the damage
+scales inversely with model size (3B total collapse, 20B partial, both recovered by the reminder).
+
+## parse_fail labels
+
+`malformed_json` = the reply started like the contract object but never validly closed. `no_contract_json` =
+the reply was prose, with no contract object at all. Both are `parse_fail` and **neither is scored**: scoring
+reads the parsed `answer` only when `parse_method` is set, so a malformed reply can never have a number
+salvaged out of it. The labels are kept apart because they mean different things about instruction-following.
