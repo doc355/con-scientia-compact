@@ -303,7 +303,8 @@ def score_row(row: Dict[str, Any], item: Dict[str, Any], cfg: Config, judge: Opt
         "item_id", "category", "rep", "model_id", "family", "lineage", "backend", "tier", "arm_id", "arm_type",
         "kit_chars", "kit_tokens_est", "kit_commit", "status", "prompt_tokens", "completion_tokens",
         "latency_s", "cost_usd", "cost_uncached_usd", "prefill", "prompt_eval_duration_ns", "num_ctx",
-        "block_canary_ok", "cache_read_input_tokens", "cache_creation_input_tokens")}
+        "block_canary_ok", "cache_read_input_tokens", "cache_creation_input_tokens",
+        "finish_reason", "hit_max_tokens", "degenerate_output", "max_tokens_sent")}
     s["requires_context"] = item.get("requires_context")
     s["difficulty"] = item.get("difficulty")
     s["correct"] = None

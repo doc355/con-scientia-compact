@@ -95,6 +95,25 @@ def _call(spec: ModelSpec, messages, chat_fn: ChatFn, temperature: float, retrie
     return chat_fn(use, messages)
 
 
+def is_degenerate(text: str) -> bool:
+    """A reply dominated by a single repeated token/substring is a model breakdown (e.g. the escaped-newline
+    loop the lead measured on FK-045), not an answer. True when, after whitespace normalization, a <=4-char
+    unit tiles >80% of the content, or <=3 distinct characters make up the whole of a long reply. It is a FLAG
+    only; it never changes correctness."""
+    import re as _re
+    from collections import Counter as _C
+    t = _re.sub(r"\s+", "", text or "")
+    if len(t) < 40:
+        return False
+    for w in range(1, 5):
+        unit = t[:w]
+        if unit and t.count(unit) * w >= 0.8 * len(t):
+            return True
+    if len(set(t)) <= 3:
+        return True
+    return _C(t).most_common(1)[0][1] >= 0.8 * len(t)
+
+
 def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: ChatFn,
             temperature: float, retries: int, num_ctx: Optional[int], cpt: float,
             prefill: Optional[PrefillTracker], block_canary_ok: Optional[bool],
@@ -140,7 +159,14 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         prompt_tokens=ptoks, completion_tokens=ctoks,
         cache_creation_input_tokens=_sum(t.get("cache_creation_input_tokens") for t in turns),
         cache_read_input_tokens=_sum(t.get("cache_read_input_tokens") for t in turns)))
-    status = "error" if error else ("INVALID_TRUNCATED" if trunc else "ok")
+    # OUTPUT_CAPPED: the generation hit the output cap (a model breakdown, often a degenerate loop), which must
+    # not look like a normal completion. finish_reason "length"/"max_tokens", or completion_tokens at the cap.
+    cap = spec.max_tokens
+    hit_max = bool(error is None and (
+        any(str(t.get("finish_reason")).lower() in ("length", "max_tokens") for t in turns)
+        or (cap and ctoks is not None and ctoks >= cap)))
+    degen = any(is_degenerate(t.get("content") or "") for t in turns)
+    status = "error" if error else ("INVALID_TRUNCATED" if trunc else "OUTPUT_CAPPED" if hit_max else "ok")
     row: Dict[str, Any] = {
         "run_id": uuid.uuid4().hex, "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "item_id": item["id"], "category": item["category"], "requires_context": item.get("requires_context"),
@@ -153,6 +179,8 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         "block_canary_ok": block_canary_ok,
         "temperature": temperature, "turns": turns,
         "status": status, "error": error,
+        "finish_reason": turns[-1].get("finish_reason") if turns else None,
+        "hit_max_tokens": hit_max, "degenerate_output": degen, "max_tokens_sent": cap,
         "prompt_tokens": ptoks, "completion_tokens": ctoks,
         "prompt_eval_duration_ns": turns[0].get("prompt_eval_duration_ns") if turns else None,
         "prefill": turns[0].get("prefill") if turns else None,

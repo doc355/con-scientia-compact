@@ -181,3 +181,21 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
     confabulated. A forbidden pattern on a trap item is the false premise's own value being asserted, which is
     endorsement; and the lead's rule is that confabulation_rate counts CONFABULATED alone. This changes the
     label, never the correctness, of such rows versus the earlier build. · open to reversal if the lead disagrees.
+34. 2026-10-18 · Two uncommitted metric additions, pushed together.
+    (A) WEAK-CREDIT GAP, lead-requested. Real re-score with 62b1ae7: vanilla TU-001 scored correct via
+    credit_basis=abstain_flag, but the audit judge returned SELF_CONTRADICTORY with audit_agrees=False. The
+    abstain flag alone can credit a reply a careful reader would fail. Rule unchanged. Added
+    trap_accuracy_judge_strict per (model, arm): correct ONLY when a judge returned ABSTAINED/REJECTED_PREMISE;
+    rows with no valid judge label excluded and counted in n_trap_unjudged. Reported with Wilson CIs beside the
+    rule-based abstention_correctness, with the flag-gap column = rule - strict. trap_audit_agreement now covers
+    exactly the abstain_flag/accept_pattern-credited rows. None of this changes correctness.
+    (B) OUTPUT-CAP DATA-INTEGRITY BUG, lead-measured. llama3.2:3b | full_kit | FK-045 degenerated into repeating
+    escaped newlines, hit completion_tokens=4096 (= default_max_tokens), and was written status="ok" with
+    finish_reason absent from the row. A capped degenerate generation is a MODEL BREAKDOWN, not a wrong answer:
+    scoring it wrong penalizes the arm for the wrong failure mode, scoring it ok pollutes latency/token means.
+    Fixed: finish_reason persisted per turn and at row level; hit_max_tokens (finish_reason length/max_tokens or
+    completion_tokens >= the cap sent) sets status="OUTPUT_CAPPED", excluded from accuracy, counted as
+    n_output_capped; degenerate_output flag (<=4-char unit tiling >80%, or <=3 distinct chars, after whitespace
+    normalization) reported as n_degenerate and NEVER changing correctness. In aggregate, invalid-trunc / capped
+    / degenerate sit in one row of the cost/latency table (no silent exclusions); capped rows' wall time counts
+    in total block time and their tokens in total spend, but they are excluded from per-item means. · fixed.

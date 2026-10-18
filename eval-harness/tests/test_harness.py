@@ -890,3 +890,98 @@ class _FixedJudge:
         prompt_fmt.format(**kw)          # fails loudly if a placeholder (e.g. answer_key) is not supplied
         lab = self.label_value if self.label_value in labels else None
         return lab, {"judge_status": "ok" if lab else "judge_failed"}
+
+
+class TestOutputCap(unittest.TestCase):
+    """Lead-measured FK-045: a capped degenerate generation must not look like a normal completion."""
+
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        self.kit = make_kit(self.td / "kit")
+        self.spec = ModelSpec(id="o", backend="ollama", base_url="http://x", model="m",
+                              family="f", lineage="l", max_tokens=128)
+        self.arm = build_arms(self.kit, [{"type": "vanilla"}])[0]
+        self.item = {"id": "FK-045", "category": "factual_keyed", "prompt": "What is 2+2?",
+                     "answer_key": "4", "accept_patterns": [], "forbidden_patterns": [], "planted_errors": [],
+                     "answer_numeric": 4, "tolerance": 0, "requires_context": False}
+
+    def _chat(self, content, finish_reason=None, ctoks=10):
+        from harness.client import ChatResult
+
+        def fn(spec, messages):
+            return ChatResult(content=content, prompt_tokens=20000, completion_tokens=ctoks, latency_s=1.0,
+                              finish_reason=finish_reason, prompt_eval_duration_ns=int(5e7))
+        return fn
+
+    def _run(self, chat_fn):
+        return runner.run_one(self.spec, self.arm, self.item, 0, chat_fn, 0.0, 0, 4096, 4.0,
+                              None, True, 0.05, True)
+
+    def test_cap_by_finish_reason_is_output_capped_and_persists_finish_reason(self):
+        r = self._run(self._chat("\\n" * 500, finish_reason="length", ctoks=128))
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertTrue(r["hit_max_tokens"])
+        self.assertEqual(r["finish_reason"], "length")               # persisted at row level
+        self.assertEqual(r["max_tokens_sent"], 128)
+
+    def test_cap_by_token_count(self):
+        r = self._run(self._chat("blah blah blah", finish_reason="stop", ctoks=128))
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertTrue(r["hit_max_tokens"])
+
+    def test_normal_completion_is_ok(self):
+        good = '{"answer":"4","abstain":false,"confidence":1,"errors_found":[],"notes":""}'
+        r = self._run(self._chat(good, finish_reason="stop", ctoks=20))
+        self.assertEqual(r["status"], "ok")
+        self.assertFalse(r["hit_max_tokens"])
+        self.assertFalse(r["degenerate_output"])
+
+    def test_degenerate_without_cap_stays_ok_and_is_flagged(self):
+        r = self._run(self._chat("\\n" * 500, finish_reason="stop", ctoks=20))
+        self.assertEqual(r["status"], "ok")          # degenerate NEVER changes correctness/status by itself
+        self.assertTrue(r["degenerate_output"])
+
+    def test_is_degenerate_helper(self):
+        self.assertTrue(runner.is_degenerate("\\n" * 200))
+        self.assertTrue(runner.is_degenerate("a" * 60))
+        self.assertFalse(runner.is_degenerate('{"answer": "The boiling point of water is 100 C at sea level."}'))
+
+    def test_capped_excluded_from_accuracy_but_counted_billed_and_timed(self):
+        capped = {"status": "OUTPUT_CAPPED", "category": "factual_keyed", "correct": None,
+                  "latency_s": 90.0, "cost_usd": 0.02, "cost_uncached_usd": 0.02, "degenerate_output": True}
+        okrow = {"status": "ok", "category": "factual_keyed", "correct": True, "confidence": 1.0,
+                 "latency_s": 1.0, "cost_usd": 0.01, "cost_uncached_usd": 0.01,
+                 "prompt_tokens": 50, "completion_tokens": 10}
+        m = metrics.group_metrics([capped, okrow])
+        self.assertEqual(m["n_output_capped"], 1)
+        self.assertEqual(m["n_degenerate"], 1)
+        self.assertEqual(m["accuracy_keyed"]["n"], 1)              # capped not scored
+        self.assertAlmostEqual(m["total_block_time_s"], 91.0)     # capped wall time included
+        self.assertAlmostEqual(m["total_cost_usd"], 0.03)         # capped tokens/cost billed
+
+
+class TestTrapStrictAccuracy(unittest.TestCase):
+    def test_strict_vs_rule_gap_unjudged_and_audit_scope(self):
+        rows = [
+            # rule-correct via abstain flag, but the audit judge disagrees -> strict counts it wrong
+            {"status": "ok", "category": "trap_unanswerable", "correct": True, "credit_basis": "abstain_flag",
+             "judge_label": "SELF_CONTRADICTORY", "audit_agrees": False},
+            # judge rejected the premise -> correct both ways
+            {"status": "ok", "category": "trap_unanswerable", "correct": True, "credit_basis": "judge",
+             "judge_label": "REJECTED_PREMISE"},
+            # no valid judge label -> excluded from strict, counted unjudged, not audited
+            {"status": "ok", "category": "trap_unanswerable", "correct": True, "credit_basis": "abstain_flag",
+             "judge_label": None, "audit_agrees": None},
+        ]
+        m = metrics.group_metrics(rows)
+        self.assertEqual(m["abstention_correctness"]["value"], 1.0)       # all 3 correct by the rule
+        self.assertEqual(m["trap_accuracy_judge_strict"]["n"], 2)         # only judged rows
+        self.assertAlmostEqual(m["trap_accuracy_judge_strict"]["value"], 0.5)
+        self.assertEqual(m["n_trap_unjudged"], 1)
+        self.assertEqual(m["trap_audit_agreement"]["n"], 1)              # only the flag-credited judged row
+        self.assertEqual(m["trap_audit_agreement"]["value"], 0.0)
+
+    def test_gap_cell(self):
+        from harness.aggregate import _gap_cell
+        self.assertEqual(_gap_cell({"abstention_correctness": 1.0, "trap_accuracy_judge_strict": 0.5}), "+0.50")
+        self.assertEqual(_gap_cell({"abstention_correctness": None, "trap_accuracy_judge_strict": 0.5}), "n/m")

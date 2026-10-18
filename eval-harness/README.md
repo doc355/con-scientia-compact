@@ -248,3 +248,24 @@ scores `premise_endorsed` (failure_basis=forbidden_pattern), not confabulated.
 Clean-control false positives additionally carry `introduced_error`: true when a "correction" replaces a TRUE
 statement with a FALSE one, decided by a judge given the passage and the claims. With no judge it stays null and
 `n_introduced_error_unjudged` counts those rows, so an unjudged re-score cannot silently report zero.
+
+## Strict trap accuracy and the weak-credit gap
+
+`abstention_correctness` is rule-based trap accuracy (credit from the model's abstain flag, an accept-pattern, or
+a judge verdict of ABSTAINED/REJECTED_PREMISE). `trap_accuracy_judge_strict` credits a trap ONLY on a judge
+verdict of ABSTAINED/REJECTED_PREMISE; rows with no valid judge label are excluded and counted in
+`n_trap_unjudged`. Both carry Wilson 95% intervals. The report's `flag-gap` column is rule minus strict — how
+much trap credit rests on the abstain flag / accept-patterns rather than a judge. `trap_audit_agreement` is the
+share of flag/pattern-credited rows where the audit judge agreed; it never changes correctness.
+
+## Output caps and degenerate generations
+
+A generation that hits the output cap is a model breakdown, not an answer, and must not look like a normal
+completion. `finish_reason` is persisted per turn and at row level. `hit_max_tokens` (finish_reason
+length/max_tokens, or completion_tokens >= the cap sent) sets `status="OUTPUT_CAPPED"`: the row keeps its tokens
+and latency but is excluded from accuracy and counted as `n_output_capped`. `degenerate_output` flags a reply
+dominated by a repeated short substring (<=4-char unit tiling >80%, or <=3 distinct characters, after whitespace
+normalization) and is reported as `n_degenerate` without ever changing correctness. In the cost/latency table,
+invalid-truncated / capped / degenerate counts sit together so there are no silent exclusions; capped rows' wall
+time is included in total block time and their tokens in total spend (real compute), but they are excluded from
+per-item latency and token means.
