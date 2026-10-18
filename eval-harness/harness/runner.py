@@ -98,6 +98,17 @@ def _call(spec: ModelSpec, messages, chat_fn: ChatFn, temperature: float, retrie
     return chat_fn(use, messages)
 
 
+def is_degenerate_thinking(text: str, n: int = 8, min_words: int = 2000, max_unique: float = 0.2) -> bool:
+    """Thinking channel stuck in a loop: under `max_unique` distinct word n-grams over a long trace.
+    gemma4:12b at temperature 0 on FK-001 (2026-10-18) found the answer, then wrote 'Wait, I should check...
+    Yes, it is.' until both the 16k and the 32k cap ran out (8-gram uniqueness 0.05). FLAG only."""
+    w = (text or "").split()
+    if len(w) < min_words:
+        return False
+    grams = len(w) - n + 1
+    return len({tuple(w[i:i + n]) for i in range(grams)}) / grams < max_unique
+
+
 def is_degenerate(text: str) -> bool:
     """A reply dominated by a single repeated token/substring is a model breakdown (e.g. the escaped-newline
     loop the lead measured on FK-045), not an answer. True when, after whitespace normalization, a <=4-char
@@ -243,6 +254,9 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         _can_retry, cap_retry_skipped_reason = False, "context_bound"
     elif hit_max and not trunc and not _can_retry:
         cap_retry_skipped_reason = "retry_disabled_or_not_larger"
+    # A looping trace only loops longer with a doubled cap (FK-001 above: 19 min, no answer either time).
+    if _can_retry and any(is_degenerate_thinking(t.get("thinking") or "") for t in turns):
+        _can_retry, cap_retry_skipped_reason = False, "degenerate_thinking_loop"
     if _can_retry:
         retry_cap = min(cap * 2, cap_retry_max)
         eff = ModelSpec(**{**spec.__dict__, "max_tokens": retry_cap,
@@ -274,9 +288,12 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         "chars_per_token_used": round(cpt, 3), "chars_per_token_measured": cpt_measured,
         "block_canary_ok": block_canary_ok,
         "temperature": temperature, "turns": turns,
+        "temperature_effective": spec.options.get("temperature", temperature),
+        "sampling_options": dict(spec.options),
         "status": status, "error": error,
         "finish_reason": turns[-1].get("finish_reason") if turns else None,
         "hit_max_tokens": hit_max, "degenerate_output": degen, "max_tokens_sent": cap,
+        "degenerate_thinking": any(is_degenerate_thinking(t.get("thinking") or "") for t in turns),
         "effective_max_tokens": cap, "cap_reason": cap_reason,
         "cap_retry_skipped_reason": cap_retry_skipped_reason,
         "thinking": spec.thinking, "thinking_chars": thinking_chars(turns),

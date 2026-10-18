@@ -46,3 +46,16 @@ class CanaryBudgetTests(unittest.TestCase):
         from harness import runner
         src = inspect.getsource(runner.canary_check)
         self.assertIn("64 if not spec.thinking", src)
+
+
+class TestDegenerateThinking(unittest.TestCase):
+    def test_loop_flagged_and_cap_retry_skipped(self):
+        from pathlib import Path
+        from harness.runner import is_degenerate_thinking
+        loop = "Wait, I should check if the Euler characteristic is 0. Yes, it is. " * 400
+        self.assertTrue(is_degenerate_thinking(loop))
+        self.assertFalse(is_degenerate_thinking(" ".join(f"w{i}" for i in range(3000))))
+        self.assertFalse(is_degenerate_thinking("Wait, yes. " * 50))
+        src = open(Path(__file__).resolve().parents[1] / "harness" / "runner.py").read()
+        self.assertIn('"degenerate_thinking_loop"', src)
+        self.assertIn('"sampling_options"', src)
