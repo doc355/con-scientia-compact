@@ -117,3 +117,21 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
     4.554) instead of guessing; the per-block canary recalibration from prompt_eval_count still refines it.
     Note the estimate was wrong in the DANGEROUS-SAFE direction here (over-reserving context), but the same
     4.0 guess under-reserves for text that tokenizes densely. · fixed.
+25. 2026-10-18 · Unit slips, logged at the lead's request — both his, one of them twice. (a) "4.6 GB" for the
+    122B KV at 100k context was a GiB figure labeled GB. (b) In the message accepting that correction he wrote
+    "4.8 GB decimal = 4.58 GiB", mislabeling the unit again: 4.8 GB decimal is 4.47 GiB; 4.58 GiB is 48 KiB per
+    token, not 48 KB. I raised it and he confirmed the derivation: 2 (K,V) x 48 layers x 2 KV heads x 128
+    head_dim x 2 bytes = 49,152 B/token = 48 KiB. kv_bytes_per_token is now 49152 (BYTES), giving 4.58 GiB at
+    100k and a kill line at weights + 9.16 GiB. My own share: the earlier GB/GiB mix in the scheduler
+    (entry 20). head_dim=128 is still ASSUMED, so the kill condition still matters. · fixed.
+26. 2026-10-18 · FIRST REAL-FLEET RUN of this harness, reported by the lead (commit efb7602, llama3.2:3b,
+    7 items, vanilla + full_kit): 14/14 status ok, 0 INVALID_TRUNCATED, canary passed on both blocks (full_kit
+    canary prompt_eval_count 28,744), cold/warm classified correctly, keep_alive released, aggregate wrote its
+    outputs. OPEN: under full_kit, FK-001/FK-002 came back parse_fail and SE-001/CC-001 unscored_no_errors_field,
+    while vanilla scored cleanly. Unresolved whether that is the model abandoning the JSON contract under 28k of
+    kit (a real finding, and one the contract-violation metric exists to catch) or a gap in my parser. The lead
+    is reading the raw turns; NO parser changes until he reports, so a parser patch cannot mask a real result.
+    Note the direction: if it is real, it is the kit HURTING contract compliance on a 3B model. · open.
+27. 2026-10-18 · Mine: aggregate wrote summary_sliced.csv to a results/ path relative to the CWD when
+    --sliced-csv was omitted, instead of beside --csv. Harmless but surprising; found by the lead on the first
+    real run. Fixed: it now defaults to <csv stem>_sliced.csv next to --csv. · fixed.

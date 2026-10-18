@@ -177,3 +177,24 @@ Ollama reports the **full** prompt token count on a prefix-cache hit — the lea
 >5% guard applies **uniformly** to warm and cold calls; the earlier `not_checkable_warm` escape hatch is gone.
 Cold vs warm is derived from `prompt_eval_duration` only, never from the count, and the few-token drift between
 identical calls is absorbed by the tolerance.
+
+## Units, and the KV kill condition (settled with the lead)
+
+All RAM/weights/KV figures are **GiB**; exo reports raw bytes and the harness divides by 1024**3.
+`kv_bytes_per_token` in the registry is in **bytes**: 49152 = 48 **KiB**/token, from the lead's derivation for
+the 122B (2 for K,V x 48 layers x 2 KV heads x 128 head_dim x 2 bytes). That gives 4.58 GiB at 100k context and
+a kill line at weights + 2x = +9.16 GiB. 48 KB decimal would be 4.47 GiB — the earlier "4.6 GB"/"4.58 GiB from
+48 KB" labels were unit slips (ledger 20, 25). `head_dim=128` is still ASSUMED (not in exo's model card), which
+is exactly why the `kv_estimate_invalid` abort exists instead of trusting the estimate.
+
+## Registry schema note
+
+`full_kit_fits` is **not** part of the schema and the loader rejects it as an unknown key. The lead keeps it as
+a helper in his own `models.json`; the runner computes fit itself from `max_ctx` versus the unrounded
+(system + longest item + headroom + completion reserve) requirement, so a stale helper flag can never override
+a measured limit. Underscore-prefixed top-level keys (`_kit_tokens_measured`, `_num_ctx_default`, ...) are read
+as metadata; `_kit_tokens_measured` calibrates chars/token for context sizing.
+
+## aggregate.py output paths
+
+`--sliced-csv` now defaults to `<csv stem>_sliced.csv` beside `--csv`, not to a CWD-relative `results/` path.

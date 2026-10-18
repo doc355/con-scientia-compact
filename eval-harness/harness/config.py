@@ -18,7 +18,6 @@ REGISTRY_MODEL_KEYS = {"id", "backend", "lineage", "price_in", "price_out", "tie
                        "model", "num_ctx", "max_tokens", "think", "options", "timeout_s", "family", "system_role",
                        "api_key_env", "base_url", "price_cache_write", "price_cache_read", "prompt_cache",
                        "max_ctx", "num_ctx_default", "num_ctx_full_kit", "weights_gib", "weights_bytes", "kv_bytes_per_token",
-                       "full_kit_fits",
                        "keep_alive"}
 DEFAULT_NUM_CTX = 100000        # Doc's standing order; capped per model at max_ctx
 TIMEOUT_FLOOR_LARGE_S = 300.0   # lead: >=300 s for large/thinking models (gpt-oss:20b measured 13-30 s/item vanilla)

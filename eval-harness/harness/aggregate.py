@@ -245,10 +245,13 @@ def main(argv=None):
     ap.add_argument("--results", default="results/results.jsonl", help="raw results (canary rows give measured kit tokens)")
     ap.add_argument("--calibration", help="optional legacy calibration.jsonl")
     ap.add_argument("--slices", default="requires_context", help="comma list of scored fields to slice by ('' = none)")
-    ap.add_argument("--sliced-csv", default="results/summary_sliced.csv")
+    ap.add_argument("--sliced-csv", default=None,
+                    help="default: <csv stem>_sliced.csv beside --csv")
     ap.add_argument("--csv", default="results/summary.csv")
     ap.add_argument("--md", default="results/report.md")
     a = ap.parse_args(argv)
+    csv_path = Path(a.csv)
+    sliced_path = Path(a.sliced_csv) if a.sliced_csv else csv_path.with_name(csv_path.stem + "_sliced.csv")
     scored = read_jsonl(Path(a.scored))
     calib = read_jsonl(Path(a.calibration)) if a.calibration else None
     ktm = kit_tokens_measured(calib or [])
@@ -260,12 +263,12 @@ def main(argv=None):
         slices[f] = build_table(scored, slice_by=f, ktm=ktm)
         sliced_all += slices[f]
     if sliced_all:
-        write_csv(sliced_all, Path(a.sliced_csv))
+        write_csv(sliced_all, sliced_path)
     seeded = sorted([r for r in scored if r.get("category") == "seeded_error_doc" and r.get("status") == "ok"],
                     key=lambda r: (r["model_id"], r["arm_id"], r["item_id"], r.get("rep", 0)))
     write_md(table, Path(a.md), {"n_scored": len(scored), "slices": slices, "seeded_items": seeded,
                                  "kit_commits": sorted({r["kit_commit"] for r in scored if r.get("kit_commit")})})
-    print(f"wrote {a.csv}, {a.sliced_csv if sliced_all else '(no slices)'} and {a.md} ({len(table)} model x arm rows)")
+    print(f"wrote {a.csv}, {sliced_path if sliced_all else '(no slices)'} and {a.md} ({len(table)} model x arm rows)")
 
 
 if __name__ == "__main__":

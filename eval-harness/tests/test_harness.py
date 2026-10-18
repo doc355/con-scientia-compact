@@ -621,3 +621,50 @@ class TestVerifiedExoShapes(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRegistrySchemaAndAggregateDefaults(unittest.TestCase):
+    def test_full_kit_fits_is_not_in_schema(self):
+        """The lead's helper key is deliberately rejected: the runner computes fit from max_ctx itself."""
+        from harness import config
+        self.assertNotIn("full_kit_fits", config.REGISTRY_MODEL_KEYS)
+        td = Path(tempfile.mkdtemp())
+        reg = {"ollama_base": "http://h:11434",
+               "models": [{"id": "m", "backend": "ollama", "lineage": "l",
+                           "price_in": 0, "price_out": 0, "tier": "small",
+                           "max_ctx": 131072, "full_kit_fits": True}],
+               "judge_pool": []}
+        (td / "r.json").write_text(json.dumps(reg))
+        with self.assertRaises(ValueError) as e:
+            config.load_registry(td / "r.json")
+        self.assertIn("full_kit_fits", str(e.exception))
+
+    def test_kv_estimate_is_48_kib(self):
+        """48 KiB/token = 49152 bytes -> 4.58 GiB at 100k ctx (not 4.47, which is 48 KB decimal)."""
+        from harness import exo_sched
+
+        class S:
+            kv_bytes_per_token = 49152
+            weights_gib = 64.8
+        self.assertAlmostEqual(exo_sched.ExoScheduler.kv_estimate_gib(S, 100_000), 4.58, places=2)
+
+    def test_sliced_csv_defaults_beside_csv(self):
+        td = Path(tempfile.mkdtemp())
+        kit = make_kit(td / "kit")
+        cfg = load_config(write_cfg(td, kit))
+        runner.run(cfg, BATTERY, td / "r.jsonl", chat_fn=mock_chat,
+                   fetch_show=False, keep_alive=None, log=lambda *a: None)
+        score.score(cfg, td / "r.jsonl", BATTERY, td / "s.jsonl", td / "jc.jsonl",
+                    chat_fn=mock_chat, log=lambda *a: None)
+        out = td / "out"
+        out.mkdir()
+        stray = Path.cwd() / "results"
+        existed = stray.exists()          # may pre-exist in a dev worktree; only a NEW one is the bug
+        aggregate.main(["--scored", str(td / "s.jsonl"), "--results", str(td / "r.jsonl"),
+                        "--csv", str(out / "summary.csv"), "--md", str(out / "report.md")])
+        self.assertTrue((out / "summary_sliced.csv").exists())
+        self.assertEqual(stray.exists(), existed)
+        if existed:
+            self.assertFalse(
+                any(f.stat().st_mtime > os.stat(out / "summary.csv").st_mtime - 5
+                    for f in stray.glob("summary_sliced.csv")))

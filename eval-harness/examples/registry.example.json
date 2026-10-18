@@ -1,5 +1,5 @@
 {
-  "_comment": "Lead's real registry, transcribed from Ola's measured reports. UNITS: *_gib are GiB (exo reports raw bytes). Fields marked null below were NOT stated by the lead and are NOT invented - fill them from /home/ubuntu/council/models.json. lineage/tier for ids Ola did not state verbatim are INFERRED from the model name. Prices 0 = local. Kimi/Anthropic legs run from the lead's VM, not on exo.",
+  "_comment": "Lead's real registry, transcribed from Ola's measured reports. UNITS: *_gib are GiB; kv_bytes_per_token is BYTES (49152 = 48 KiB/token, the lead's derivation for the 122B: 2 x 48 layers x 2 KV heads x 128 head_dim x 2 bytes). The lead's helper key full_kit_fits is deliberately NOT in the schema - the runner computes fit itself. lineage/tier for ids Ola did not state verbatim are INFERRED from the model name. Prices 0 = local. Kimi/Anthropic legs run from the lead's VM, not on exo.",
   "ollama_base": "http://christophers-macbook-pro-3:11434",
   "exo_base": "http://project-iris-1:52415",
   "_kit_tokens_measured": 28215,
@@ -23,8 +23,7 @@
       "max_ctx": 131072,
       "num_ctx_default": 100000,
       "num_ctx_full_kit": 100000,
-      "timeout_s": 120,
-      "full_kit_fits": true
+      "timeout_s": 120
     },
     {
       "id": "qwen3:32b",
@@ -35,8 +34,7 @@
       "tier": "medium",
       "max_ctx": 40960,
       "num_ctx_default": 40960,
-      "num_ctx_full_kit": 40960,
-      "full_kit_fits": true
+      "num_ctx_full_kit": 40960
     },
     {
       "id": "magistral:24b",
@@ -47,8 +45,7 @@
       "tier": "medium",
       "max_ctx": 40000,
       "num_ctx_default": 40000,
-      "num_ctx_full_kit": 40000,
-      "full_kit_fits": true
+      "num_ctx_full_kit": 40000
     },
     {
       "id": "gpt-oss:20b",
@@ -61,8 +58,7 @@
       "num_ctx_default": 100000,
       "num_ctx_full_kit": 100000,
       "thinking": true,
-      "timeout_s": 300,
-      "full_kit_fits": true
+      "timeout_s": 300
     },
     {
       "id": "gpt-oss:120b",
@@ -75,8 +71,7 @@
       "num_ctx_default": 100000,
       "num_ctx_full_kit": 100000,
       "thinking": true,
-      "timeout_s": 300,
-      "full_kit_fits": true
+      "timeout_s": 300
     },
     {
       "id": "qwen3.5:122b",
@@ -89,8 +84,7 @@
       "num_ctx_default": 100000,
       "num_ctx_full_kit": 100000,
       "thinking": true,
-      "timeout_s": 300,
-      "full_kit_fits": true
+      "timeout_s": 300
     },
     {
       "id": "deepseek-r1:32b",
@@ -103,8 +97,7 @@
       "num_ctx_default": 100000,
       "num_ctx_full_kit": 100000,
       "thinking": true,
-      "timeout_s": 300,
-      "full_kit_fits": true
+      "timeout_s": 300
     },
     {
       "id": "deepseek-r1:70b",
@@ -117,8 +110,7 @@
       "num_ctx_default": 100000,
       "num_ctx_full_kit": 100000,
       "thinking": true,
-      "timeout_s": 300,
-      "full_kit_fits": true
+      "timeout_s": 300
     },
     {
       "id": "gemma4:12b",
@@ -129,8 +121,7 @@
       "tier": "small",
       "max_ctx": 262144,
       "num_ctx_default": 100000,
-      "num_ctx_full_kit": 100000,
-      "full_kit_fits": true
+      "num_ctx_full_kit": 100000
     },
     {
       "id": "gemma4:31b",
@@ -142,8 +133,7 @@
       "max_ctx": null,
       "num_ctx_default": null,
       "num_ctx_full_kit": null,
-      "_note": "max_ctx NOT measured by the lead; runner falls back to POST /api/show, else config default_num_ctx",
-      "full_kit_fits": true
+      "_note": "max_ctx NOT measured by the lead; runner falls back to POST /api/show, else config default_num_ctx"
     },
     {
       "id": "glm-4.7-flash",
@@ -154,8 +144,7 @@
       "tier": "medium",
       "max_ctx": 202752,
       "num_ctx_default": 100000,
-      "num_ctx_full_kit": 100000,
-      "full_kit_fits": true
+      "num_ctx_full_kit": 100000
     },
     {
       "id": "nemotron-3.5-lightning:30b",
@@ -166,8 +155,7 @@
       "tier": "medium",
       "max_ctx": 1048576,
       "num_ctx_default": 100000,
-      "num_ctx_full_kit": 100000,
-      "full_kit_fits": true
+      "num_ctx_full_kit": 100000
     },
     {
       "id": "Qwen3.5-122B-A10B-4bit",
@@ -176,17 +164,15 @@
       "price_in": 0,
       "price_out": 0,
       "tier": "large",
-      "max_ctx": null,
-      "num_ctx_default": null,
-      "num_ctx_full_kit": null,
+      "max_ctx": 262144,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
       "needs_instance": true,
       "weights_gib": 64.8,
       "weights_bytes": 69593314272,
-      "kv_bytes_per_token": 48000,
+      "kv_bytes_per_token": 49152,
       "thinking": true,
-      "timeout_s": 600,
-      "_note": "max_ctx not stated for exo builds; previews modelCard.contextLength carries it. weights_gib measured.",
-      "full_kit_fits": true
+      "timeout_s": 600
     },
     {
       "id": "GLM-4.5-Air-8bit",
@@ -195,16 +181,14 @@
       "price_in": 0,
       "price_out": 0,
       "tier": "large",
-      "max_ctx": null,
-      "num_ctx_default": null,
-      "num_ctx_full_kit": null,
+      "max_ctx": 131072,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
       "needs_instance": true,
       "weights_gib": 114.0,
-      "kv_bytes_per_token": 48000,
-      "timeout_s": 600,
-      "_note": "max_ctx not stated for exo builds; previews modelCard.contextLength carries it. weights_gib measured.",
-      "full_kit_fits": true
+      "kv_bytes_per_token": 49152,
+      "timeout_s": 600
     }
   ],
-  "_count_discrepancy": "Ola said 13 models; this file has 14 entries. Ola gave measured max_ctx for 11 ollama ids, plus gemma4:31b (judge pool, no max_ctx given) and 2 exo builds. One of these is likely not in the real 13 - the real models.json is authoritative."
+  "_count_discrepancy": "Resolved: the lead's models.json now has 14 models (gemma4:31b added as the 14th, it is a judge). max_ctx for gemma4:31b was still not stated verbatim, so it is left null here - the runner falls back to POST /api/show. Everything else is the lead's MEASURED value."
 }
