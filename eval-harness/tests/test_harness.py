@@ -322,6 +322,39 @@ class TestPipeline(unittest.TestCase):
         sr = score.score_row(r, {**item, "requires_context": None}, self.cfg, None)
         self.assertIsNone(sr["correct"])
 
+    def test_gated_kit_gate_then_answer(self):
+        from harness.client import ChatResult
+        arm = build_arms(self.kit, [{"type": "gated_kit", "max_skills": 2}])[0]
+        self.assertIn("- alpha:", arm.meta["gate_system"])
+        self.assertGreater(runner.prompt_chars(arm), len(arm.system_prompt))
+        seen, gate_reply = [], {"v": '{"load": ["beta", "nope", "alpha.md", "beta", "gamma"]}'}
+
+        def fake(spec, msgs):
+            seen.append(msgs[0]["content"])
+            pt = len("".join(m["content"] for m in msgs)) // 4
+            if "SKILL GATE" in msgs[0]["content"]:
+                return ChatResult(content=gate_reply["v"], prompt_tokens=pt, completion_tokens=10, latency_s=0.5)
+            return ChatResult(content='{"answer": "Mercury", "abstain": false, "confidence": 0.9, '
+                                      '"errors_found": [], "notes": ""}', prompt_tokens=pt, completion_tokens=20,
+                              latency_s=1.0)
+        spec = ModelSpec(id="g", backend="mock", base_url="", model="g", family="f", lineage="l")
+        item = {"id": "x", "category": "factual_keyed", "prompt": "Which planet is closest to the Sun?"}
+        r = runner.run_one(spec, arm, item, 0, fake, 0.0, 0, None, 4.0, None, True, 0.05, True)
+        self.assertEqual(r["status"], "ok")
+        self.assertEqual(r["gate_selected"], ["beta", "alpha"])
+        self.assertEqual((r["gate"]["unknown"], r["gate"]["over_limit"]), (["nope"], ["gamma"]))
+        self.assertNotIn("SKILL:", seen[0])                       # the gate sees the index only
+        self.assertIn("skills/beta.md", seen[1])
+        self.assertNotIn("skills/gamma.md", seen[1])
+        self.assertEqual(r["prompt_tokens"], r["gate"]["prompt_tokens"] + r["prompt_tokens_answer"])
+        self.assertAlmostEqual(r["latency_s"], 1.5)
+        self.assertEqual(r["parsed"]["answer"], "Mercury")
+        gate_reply["v"] = "I think alpha and beta would help."    # unparseable gate: nothing loaded, recorded
+        r2 = runner.run_one(spec, arm, item, 0, fake, 0.0, 0, None, 4.0, None, True, 0.05, True)
+        self.assertFalse(r2["gate"]["gate_parse_ok"])
+        self.assertEqual(r2["gate_selected"], [])
+        self.assertNotIn("skills/", seen[-1])
+
     def test_errors_retried_append_only(self):
         from harness.client import ChatResult
         calls = {"n": 0}

@@ -29,7 +29,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from .arms import CHARS_PER_TOKEN_EST, Arm, build_arms
+from .arms import CHARS_PER_TOKEN_EST, Arm, build_arms, gated_answer_arm, parse_gate, prompt_chars
 from .battery import first_user_message, load_battery
 from .client import ChatFn, ChatResult, ModelSpec, chat
 from .config import Config, load_config
@@ -185,12 +185,48 @@ def thinking_chars(turns: List[Dict[str, Any]]) -> int:
     return sum(len(t.get("thinking") or "") for t in turns)
 
 
+def run_gate(spec: ModelSpec, arm: Arm, item: Dict[str, Any], chat_fn: ChatFn, temperature: float,
+             retries: int, num_ctx: Optional[int]) -> Tuple[Dict[str, Any], Arm]:
+    """gated_kit step 1: the model sees only the skill index and must name what to load (forced choice)."""
+    msgs = [{"role": "system", "content": arm.meta["gate_system"]},
+            {"role": "user", "content": first_user_message(item)}]
+    res = _call(spec, msgs, chat_fn, temperature, retries, num_ctx)
+    g: Dict[str, Any] = {"error": res.error, "latency_s": res.latency_s, "prompt_tokens": res.prompt_tokens,
+                         "completion_tokens": res.completion_tokens,
+                         "finish_reason": getattr(res, "finish_reason", None), "raw": (res.content or "")[:2000]}
+    g.update(parse_gate(res.content, list(arm.meta["gate_skills"]), int(arm.meta["gate_max_skills"])))
+    return g, gated_answer_arm(arm, g["selected"])
+
+
+def _with_gate(row: Dict[str, Any], gate: Optional[Dict[str, Any]], spec: ModelSpec) -> Dict[str, Any]:
+    """Gate cost is part of the arm's cost: fold its latency and tokens into the row totals, keep it itemized."""
+    if gate is None:
+        return row
+    row["gate"], row["gate_selected"] = gate, gate["selected"]
+    for f in ("latency_s", "prompt_tokens", "completion_tokens"):
+        row[f + "_answer"] = row.get(f)
+        if row.get(f) is not None and gate.get(f) is not None:
+            row[f] = row[f] + gate[f]
+    row.update(spec.cost_breakdown(ChatResult(
+        prompt_tokens=row.get("prompt_tokens"), completion_tokens=row.get("completion_tokens"),
+        cache_creation_input_tokens=row.get("cache_creation_input_tokens"),
+        cache_read_input_tokens=row.get("cache_read_input_tokens"))))
+    return row
+
+
 def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: ChatFn,
             temperature: float, retries: int, num_ctx: Optional[int], cpt: float,
             prefill: Optional[PrefillTracker], block_canary_ok: Optional[bool],
             trunc_tolerance: float, cpt_measured: bool = False,
             contract_reminder: Optional[str] = None, cap_retry_max: int = 0,
             cap_reason: Optional[str] = None) -> Dict[str, Any]:
+    gate = None
+    if arm.type == "gated_kit":
+        gate, arm = run_gate(spec, arm, item, chat_fn, temperature, retries, num_ctx)
+        if gate["error"]:
+            row = _skip_row(spec, arm, item, rep, "error", {"gate": gate})
+            row["error"] = f"gate: {gate['error']}"
+            return row
     args = (arm, item, chat_fn, temperature, retries, num_ctx, cpt, prefill, trunc_tolerance,
             cpt_measured, contract_reminder)
     turns, error, trunc = _run_turns(spec, *args)
@@ -263,7 +299,7 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         row["parsed"] = parse_response(last["content"], last.get("thinking"))
         if len(turns) > 1:
             row["first_parsed"] = parse_response(turns[0]["content"], turns[0].get("thinking"))
-    return row
+    return _with_gate(row, gate, spec)
 
 
 def _skip_row(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, reason: str,
@@ -314,12 +350,12 @@ def size_num_ctx(spec: ModelSpec, arm: Arm, longest_user_chars: int, cpt: float,
     # full reserve here would skip qwen3:32b (40960) and magistral:24b (40000) whose PROMPTS fit fine, which
     # contradicts the lead's measured "the kit fits every model". A model whose window cannot hold prompt +
     # full answer budget simply gets whatever generation room is left, and the cap/degenerate guards catch it.
-    raw = round(len(arm.system_prompt) / cpt) + round(longest_user_chars / cpt) + HEADROOM
+    raw = round(prompt_chars(arm) / cpt) + round(longest_user_chars / cpt) + HEADROOM
     # Compare the UNROUNDED requirement with the trained max: ladder rounding (e.g. 36k -> 40960) must not
     # skip a block that fits under a non-ladder limit such as magistral:24b's 40000.
     if max_ctx is not None and raw > max_ctx:
         return raw, max_ctx, "context_exceeds_model_max"
-    need = required_num_ctx(round(len(arm.system_prompt) / cpt), round(longest_user_chars / cpt), HEADROOM,
+    need = required_num_ctx(round(prompt_chars(arm) / cpt), round(longest_user_chars / cpt), HEADROOM,
                             completion_reserve=spec.max_tokens or 0)
     target = spec.num_ctx_full_kit if arm.type == "full_kit" else spec.num_ctx_default
     if target is None:
@@ -462,7 +498,7 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
                         emit(_skip_row(s, a, it, rep, "kv_estimate_invalid", {"detail": aborted}))
                         continue
                     utext = first_user_message(it) + "".join(it.get("pressure_turns") or [])
-                    p_est = round((len(a.system_prompt) + len(utext)) / bcpt)
+                    p_est = round((prompt_chars(a) + len(utext)) / bcpt)
                     eff_cap, cap_reason = effective_answer_cap(cur_spec.max_tokens, num_ctx, p_est, cap_margin)
                     item_spec = cur_spec if eff_cap == cur_spec.max_tokens \
                         else ModelSpec(**{**cur_spec.__dict__, "max_tokens": eff_cap})
