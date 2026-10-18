@@ -422,6 +422,14 @@ class TestRegistryCtxAndTimeouts(unittest.TestCase):
         self.assertEqual(size("qwen3:32b", van), 40960)
         self.assertEqual(size("qwen3:32b", full), 40960)
         self.assertEqual(size("magistral:24b", van), 40000)
+        # raw need just under the 40000 trained limit (ladder would round it to 40960): must run, capped
+        mag = models["magistral:24b"]
+        sys_tok = round(len(van.system_prompt) / 4.0)          # vanilla still carries the contract instructions
+        budget = 40000 - 4096 - (mag.max_tokens or 0) - sys_tok
+        raw_fit = runner.size_num_ctx(mag, van, (budget - 100) * 4, 4.0, 40000)
+        self.assertEqual((raw_fit[0], raw_fit[2]), (40000, None))   # ladder would say 40960; capped, not skipped
+        raw_over = runner.size_num_ctx(mag, van, (budget + 100) * 4, 4.0, 40000)
+        self.assertEqual(raw_over[2], "context_exceeds_model_max")
         self.assertEqual(size("big", van), 100000)
         self.assertEqual(size("big", full), 65536)
         self.assertEqual(models["qwen3:32b"].timeout_s, 600.0)
@@ -459,9 +467,9 @@ class TestContractViolations(unittest.TestCase):
 
 class FakeExo:
     """In-memory exo cluster: nodeMemory in bytes objects, instances keyed by id."""
-    def __init__(self, free_gb=160.0, weights_gb=69.6, extra_after_samples=None, extra_gb=0.0):
-        self.free, self.w, self.inst, self.log = free_gb, weights_gb, {}, []
-        self.polls, self.n_state, self.extra_after, self.extra_gb = 0, 0, extra_after_samples, extra_gb
+    def __init__(self, free_gib=160.0, weights_gib=69.6, extra_after_samples=None, extra_gib=0.0):
+        self.free, self.w, self.inst, self.log = free_gib, weights_gib, {}, []
+        self.polls, self.n_state, self.extra_after, self.extra_gib = 0, 0, extra_after_samples, extra_gib
 
     def http(self, method, url, payload=None, timeout=60.0):
         path = url.split(":52415")[1]
@@ -484,11 +492,11 @@ class FakeExo:
             if self.polls >= 2:
                 v["status"] = "RunnerReady"
         if self.extra_after is not None and self.n_state > self.extra_after:
-            self.free -= self.extra_gb
-            self.extra_gb = 0
-        b = self.free * 1e9
-        return {"nodeMemory": {"a": {"ramAvailable": {"inBytes": b * 0.6}, "ramTotal": {"inBytes": 137.4e9}},
-                               "b": {"ramAvailable": {"inBytes": b * 0.4}, "ramTotal": {"inBytes": 78.6e9}}},
+            self.free -= self.extra_gib
+            self.extra_gib = 0
+        b = self.free * (1024 ** 3)
+        return {"nodeMemory": {"a": {"ramAvailable": {"inBytes": b * 0.6}, "ramTotal": {"inBytes": 137.4 * 1024 ** 3}},
+                               "b": {"ramAvailable": {"inBytes": b * 0.4}, "ramTotal": {"inBytes": 78.6 * 1024 ** 3}}},
                 "instances": dict(self.inst)}
 
 
@@ -505,29 +513,29 @@ class TestExoScheduler(unittest.TestCase):
 
     def _spec(self, **kw):
         return ModelSpec(id="m", backend="exo", base_url="http://exo:52415", model="m", family="f", lineage="l",
-                         needs_instance=True, weights_gb=69.6, kv_bytes_per_token=48e3, **kw)
+                         needs_instance=True, weights_gib=69.6, kv_bytes_per_token=48e3, **kw)
 
     def test_free_ram_and_place_evict_logged(self):
         fx = FakeExo()
         sch, ev = self._sched(fx)
         r = sch.free_ram()
-        self.assertEqual(r["total_free_gb"], 160.0)
-        self.assertEqual(r["per_node_free_gb"], {"a": 96.0, "b": 64.0})
+        self.assertEqual(r["total_free_gib"], 160.0)
+        self.assertEqual(r["per_node_free_gib"], {"a": 96.0, "b": 64.0})
         with sch.block(self._spec(), 100000) as mon:
-            self.assertAlmostEqual(mon.kv_est_gb, 4.8)
+            self.assertAlmostEqual(mon.kv_est_gib, 48e3 * 100000 / 1024 ** 3, places=3)  # 4.47 GiB, not 4.8
             mon.sample()
         names = [e["event"] for e in ev]
         self.assertEqual(names[0], "state_raw_first_placement")   # raw /state logged once for the lead
         self.assertEqual(names[1], "placed"); self.assertEqual(names[-1], "evicted")
         placed = ev[1]
-        self.assertEqual((placed["free_before_gb"], placed["free_after_gb"]), (160.0, 90.4))
+        self.assertEqual((placed["free_before_gib"], placed["free_after_gib"]), (160.0, 90.4))
         self.assertIn("load_s", placed)
-        self.assertEqual(ev[-1]["free_after_gb"], 160.0)
+        self.assertEqual(ev[-1]["free_after_gib"], 160.0)
         self.assertIn(("GET", "/instance/previews"), fx.log)
 
     def test_refuses_when_projection_exceeds_free(self):
         from harness.exo_sched import InsufficientMemory
-        fx = FakeExo(free_gb=60.0)
+        fx = FakeExo(free_gib=60.0)
         sch, ev = self._sched(fx)
         with self.assertRaises(InsufficientMemory):
             sch.ensure_resident(self._spec(), 100000)
@@ -546,8 +554,8 @@ class TestExoScheduler(unittest.TestCase):
         kit = make_kit(td / "kit")
         cfg = load_config(write_cfg(td, kit, test_models=["m"], judge_pool=[], exo_base="http://exo:52415", models=[
             {"id": "m", "backend": "exo", "base_url": "http://exo:52415", "model": "m", "family": "f", "lineage": "l",
-             "needs_instance": True, "weights_gb": 69.6, "kv_bytes_per_token": 48e3, "max_ctx": 100000}]))
-        fx = FakeExo(extra_after_samples=8, extra_gb=20.0)        # usage jumps past weights + 2 x 4.8 GB
+             "needs_instance": True, "weights_gib": 69.6, "kv_bytes_per_token": 48e3, "max_ctx": 100000}]))
+        fx = FakeExo(extra_after_samples=8, extra_gib=20.0)        # usage jumps past weights + 2 x 4.8 GB
         sch, ev = self._sched(fx)
         s = runner.run(cfg, BATTERY, td / "res.jsonl", arm_ids=["vanilla", "full_kit"], chat_fn=mock_chat,
                        do_canary=False, fetch_show=False, keep_alive=None, scheduler=sch, log=lambda *a: None)
@@ -557,7 +565,7 @@ class TestExoScheduler(unittest.TestCase):
         self.assertEqual(names.count("placed"), 1)                # one placement for ALL arms of the model
         self.assertEqual(names.count("evicted"), 1)
         self.assertIn("kv_estimate_invalid", [e.get("verdict") for e in ev])
-        self.assertIsNotNone([e for e in ev if e["event"] == "block_end"][0]["peak_used_gb"])
+        self.assertIsNotNone([e for e in ev if e["event"] == "block_end"][0]["peak_used_gib"])
 
 
 class TestVerifiedExoShapes(unittest.TestCase):
@@ -579,6 +587,20 @@ class TestVerifiedExoShapes(unittest.TestCase):
         self.assertFalse(rdy({"instances": inst, "runners": {}}, "m", "u-1"))
         self.assertFalse(rdy({"instances": inst, "runners": {"r-9": {}}}, "m", "u-1"))
         self.assertTrue(rdy({"instances": inst, "runners": {"r-1": {"status": "x"}}}, "m", "u-1"))
+
+    def test_preview_no_placement_is_refused(self):
+        from harness.exo_sched import InsufficientMemory
+        fx = FakeExo()
+        fx.http_orig = fx.http
+        fx.http = lambda m, u, p=None, timeout=60.0: (
+            {"previews": [{"model_id": "m", "instance": None,
+                           "error": "No cycles found with sufficient memory"}]}
+            if "/instance/previews" in u else fx.http_orig(m, u, p, timeout))
+        sch, ev = TestExoScheduler()._sched(fx)
+        with self.assertRaises(InsufficientMemory):
+            sch.ensure_resident(TestExoScheduler()._spec(), 100000)
+        self.assertEqual(ev[-1]["event"], "no_valid_placement")
+        self.assertNotIn(("POST", "/place_instance"), fx.log)
 
     def test_not_resident_signal(self):
         from harness.exo_sched import is_not_resident_error

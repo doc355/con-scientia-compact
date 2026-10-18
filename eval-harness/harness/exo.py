@@ -108,6 +108,9 @@ def preview_instance_ids(previews: Any, paths=PREVIEW_ID_PATHS) -> list:
     plist = previews.get("previews") if isinstance(previews, dict) else previews
     out = []
     for pv in plist if isinstance(plist, list) else []:
+        # verified failure mode: {"instance": null, "error": "No cycles found with sufficient memory"}
+        if isinstance(pv, dict) and (pv.get("instance") is None or pv.get("error")):
+            continue
         got = next((v for v in (_dig(pv, p) for p in paths) if isinstance(v, str)), None)
         if got is None:                       # unknown instance_meta variant: scan for an instanceId key
             got = next((x for x in _walk(pv) if isinstance(x, dict) and isinstance(x.get("instanceId"), str)), None)

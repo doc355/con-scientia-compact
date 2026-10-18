@@ -125,16 +125,16 @@ The truncation guard runs on every call regardless.
 exo reserves RAM per instance until deletion, so exo models with `needs_instance: true` run one at a time:
 place → every arm and item → evict → next model. No mid-block rebalancing.
 
-- `free_ram()` sums `nodeMemory[*].ramAvailable` from GET `/state` (per node and total).
+- `free_ram()` sums `nodeMemory[peer_id].ramAvailable.inBytes` from GET `/state` (per node and total), in GiB.
 - `ensure_resident(spec, num_ctx)`: GET `/instance/previews?model_id=…` must show a placement; projected
-  `(weights_gb + kv_bytes_per_token × num_ctx) × 1.15` must fit in free RAM, else refused (no placement).
+  `(weights_gib + kv_bytes_per_token × num_ctx) × 1.15` must fit in free RAM, else refused (no placement).
   Then POST `/place_instance`, poll `/state` until ready (20 min default).
 - `evict(instance_id)`: DELETE `/instance/{id}`, confirmed by its absence from `/state`.
 - Every place/evict is logged to the lifecycle log with timestamp, free RAM before/after, and load/evict seconds;
   `block_end` records peak RAM used by the block.
 - Kill condition: if RAM used by the block exceeds `weights_gb + 2 × KV estimate`, the remaining items of the
   block get status `kv_estimate_invalid` and the instance is evicted (not left to OOM the cluster).
-- Registry fields used: `weights_gb`, `kv_bytes_per_token`. Missing sizing → placement refused unless
+- Registry fields used: `weights_gib` (or `weights_bytes`), `kv_bytes_per_token`. Missing sizing → placement refused unless
   config `exo_scheduler_opts: {"require_sizing": false}`.
 
 Ollama: before a model's blocks the runner sends POST `/api/generate {"model", "keep_alive": "60m"}` and every
@@ -162,3 +162,18 @@ Per model: registry `timeout_s` (default 600 s); tier `large` or `thinking: true
   fallback `ready_probe` = a trial chat that must not 404). Raw `/state` is logged once at first placement.
 - Not resident = chat HTTP 404 "No instance found for model <id>" (`exo_sched.is_not_resident_error`).
 - Battery: `answer_numeric` is present on every item and null on most; tested with `is not None` (0 is a real key).
+
+## Units
+
+All memory, weight and KV figures are **GiB** (1024^3), because exo reports raw bytes and the lead's cluster
+figures are GiB. Registry: `weights_gib` (or `weights_bytes`, converted). The lead's "4.6 GB" KV figure for the
+122B at 100k context was the GiB value mislabeled: 48 KB/token × 100,000 = 4.8 GB decimal = 4.47–4.58 GiB
+depending on whether KB is 1000 or 1024 bytes. The kill condition is 2× the GiB estimate. See ledger #20.
+
+## Truncation guard on warm calls (measured, settled)
+
+Ollama reports the **full** prompt token count on a prefix-cache hit — the lead measured 28203 cold / 28200 /
+28202 warm with the same system prompt, only `prompt_eval_duration` collapsing (34,944 → 311 → 58 ms). So the
+>5% guard applies **uniformly** to warm and cold calls; the earlier `not_checkable_warm` escape hatch is gone.
+Cold vs warm is derived from `prompt_eval_duration` only, never from the count, and the few-token drift between
+identical calls is absorbed by the tolerance.

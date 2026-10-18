@@ -69,7 +69,8 @@ def truncation_check(observed: Optional[int], expected: Optional[int], user_est_
 
 class PrefillTracker:
     """cold = first call of a (model, arm) block in this process, or a prompt_eval_duration jump
-    (> jump_factor x median of earlier calls in the block and > min_cold_ns)."""
+    (> jump_factor x median of earlier calls in the block and > min_cold_ns). Derived from DURATION only,
+    never from prompt_eval_count (counts are full-prompt on cache hits and drift by a few tokens)."""
 
     def __init__(self, jump_factor: float = 5.0, min_cold_ns: int = 1_000_000_000):
         self.hist: Dict[tuple, List[float]] = {}

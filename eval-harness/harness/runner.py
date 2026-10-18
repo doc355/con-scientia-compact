@@ -35,7 +35,7 @@ from .client import ChatFn, ChatResult, ModelSpec, chat
 from .config import Config, load_config
 from .contract import parse_response
 from .exo import ExoLifecycle, maybe_instance
-from .config import DEFAULT_NUM_CTX
+from .config import DEFAULT_NUM_CTX, kit_chars_per_token
 from .exo_sched import ExoScheduler, KVEstimateInvalid, ollama_keep_alive
 from .tokens import (HEADROOM, PrefillTracker, context_max_from_show, ollama_show,
                      required_num_ctx, truncation_check)
@@ -120,10 +120,8 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         if not cpt_measured and tc["trunc_guard"] == "fail" and (tc.get("trunc_short_frac") or 0) < 0.40:
             # chars/token not yet measured for this block: only a gross shortfall counts as truncation
             tc["trunc_guard"] = "pass_uncalibrated"
-        if (tc["trunc_guard"] == "fail" and t.get("prefill") == "warm" and res.prompt_tokens is not None
-                and res.prompt_tokens <= user_est * 1.5 + 64):
-            # engine reported only newly evaluated tokens on a prefix-cache hit (count ~= user part)
-            tc["trunc_guard"] = "not_checkable_warm"
+        # Guard applies uniformly, warm or cold: Ollama reports the FULL prompt count on a cache hit
+        # (lead measured 28203 cold / 28200 / 28202 warm); only prompt_eval_duration collapses.
         t.update(tc)
         turns.append(t)
         if res.error:
@@ -202,10 +200,13 @@ def size_num_ctx(spec: ModelSpec, arm: Arm, longest_user_chars: int, cpt: float,
     """
     if spec.backend not in ("ollama", "exo"):
         return None, max_ctx, None
+    raw = round(len(arm.system_prompt) / cpt) + round(longest_user_chars / cpt) + HEADROOM + (spec.max_tokens or 0)
+    # Compare the UNROUNDED requirement with the trained max: ladder rounding (e.g. 36k -> 40960) must not
+    # skip a block that fits under a non-ladder limit such as magistral:24b's 40000.
+    if max_ctx is not None and raw > max_ctx:
+        return raw, max_ctx, "context_exceeds_model_max"
     need = required_num_ctx(round(len(arm.system_prompt) / cpt), round(longest_user_chars / cpt), HEADROOM,
                             completion_reserve=spec.max_tokens or 0)
-    if max_ctx is not None and need > max_ctx:
-        return need, max_ctx, "context_exceeds_model_max"
     target = spec.num_ctx_full_kit if arm.type == "full_kit" else spec.num_ctx_default
     if target is None:
         target = spec.num_ctx or default_num_ctx
@@ -254,6 +255,12 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
              "context_exceeds_model_max": 0, "canary_failed_blocks": 0, "kv_estimate_invalid": 0}
     prefill = PrefillTracker()
     cpt = CHARS_PER_TOKEN_EST
+    fk = next((a for a in arms if a.type == "full_kit"), None)
+    meas_cpt = kit_chars_per_token(cfg.registry_raw, fk.kit_chars if fk else None)
+    if meas_cpt:
+        cpt = meas_cpt
+        log(f"chars/token calibrated from registry _kit_tokens_measured: {cpt:.3f} "
+            f"(kit {fk.kit_chars} chars -> {cfg.registry_raw.get('_kit_tokens_measured')} measured tokens)")
 
     def emit(row):
         w.write(row)

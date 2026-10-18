@@ -17,7 +17,8 @@ REGISTRY_MODEL_KEYS = {"id", "backend", "lineage", "price_in", "price_out", "tie
                        # harness extensions, optional:
                        "model", "num_ctx", "max_tokens", "think", "options", "timeout_s", "family", "system_role",
                        "api_key_env", "base_url", "price_cache_write", "price_cache_read", "prompt_cache",
-                       "max_ctx", "num_ctx_default", "num_ctx_full_kit", "weights_gb", "kv_bytes_per_token",
+                       "max_ctx", "num_ctx_default", "num_ctx_full_kit", "weights_gib", "weights_bytes", "kv_bytes_per_token",
+                       "full_kit_fits",
                        "keep_alive"}
 DEFAULT_NUM_CTX = 100000        # Doc's standing order; capped per model at max_ctx
 TIMEOUT_FLOOR_LARGE_S = 300.0   # lead: >=300 s for large/thinking models (gpt-oss:20b measured 13-30 s/item vanilla)
@@ -47,6 +48,14 @@ class Config:
     exo_base: Optional[str] = None
     ollama_base: Optional[str] = None
     raw: Dict[str, Any] = field(default_factory=dict)
+    registry_raw: Dict[str, Any] = field(default_factory=dict)
+
+
+def kit_chars_per_token(reg: Dict[str, Any], kit_chars: Optional[int]) -> Optional[float]:
+    """chars/token measured from the lead's registry: _kit_tokens_measured (28215) against the assembled
+    full_kit char count. Beats the 4.0 guess, which overstated the kit by 14% and skipped magistral:24b."""
+    n = reg.get("_kit_tokens_measured") if isinstance(reg, dict) else None
+    return (kit_chars / n) if (n and kit_chars) else None
 
 
 def load_registry(path: str | Path, default_num_ctx: Optional[int] = None,
@@ -63,7 +72,7 @@ def load_registry(path: str | Path, default_num_ctx: Optional[int] = None,
     d = json.loads(Path(path).read_text(encoding="utf-8"))
     models: Dict[str, ModelSpec] = {}
     for m in d["models"]:
-        unknown = set(m) - REGISTRY_MODEL_KEYS
+        unknown = {k for k in set(m) if not k.startswith('_')} - REGISTRY_MODEL_KEYS
         if unknown:
             raise ValueError(f"registry model {m.get('id')}: unknown keys {sorted(unknown)}")
         be = m["backend"]
@@ -84,7 +93,9 @@ def load_registry(path: str | Path, default_num_ctx: Optional[int] = None,
             price_per_mtok_cache_write=m.get("price_cache_write"), price_per_mtok_cache_read=m.get("price_cache_read"),
             prompt_cache=bool(m.get("prompt_cache", False)), max_ctx=m.get("max_ctx"),
             num_ctx_default=m.get("num_ctx_default"), num_ctx_full_kit=m.get("num_ctx_full_kit"),
-            weights_gb=m.get("weights_gb"), kv_bytes_per_token=m.get("kv_bytes_per_token"),
+            weights_gib=(m.get("weights_gib") if m.get("weights_gib") is not None else
+                         (m["weights_bytes"] / 1024 ** 3 if m.get("weights_bytes") is not None else None)),
+            kv_bytes_per_token=m.get("kv_bytes_per_token"),
             keep_alive=m.get("keep_alive"),
         )
         if spec.id in models:
@@ -106,6 +117,7 @@ def load_config(path: str | Path) -> Config:
         return q if q.is_absolute() else (path.parent / q).resolve()
 
     exo_base = ollama_base = None
+    reg: Dict[str, Any] = {}
     if "registry" in d:
         models, judge_pool, reg = load_registry(rel(d["registry"]), d.get("default_num_ctx"), d.get("default_max_tokens"))
         exo_base, ollama_base = reg.get("exo_base"), reg.get("ollama_base")
@@ -122,7 +134,7 @@ def load_config(path: str | Path) -> Config:
     for j in judge_pool:
         if j not in models:
             raise ValueError(f"judge {j} not in models")
-    return Config(
+    return Config(registry_raw=reg if isinstance(reg, dict) else {}, 
         kit_root=rel(d["kit_root"]),
         models=models,
         arms=d.get("arms", [{"type": "vanilla"}, {"type": "full_kit"}, {"type": "master_only"}]),

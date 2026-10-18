@@ -82,3 +82,38 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
 18. 2026-10-18 · My first draft of that ready predicate ended in `... or True`, which made the runner check
     always pass whenever any runner existed. Caught on re-read before shipping; replaced with the
     runnerToShard rule above and a test that an unrelated runner does not count as ready. · fixed.
+19. 2026-10-18 · RESOLVED by measurement (closes the open question in entry 8): Ollama reports the FULL
+    prompt token count on a prefix-cache hit — lead measured 28203 cold / 28200 / 28202 warm, with only the
+    duration collapsing (34,944 ms -> 311 ms -> 58 ms). My `not_checkable_warm` escape hatch was unnecessary
+    and would have hidden real truncation on warm calls. Removed: the >5% guard now applies uniformly, cold vs
+    warm is derived from prompt_eval_duration only (never from the count), and the few-token drift between
+    identical calls is absorbed by the tolerance. · fixed.
+20. 2026-10-18 · UNIT ERROR, mine and the lead's, now agreed: 48 KB/token x 100k = 4.8 GB decimal = 4.58 GiB;
+    the lead's "4.6 GB" was the GiB figure mislabeled, and my scheduler divided bytes by 1e9 while calling the
+    result GB in a report whose other RAM/weights figures were GiB. Standardized on GiB everywhere (exo reports
+    raw bytes); fields renamed *_gib and units labeled in the report. Kill condition stays at 2x the GiB
+    estimate. Corrected weights: Qwen3.5-122B-A10B-4bit 69,593,314,272 B = 64.8 GiB (not 69.6 "GB" as a GiB
+    quantity), GLM-4.5-Air-8bit 114 GiB. Cluster 216 GiB total, ~160 GiB free idle. · fixed.
+21. 2026-10-18 · Previews validity: I treated "non-empty response with no top-level error" as a valid
+    placement. Lead measured the real failure mode — a preview is returned with "instance": null and
+    "error": "No cycles found with sufficient memory". So a response can be non-empty, carry a previews list,
+    and still mean NO PLACEMENT. Now: instance == null or a non-empty per-preview "error" = no valid
+    placement, do not place. · fixed.
+22. 2026-10-18 · Kimi is ruled out on-cluster (lead): exo's planner returns "No cycles found with sufficient
+    memory" for all three Kimi builds, and exo has no cloud-provider or proxy path (120 models, all local MLX
+    weights, no key-config endpoint). The Kimi and Anthropic legs run from the lead's VM against a paid
+    endpoint, so the OpenAI-compatible and native Anthropic client paths stay as built. · noted, no code change.
+23. 2026-10-18 · My own sizing bug, caught by a dry run against the real registry: size_num_ctx rounded the
+    requirement UP the context ladder before comparing it with the trained max, so magistral:24b full_kit
+    (raw need ~36k by chars/4 estimate, measured kit is 28,215 tokens) became 40960 > 40000 and the block was
+    skipped as context_exceeds_model_max even though it fits. The lead had stated the kit fits every model;
+    my output contradicted that, which is how it surfaced. Fixed: compare the UNROUNDED requirement with
+    max_ctx; ladder rounding only chooses num_ctx, which is then capped at max_ctx. Test added for both sides
+    of a 40000 limit. · fixed.
+24. 2026-10-18 · Related to #23 and the actual cause of the magistral skip: I sized contexts with a hardcoded
+    4.0 chars/token guess, which put the kit at 128,508/4 = 32,127 tokens against the lead's MEASURED 28,215
+    (a 14% overstatement, ~3,900 tokens) and pushed magistral:24b full_kit over its 40,000 limit. Fixed: when
+    the registry carries _kit_tokens_measured the runner calibrates chars/token from it (128,508/28,215 =
+    4.554) instead of guessing; the per-block canary recalibration from prompt_eval_count still refines it.
+    Note the estimate was wrong in the DANGEROUS-SAFE direction here (over-reserving context), but the same
+    4.0 guess under-reserves for text that tokenizes densely. · fixed.

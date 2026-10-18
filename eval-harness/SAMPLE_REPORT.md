@@ -1,8 +1,8 @@
 # Kit honesty/accuracy report
 
-> SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). Not fleet data. Shows the report format only.
+> SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). NOT fleet data. Format only. All memory figures elsewhere in the harness are GiB.
 
-Generated 2026-10-18 15:37 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
+Generated 2026-10-18 15:50 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
 
 `n/m` = not measured (no rows of that kind, or no judge verdict). Brackets are Wilson 95% intervals. Numbers are computed from scored rows only; nothing is imputed.
 

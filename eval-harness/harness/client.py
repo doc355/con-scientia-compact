@@ -41,7 +41,7 @@ class ModelSpec:
     prompt_cache: bool = False            # anthropic: cache_control ephemeral on the system block
     num_ctx_default: Optional[int] = None  # registry: target num_ctx for non-full-kit arms (capped at max_ctx)
     num_ctx_full_kit: Optional[int] = None # registry: target num_ctx for full_kit
-    weights_gb: Optional[float] = None    # exo scheduler: resident weight size
+    weights_gib: Optional[float] = None   # GiB    # exo scheduler: resident weight size
     kv_bytes_per_token: Optional[float] = None  # exo scheduler: KV-cache estimate (lead-supplied, may be ASSUMED)
     keep_alive: Optional[str] = None      # ollama: hold model loaded for the block
     max_ctx: Optional[int] = None         # model max context override (else /api/show for ollama)
