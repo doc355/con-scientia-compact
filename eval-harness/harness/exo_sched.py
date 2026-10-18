@@ -166,10 +166,14 @@ class ExoScheduler:
         ready = False
         while time.perf_counter() - t0 < self.ready_timeout_s:
             st = self.state()
-            if iid is None:
-                new = instance_ids_in_state(st) - before_ids
+            live = instance_ids_in_state(st)
+            if iid is None or (iid not in live and iid not in before_ids):
+                new = live - before_ids
                 if len(new) == 1:
-                    iid = new.pop()
+                    real = new.pop()
+                    if iid is not None and real != iid:   # /place_instance returns a preview id, not the real one
+                        self._event(event="instance_id_resolved", model_id=mid, preview_id=iid, instance_id=real)
+                    iid = real
             if self.state_log_once and not self._state_logged:
                 self._state_logged = True     # raw /state once, so the predicate can be corrected from real data
                 self._event(event="state_raw_first_placement", model_id=mid, instance_id=iid, state=st)
@@ -193,6 +197,13 @@ class ExoScheduler:
     def evict(self, instance_id: str) -> bool:
         before = self.free_ram()
         t0 = time.perf_counter()
+        if instance_id not in instance_ids_in_state(self.state()):
+            # deleting an id exo never had proves nothing; never report it as evicted
+            self._event(event="evict_id_not_in_state", instance_id=instance_id,
+                        free_before_gib=before["total_free_gib"])
+            if self.resident and self.resident["instance_id"] == instance_id:
+                self.resident = None
+            return False
         self.http("DELETE", f"{self.base}/instance/{instance_id}")
         gone = False
         while time.perf_counter() - t0 < self.evict_timeout_s:

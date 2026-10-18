@@ -6,6 +6,7 @@ Nothing is estimated in this module; missing fields stay None.
 from __future__ import annotations
 
 import json
+import subprocess
 import os
 import time
 import urllib.error
@@ -213,12 +214,38 @@ def _chat_anthropic(spec: ModelSpec, messages: List[Message], temperature: float
                       raw=body, cache_creation_input_tokens=cw, cache_read_input_tokens=cr)
 
 
+def _chat_external(spec: ModelSpec, messages: List[Message], temperature: float) -> ChatResult:
+    """An outside harness (e.g. a multi-model composite with its own gates) treated as one model.
+    spec.options["cmd"] (argv list; request JSON on stdin) or spec.options["url"] (request JSON POSTed).
+    Request: {"model", "messages", "temperature", "max_tokens"}. Reply JSON: {"content", optional "thinking",
+    "prompt_tokens", "completion_tokens", "trace"}. The whole reply is kept in raw, so gate traces are recorded."""
+    opts = dict(spec.options)
+    cmd, url = opts.pop("cmd", None), opts.pop("url", None)
+    req = {"model": spec.model, "messages": messages, "temperature": temperature,
+           "max_tokens": spec.max_tokens, **opts}
+    t0 = time.perf_counter()
+    if cmd:
+        p = subprocess.run(cmd, input=json.dumps(req), capture_output=True, text=True, timeout=spec.timeout_s)
+        if p.returncode != 0:
+            raise RuntimeError(f"external harness exit {p.returncode}: {p.stderr[-2000:]}")
+        body = json.loads(p.stdout)
+    elif url:
+        body = _post_json(url, req, {}, spec.timeout_s)
+    else:
+        raise RuntimeError("external backend needs options.cmd or options.url")
+    latency = time.perf_counter() - t0
+    return ChatResult(content=body.get("content") or "", thinking=body.get("thinking"),
+                      prompt_tokens=body.get("prompt_tokens"), completion_tokens=body.get("completion_tokens"),
+                      latency_s=latency, backend_timing={"external": True}, finish_reason=body.get("finish_reason"),
+                      raw=body)
+
+
 def chat(spec: ModelSpec, messages: List[Message], temperature: float = 0.0,
          retries: int = 2, backoff_s: float = 5.0) -> ChatResult:
     """Never raises for transport/HTTP errors: returns ChatResult(error=...)."""
     msgs = messages if spec.system_role else _fold_system(messages)
     fn = {"ollama": _chat_ollama, "openai": _chat_openai, "exo": _chat_openai,
-          "anthropic": _chat_anthropic}.get(spec.backend)
+          "anthropic": _chat_anthropic, "external": _chat_external}.get(spec.backend)
     if fn is None:
         return ChatResult(error=f"unknown backend {spec.backend!r}")
     last_err = None

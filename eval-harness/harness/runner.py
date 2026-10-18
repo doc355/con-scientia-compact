@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import signal
 import sys
 import threading
 from contextlib import nullcontext
@@ -66,8 +67,25 @@ def read_jsonl(path: Path) -> List[Dict[str, Any]]:
     return out
 
 
+def voided_run_ids(rows: List[Dict[str, Any]]) -> Set[str]:
+    """Append-only correction: a later {"status": "VOIDED", "voids_run_id": ...} row retires an earlier row
+    (kept in the file) from scoring and makes its key retryable."""
+    return {r["voids_run_id"] for r in rows if r.get("status") == "VOIDED" and r.get("voids_run_id")}
+
+
+def drop_voided(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    v = voided_run_ids(rows)
+    return [r for r in rows if r.get("status") != "VOIDED" and r.get("run_id") not in v]
+
+
 def completed_keys(path: Path) -> Set[Key]:
-    return {row_key(r) for r in read_jsonl(path) if r.get("status") == "ok"}
+    return {row_key(r) for r in drop_voided(read_jsonl(path)) if r.get("status") == "ok"}
+
+
+def is_incomplete(turns: List[Dict[str, Any]]) -> bool:
+    """Empty answer with no finish_reason: the backend cut the reply off (e.g. instance evicted mid-request)."""
+    return any(not (t.get("content") or "").strip() and not t.get("finish_reason") and not t.get("error")
+               for t in turns)
 
 
 class JsonlWriter:
@@ -275,7 +293,8 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         cache_creation_input_tokens=_sum(t.get("cache_creation_input_tokens") for t in turns),
         cache_read_input_tokens=_sum(t.get("cache_read_input_tokens") for t in turns)))
     degen = any(is_degenerate(t.get("content") or "") for t in turns)
-    status = "error" if error else ("INVALID_TRUNCATED" if trunc else "OUTPUT_CAPPED" if hit_max else "ok")
+    status = "error" if error else ("INVALID_TRUNCATED" if trunc else "OUTPUT_CAPPED" if hit_max
+                                     else "INCOMPLETE_RESPONSE" if is_incomplete(turns) else "ok")
     _tt = [t.get("thinking_tokens") for t in turns if t.get("thinking_tokens") is not None]
     row: Dict[str, Any] = {
         "run_id": uuid.uuid4().hex, "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -546,7 +565,8 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
                         except KVEstimateInvalid as e:
                             aborted = str(e)
                             log(f"[ABORT] {mid} | {a.id}: kv_estimate_invalid: {e}")
-                    n = sum(stats[k] for k in ("ok", "error", "INVALID_TRUNCATED"))
+                    n = sum(stats.get(k, 0) for k in ("ok", "error", "INVALID_TRUNCATED", "OUTPUT_CAPPED",
+                                                          "INCOMPLETE_RESPONSE"))
                     log(f"[{n}/{stats['todo']}] {row['status']:16s} {mid} | {a.id} | {it['id']} "
                         f"| ptok={row['prompt_tokens']} ctok={row['completion_tokens']} "
                         f"prefill={row['prefill']} lat={row['latency_s'] and round(row['latency_s'],2)}s"
@@ -561,7 +581,15 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
     return stats
 
 
+def install_sigterm_exit() -> None:
+    """SIGTERM -> SystemExit, so `with` blocks unwind and exo instances are evicted (nohup'd jobs ignore SIGINT)."""
+    def _exit(signum, _frame):
+        raise SystemExit(128 + signum)
+    signal.signal(signal.SIGTERM, _exit)
+
+
 def main(argv=None):
+    install_sigterm_exit()
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--config", required=True)
     ap.add_argument("--battery", required=True)

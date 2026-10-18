@@ -1217,3 +1217,33 @@ class TestEffectiveCap(unittest.TestCase):
         self.assertIn("16384", out)                   # the reference budget the others got
         self.assertNotIn("gpt-oss:20b |", out)        # only the constrained blocks are listed
         self.assertEqual(_asymmetry_section([table[1]]), [])   # nothing to say when all blocks match
+
+
+class PreviewIdExo(FakeExo):
+    """Real exo: /place_instance answers with a preview id, the instance in /state has another id."""
+    def http(self, method, url, payload=None, timeout=60.0):
+        if url.endswith("/place_instance"):
+            self.log.append((method, "/place_instance"))
+            self.inst["real-1"] = {"modelId": payload["model_id"], "status": "RunnerLoading"}
+            self.free -= self.w
+            return {"instance": {"MlxRingInstance": {"instanceId": "preview-9"}}}
+        return super().http(method, url, payload, timeout)
+
+
+class TestPreviewIdEviction(unittest.TestCase):
+    def test_scheduler_evicts_real_instance_not_preview(self):
+        fx = PreviewIdExo()
+        sch, ev = TestExoScheduler()._sched(fx)
+        with sch.block(TestExoScheduler()._spec(), 100000):
+            pass
+        self.assertEqual(fx.inst, {})                    # nothing orphaned
+        self.assertIn(("DELETE", "/instance/real-1"), fx.log)
+        names = [e["event"] for e in ev]
+        self.assertIn("instance_id_resolved", names)
+        self.assertEqual(names[-1], "evicted")
+
+    def test_evicting_unknown_id_is_not_reported_evicted(self):
+        fx = FakeExo()
+        sch, ev = TestExoScheduler()._sched(fx)
+        self.assertFalse(sch.evict("never-existed"))
+        self.assertEqual(ev[-1]["event"], "evict_id_not_in_state")

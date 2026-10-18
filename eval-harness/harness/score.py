@@ -27,7 +27,7 @@ from .client import ChatFn, ModelSpec, chat
 from .config import Config, load_config
 from .contract import _json_objects, strip_thinking
 from .exo import ExoLifecycle, maybe_instance
-from .runner import JsonlWriter, is_degenerate, read_jsonl, row_key
+from .runner import JsonlWriter, drop_voided, is_degenerate, read_jsonl, row_key
 
 _NUM_RE = re.compile(r"(?<![\w.])[-+−]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:[eE][-+]?\d+)?")
 STOP = set("a an the of in on at to is are was were be been it its this that and or for with as by from".split())
@@ -447,7 +447,7 @@ def score_row(row: Dict[str, Any], item: Dict[str, Any], cfg: Config, judge: Opt
 
 def latest_rows(results: Path) -> List[Dict[str, Any]]:
     latest: Dict[Any, Dict[str, Any]] = {}
-    for r in read_jsonl(results):
+    for r in drop_voided(read_jsonl(results)):
         if r.get("status") in ("canary", "run_meta"):
             continue
         k = row_key(r)

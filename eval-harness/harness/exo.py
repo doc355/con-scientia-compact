@@ -180,8 +180,15 @@ class ExoLifecycle:
         try:
             while time.perf_counter() - t0 < self.timeout_s:
                 state = self.http("GET", self.base + "/state")
+                live = instance_ids_in_state(state)
+                if iid is not None and iid not in live and iid not in before:
+                    new = live - before
+                    if len(new) == 1:     # /place_instance can answer with a preview id, not the real one
+                        real = new.pop()
+                        self._event(event="instance_id_resolved", model_id=model_id, preview_id=iid, instance_id=real)
+                        iid = real
                 if iid is None:
-                    new = instance_ids_in_state(state) - before
+                    new = live - before
                     if len(new) == 1:
                         iid = new.pop()
                         self._event(event="instance_id_from_state_diff", model_id=model_id, instance_id=iid)

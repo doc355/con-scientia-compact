@@ -59,3 +59,65 @@ class TestDegenerateThinking(unittest.TestCase):
         src = open(Path(__file__).resolve().parents[1] / "harness" / "runner.py").read()
         self.assertIn('"degenerate_thinking_loop"', src)
         self.assertIn('"sampling_options"', src)
+
+
+class TestExternalHarnessBackend(unittest.TestCase):
+    def test_cmd_harness_reply_and_trace_kept(self):
+        import sys
+        from harness.client import ModelSpec, chat
+        echo = ("import json,sys;r=json.load(sys.stdin);"
+                "print(json.dumps({'content':'ANS:'+r['messages'][-1]['content'],'trace':{'gates':['g1','g2']}}))")
+        spec = ModelSpec(id="hydra@test", family="test", backend="external", base_url="", model="hydra-v1",
+                         options={"cmd": [sys.executable, "-c", echo]})
+        res = chat(spec, [{"role": "system", "content": "S"}, {"role": "user", "content": "Q"}], retries=0)
+        self.assertIsNone(res.error)
+        self.assertEqual(res.content, "ANS:Q")
+        self.assertEqual(res.raw["trace"]["gates"], ["g1", "g2"])
+
+    def test_failing_harness_is_an_error_not_a_drop(self):
+        import sys
+        from harness.client import ModelSpec, chat
+        spec = ModelSpec(id="hydra@test", family="test", backend="external", base_url="", model="x",
+                         options={"cmd": [sys.executable, "-c", "import sys;sys.exit(3)"]})
+        res = chat(spec, [{"role": "user", "content": "Q"}], retries=0)
+        self.assertIn("exit 3", res.error)
+
+
+class TestIncompleteAndVoid(unittest.TestCase):
+    def test_cut_off_reply_is_not_ok(self):
+        from harness.runner import is_incomplete
+        self.assertTrue(is_incomplete([{"content": "", "finish_reason": None, "thinking": "half a thou"}]))
+        self.assertFalse(is_incomplete([{"content": "", "finish_reason": "stop"}]))
+        self.assertFalse(is_incomplete([{"content": "{}", "finish_reason": None}]))
+
+    def test_void_row_retires_ok_row_and_keeps_it(self):
+        import json, tempfile
+        from pathlib import Path
+        from harness.runner import completed_keys, drop_voided, read_jsonl
+        a = {"run_id": "r1", "status": "ok", "item_id": "FK-002", "model_id": "m", "arm_id": "vanilla", "rep": 0}
+        b = {"run_id": "r2", "status": "ok", "item_id": "FK-003", "model_id": "m", "arm_id": "vanilla", "rep": 0}
+        v = {"run_id": "v1", "status": "VOIDED", "voids_run_id": "r1", "item_id": "FK-002", "model_id": "m",
+             "arm_id": "vanilla", "rep": 0, "reason": "cut off"}
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "r.jsonl"
+            p.write_text("\n".join(json.dumps(x) for x in (a, b, v)) + "\n")
+            self.assertEqual(completed_keys(p), {("FK-003", "m", "vanilla", 0)})
+            self.assertEqual(len(read_jsonl(p)), 3)
+            self.assertEqual([r["run_id"] for r in drop_voided(read_jsonl(p))], ["r2"])
+
+
+class TestSigtermUnwinds(unittest.TestCase):
+    def test_sigterm_runs_finally(self):
+        import subprocess, sys, textwrap
+        code = textwrap.dedent("""
+            import os, signal, time
+            from harness.runner import install_sigterm_exit
+            install_sigterm_exit()
+            try:
+                os.kill(os.getpid(), signal.SIGTERM); time.sleep(5)
+            finally:
+                print("EVICTED")
+        """)
+        p = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=20)
+        self.assertIn("EVICTED", p.stdout)
+        self.assertEqual(p.returncode, 143)
