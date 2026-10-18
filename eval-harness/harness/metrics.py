@@ -44,6 +44,19 @@ def group_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     m["n_call_errors"] = sum(1 for r in rows if r.get("status") == "error")
     m["n_invalid_truncated"] = sum(1 for r in rows if r.get("status") == "INVALID_TRUNCATED")
     m["n_output_capped"] = sum(1 for r in rows if r.get("status") == "OUTPUT_CAPPED")
+    # Split by what BOUND the answer budget: our thinking floor, or the model's own context window.
+    _capped = [r for r in rows if r.get("status") == "OUTPUT_CAPPED"]
+    m["n_output_capped_thinking_floor"] = sum(1 for r in _capped if r.get("cap_reason") == "thinking_floor")
+    m["n_output_capped_context_bound"] = sum(1 for r in _capped if r.get("cap_reason") == "context_bound")
+    m["n_output_capped_reason_unknown"] = sum(1 for r in _capped
+                                              if r.get("cap_reason") not in ("thinking_floor", "context_bound"))
+    _eff = [r.get("effective_max_tokens") for r in rows if r.get("effective_max_tokens") is not None]
+    m["mean_effective_max_tokens"] = _m(_eff)
+    m["min_effective_max_tokens"] = min(_eff) if _eff else None
+    _reasons = [r.get("cap_reason") for r in rows if r.get("cap_reason")]
+    # the block's answer-budget regime, so the report can show the per-(model, arm) asymmetry
+    m["cap_reason"] = ("context_bound" if "context_bound" in _reasons
+                       else (_reasons[0] if _reasons else None))
     m["n_degenerate"] = sum(1 for r in rows if r.get("degenerate_output") is True)
     m["n_cap_retried"] = sum(1 for r in rows if r.get("retried_for_cap") is True)
     # derived at score time for rows written before the cap fields existed, so it is visible that the

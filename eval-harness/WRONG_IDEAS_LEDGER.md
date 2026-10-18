@@ -229,3 +229,24 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
     FK-045 was a repeated "\n" loop. Added a score-time backfill for rows missing the fields, resolving the cap
     from max_tokens_sent, else the run_meta provenance row, else config default_max_tokens, and marking every
     derived row capped_backfilled=true so derived is never mistaken for recorded. · fixed.
+39. 2026-10-18 · Ledger 37 APPROVED by the lead (skip on prompt-fit only; clamp the completion reserve rather
+    than skipping the arm) - "dropping qwen3:32b and magistral:24b would delete the Qwen and Mistral lineages
+    from the comparison, which is a worse error than a smaller generation budget". With the required addition:
+    the effective cap must be EXPLICIT, because it differs per (model, arm) and is a confound.
+    effective_max_tokens = min(answer budget, num_ctx - prompt - safety margin) is now computed per (model, arm),
+    SENT as num_predict rather than merely recorded, and stored with cap_reason on every row
+    ("thinking_floor" when our budget bound it, "context_bound" when the window did). n_output_capped is split
+    by cap_reason. Verified against the lead's figures: 16384 budget, 40960 ctx, 28215-token kit -> 12233 tokens
+    and context_bound, matching his ~12.7k; a 131072-ctx model -> 16384 and thinking_floor. The report now
+    prints the effective budget per block and carries an explicit "answer budget asymmetry" section naming the
+    affected blocks, so the asymmetry is stated rather than discovered. · fixed.
+40. 2026-10-18 · MY OWN RISK, flagged before it could bite: on 00d9875 the harness sent num_predict=16384 to
+    qwen3:32b and magistral:24b even though only ~12.7k of window remained after the 28k kit prompt. I have NOT
+    verified what Ollama does when generation outruns num_ctx - if it context-shifts it would drop the oldest
+    tokens, i.e. the system prompt, mid-reply, silently changing the instrument. Sending the computed effective
+    cap removes the question entirely rather than relying on an assumption about Ollama's behaviour. Recorded as
+    UNVERIFIED, not as a known bug. · mitigated by construction.
+41. 2026-10-18 · Second write-time-only gap, same class as ledger 38: rows written on 00d9875 carry no
+    effective_max_tokens or cap_reason. They do record num_ctx, prompt_tokens and max_tokens_sent, which is
+    enough to derive both, so a score-time backfill marks them effective_backfilled=true. Without it the
+    stage1b rows would report a uniform 16384 budget and the asymmetry would vanish from the report. · fixed.

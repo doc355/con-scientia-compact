@@ -25,6 +25,8 @@ SCALAR_COLS = ["n_rows", "n_ok", "n_call_errors", "n_invalid_truncated", "n_skip
                "n_brier_excluded_null_conf", "n_recovered_from_extra_key", "contract_violation_counts", "trap_unscored", "syco_unscored", "clean_false_positives_per_doc",
                "trap_credit_basis_counts", "n_trap_audited", "n_trap_unjudged", "n_output_capped", "n_degenerate",
                "n_cap_retried", "n_capped_backfilled", "mean_thinking_chars", "mean_thinking_chars_all",
+               "n_output_capped_thinking_floor", "n_output_capped_context_bound", "n_output_capped_reason_unknown",
+               "mean_effective_max_tokens", "min_effective_max_tokens", "cap_reason",
                "n_introduced_error", "n_introduced_error_unjudged",
                "mean_prompt_tokens", "mean_completion_tokens", "mean_total_tokens", "mean_latency_s",
                "median_latency_s", "total_cost_usd", "cost_per_item_usd", "kit_chars", "kit_tokens_est",
@@ -141,6 +143,30 @@ def _gap_cell(r: Dict[str, Any]) -> str:
     return "n/m" if (a is None or b is None) else f"{a - b:+.2f}"
 
 
+def _asymmetry_section(table: List[Dict[str, Any]]) -> List[str]:
+    """The answer budget is NOT uniform across blocks, and that is a confound. State it plainly instead of
+    letting a reader discover it: a model whose context window left less room than our thinking floor had less
+    room to generate than every other block, so a capped or short reply there is partly a window artifact."""
+    overall = [r for r in table if r.get("slice") in (None, "all")]
+    ctxb = [r for r in overall if r.get("cap_reason") == "context_bound"]
+    if not ctxb:
+        return []
+    floors = [r["mean_effective_max_tokens"] for r in overall
+              if r.get("cap_reason") == "thinking_floor" and r.get("mean_effective_max_tokens") is not None]
+    ref = f"{max(floors):.0f}" if floors else "the configured floor"
+    L = ["## Answer budget asymmetry - READ BEFORE COMPARING ARMS", "",
+         f"These (model, arm) blocks could NOT receive the full answer budget: the model's own context window, "
+         f"not our thinking floor, bound it. They had LESS room to generate an answer than the other blocks "
+         f"(which got {ref} tokens), so a capped or short reply here is partly an artifact of window size, "
+         f"not only of the arm.", "",
+         "| model | arm | effective max tokens | capped rows | capped (context-bound) |",
+         "|---|---|---|---|---|"]
+    for r in ctxb:
+        L.append("| " + " | ".join([r["model_id"], r["arm_id"], _f(r.get("mean_effective_max_tokens"), 0),
+                                    _f(r.get("n_output_capped")), _f(r.get("n_output_capped_context_bound"))]) + " |")
+    return L + [""]
+
+
 def write_md(table: List[Dict[str, Any]], path: Path, meta: Dict[str, Any]) -> None:
     L = [f"# Kit honesty/accuracy report", "",
          f"Generated {time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime())} by harness aggregate.py. "
@@ -161,13 +187,13 @@ def write_md(table: List[Dict[str, Any]], path: Path, meta: Dict[str, Any]) -> N
                                      f"{_f(r['brier'])} (n={r['brier_n']})", _f(r["composite"]),
                                      _f(r["composite_delta_vs_vanilla"])]) + " |")
     L += ["", "## Cost, tokens, latency per model x arm", "",
-          "| model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean think chars | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | invalid trunc | capped | cap retries | degenerate | ctx-overflow-risk rows |",
-          "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+          "| model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean think chars | eff max tok | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | invalid trunc | capped | cap retries | degenerate | ctx-overflow-risk rows |",
+          "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in table:
         L.append("| " + " | ".join([r["model_id"], r["arm_id"], _f(r["kit_chars"]), _f(r["kit_tokens_est"]),
                                      _f(r["kit_tokens_measured"], 0), _f(r["mean_prompt_tokens"], 0),
                                      _f(r["mean_completion_tokens"], 0), _f(r["mean_thinking_chars"], 0),
-                                     _f(r["mean_latency_s"], 2),
+                                     _f(r["mean_effective_max_tokens"], 0), _f(r["mean_latency_s"], 2),
                                      _f(r["median_latency_s"], 2), _f(r["cost_per_item_usd"], 5),
                                      _f(r["total_cost_usd"], 4), _f(r["n_call_errors"]),
                                      _f(r["parse_fail_rate"], 2), _f(r["n_invalid_truncated"]),
@@ -252,6 +278,8 @@ def write_md(table: List[Dict[str, Any]], path: Path, meta: Dict[str, Any]) -> N
           "(no paired significance test is computed; temperature 0 does not guarantee determinism on all engines).",
           "- Judge accuracy itself (no human audit of judge labels is built in; judge rationales are in the judge cache for audit).",
           "- Unplanted real errors in seeded docs: an unmatched reported error lowers precision even if it is a real error the battery author missed.", ""]
+
+    L += _asymmetry_section(table)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(L), encoding="utf-8")
 

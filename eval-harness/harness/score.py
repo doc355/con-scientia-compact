@@ -305,7 +305,8 @@ def score_row(row: Dict[str, Any], item: Dict[str, Any], cfg: Config, judge: Opt
         "latency_s", "cost_usd", "cost_uncached_usd", "prefill", "prompt_eval_duration_ns", "num_ctx",
         "block_canary_ok", "cache_read_input_tokens", "cache_creation_input_tokens",
         "finish_reason", "hit_max_tokens", "degenerate_output", "max_tokens_sent",
-        "thinking", "thinking_chars", "thinking_tokens", "retried_for_cap", "capped_backfilled")}
+        "thinking", "thinking_chars", "thinking_tokens", "retried_for_cap", "capped_backfilled",
+        "effective_max_tokens", "cap_reason", "cap_retry_skipped_reason", "effective_backfilled")}
     s["requires_context"] = item.get("requires_context")
     s["difficulty"] = item.get("difficulty")
     s["correct"] = None
@@ -457,6 +458,34 @@ def default_max_tokens_for(results: Path, cfg: Config) -> Optional[int]:
     return int(d) if d else None
 
 
+def cap_safety_margin_for(results: Path, cfg: Config) -> int:
+    from .config import CAP_SAFETY_MARGIN
+    for r in read_jsonl(results):
+        if r.get("status") == "run_meta" and r.get("cap_safety_margin") is not None:
+            return int(r["cap_safety_margin"])
+    return int(cfg.raw.get("cap_safety_margin", CAP_SAFETY_MARGIN))
+
+
+def backfill_effective_cap(row: Dict[str, Any], margin: int) -> Dict[str, Any]:
+    """Rows written before effective_max_tokens/cap_reason existed still record num_ctx, prompt_tokens and
+    max_tokens_sent, which is enough to derive what the answer budget ACTUALLY was. A row whose window left
+    less room than the cap we sent was context_bound even though the runner sent the full floor."""
+    if "cap_reason" in row or row.get("status") in ("canary", "run_meta"):
+        return row
+    num_ctx, ptok = row.get("num_ctx"), row.get("prompt_tokens")
+    sent = row.get("max_tokens_sent")
+    window_room = (num_ctx - ptok - margin) if (num_ctx and ptok is not None) else None
+    if sent is None:
+        row["effective_max_tokens"], row["cap_reason"] = window_room, (
+            "context_bound" if window_room is not None else None)
+    elif window_room is None or sent <= window_room:
+        row["effective_max_tokens"], row["cap_reason"] = sent, "thinking_floor"
+    else:
+        row["effective_max_tokens"], row["cap_reason"] = max(window_room, 0), "context_bound"
+    row["effective_backfilled"] = True
+    return row
+
+
 def backfill_capped(row: Dict[str, Any], default_max_tokens: Optional[int]) -> Dict[str, Any]:
     """Rows written before the cap fields existed (the lead's Stage 1 rows came from 2ebe7bf) would otherwise
     re-score as capped 0 / degenerate 0 even when completion_tokens sat exactly on the cap. Derive the fields
@@ -485,7 +514,9 @@ def score(cfg: Config, results: Path, battery: Path, out: Path, judge_cache: Pat
           chat_fn: ChatFn = chat, use_judge: bool = True, lifecycle_log: Optional[Path] = None, log=print) -> int:
     items = {it["id"]: it for it in load_battery(battery)}
     _dmt = default_max_tokens_for(results, cfg)
-    rows = [backfill_capped(r, _dmt) for r in latest_rows(results) if r["item_id"] in items]
+    _margin = cap_safety_margin_for(results, cfg)
+    rows = [backfill_effective_cap(backfill_capped(r, _dmt), _margin)
+            for r in latest_rows(results) if r["item_id"] in items]
     judge = Judge(cfg, judge_cache, chat_fn, log) if (use_judge and cfg.judge_pool) else None
     lc = ExoLifecycle(cfg.exo_base, JsonlWriter(lifecycle_log) if lifecycle_log else None, log=log) if cfg.exo_base else None
     if judge:

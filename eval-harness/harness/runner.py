@@ -36,7 +36,7 @@ from .config import Config, load_config
 from .contract import parse_response
 from .exo import ExoLifecycle, maybe_instance
 from .config import DEFAULT_NUM_CTX, kit_chars_per_token
-from .config import (ANSWER_TPS_FLOOR, PREFILL_HEADROOM_S, THINKING_TOKEN_FLOOR,
+from .config import (ANSWER_TPS_FLOOR, CAP_SAFETY_MARGIN, PREFILL_HEADROOM_S, THINKING_TOKEN_FLOOR,
                      effective_cap_and_timeout)
 from .tokens import thinking_from_show
 from .exo_sched import ExoScheduler, KVEstimateInvalid, ollama_keep_alive
@@ -167,6 +167,20 @@ def _cap_hit(turns: List[Dict[str, Any]], ctoks: Optional[int], cap: Optional[in
         or (cap and ctoks is not None and ctoks >= cap)))
 
 
+def effective_answer_cap(budget: Optional[int], num_ctx: Optional[int], prompt_tokens_est: int,
+                         margin: int = CAP_SAFETY_MARGIN) -> Tuple[Optional[int], Optional[str]]:
+    """Answer budget actually available = min(our budget, num_ctx - prompt - margin), with cap_reason naming
+    which bound won. Per (model, arm): num_ctx and the kit prompt differ. At 40960/40000 ctx the 28k full-kit
+    prompt leaves ~12.7k for generation, so qwen3:32b and magistral:24b are 'context_bound' under full_kit
+    while every model is 'thinking_floor' elsewhere - a confound the report must surface, not hide."""
+    window_room = (num_ctx - prompt_tokens_est - margin) if num_ctx else None
+    if budget is None:
+        return window_room, ("context_bound" if window_room is not None else None)
+    if window_room is None or budget <= window_room:
+        return budget, "thinking_floor"
+    return max(window_room, 0), "context_bound"
+
+
 def thinking_chars(turns: List[Dict[str, Any]]) -> int:
     return sum(len(t.get("thinking") or "") for t in turns)
 
@@ -175,7 +189,8 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
             temperature: float, retries: int, num_ctx: Optional[int], cpt: float,
             prefill: Optional[PrefillTracker], block_canary_ok: Optional[bool],
             trunc_tolerance: float, cpt_measured: bool = False,
-            contract_reminder: Optional[str] = None, cap_retry_max: int = 0) -> Dict[str, Any]:
+            contract_reminder: Optional[str] = None, cap_retry_max: int = 0,
+            cap_reason: Optional[str] = None) -> Dict[str, Any]:
     args = (arm, item, chat_fn, temperature, retries, num_ctx, cpt, prefill, trunc_tolerance,
             cpt_measured, contract_reminder)
     turns, error, trunc = _run_turns(spec, *args)
@@ -183,9 +198,16 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
     cap = spec.max_tokens
     hit_max = _cap_hit(turns, ctoks, cap, error)
     cap_retry: Optional[Dict[str, Any]] = None
+    cap_retry_skipped_reason: Optional[str] = None
     # A capped generation has NO answer: it is a lost datum, not a result. Retry ONCE with a bigger bounded
-    # cap before accepting it as capped (lead's requirement), and record both attempts.
-    if hit_max and not trunc and cap and cap_retry_max > cap:
+    # cap before accepting it as capped (lead's requirement), and record both attempts. But when the WINDOW
+    # bound the budget (cap_reason=context_bound) doubling the cap is impossible, so suppress the retry and say so.
+    _can_retry = hit_max and not trunc and cap and cap_retry_max > cap
+    if hit_max and not trunc and cap_reason == "context_bound":
+        _can_retry, cap_retry_skipped_reason = False, "context_bound"
+    elif hit_max and not trunc and not _can_retry:
+        cap_retry_skipped_reason = "retry_disabled_or_not_larger"
+    if _can_retry:
         retry_cap = min(cap * 2, cap_retry_max)
         eff = ModelSpec(**{**spec.__dict__, "max_tokens": retry_cap,
                            "timeout_s": max(spec.timeout_s,
@@ -219,6 +241,8 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         "status": status, "error": error,
         "finish_reason": turns[-1].get("finish_reason") if turns else None,
         "hit_max_tokens": hit_max, "degenerate_output": degen, "max_tokens_sent": cap,
+        "effective_max_tokens": cap, "cap_reason": cap_reason,
+        "cap_retry_skipped_reason": cap_retry_skipped_reason,
         "thinking": spec.thinking, "thinking_chars": thinking_chars(turns),
         "thinking_tokens": sum(_tt) if _tt else None,
         "retried_for_cap": cap_retry is not None,
@@ -346,6 +370,7 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
              "contract_reminder": reminder, "contract_reminder_enabled": reminder is not None,
              "default_max_tokens": cfg.raw.get("default_max_tokens"),
              "thinking_max_tokens": int(cfg.raw.get("thinking_max_tokens", THINKING_TOKEN_FLOOR)),
+             "cap_safety_margin": int(cfg.raw.get("cap_safety_margin", CAP_SAFETY_MARGIN)),
              "arms": [a.get("id") or a.get("type") for a in cfg.arms]})
     lcw = JsonlWriter(lifecycle_log) if lifecycle_log else None
     exo_lc = ExoLifecycle(cfg.exo_base, lcw, log=log) if cfg.exo_base else None
@@ -368,6 +393,7 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
 
     floor = int(cfg.raw.get("thinking_max_tokens", THINKING_TOKEN_FLOOR))
     cap_retry_max = int(cfg.raw.get("cap_retry_max", 2 * floor))
+    cap_margin = int(cfg.raw.get("cap_safety_margin", CAP_SAFETY_MARGIN))
     for mid in model_ids:
         spec = cfg.models[mid]
         # Auto-detect thinking rather than trusting the registry flag: the lead's registry had gemma4:12b
@@ -435,9 +461,14 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
                     if aborted:
                         emit(_skip_row(s, a, it, rep, "kv_estimate_invalid", {"detail": aborted}))
                         continue
-                    row = run_one(cur_spec, a, it, rep, chat_fn, cfg.temperature, cfg.retries, num_ctx, bcpt,
+                    utext = first_user_message(it) + "".join(it.get("pressure_turns") or [])
+                    p_est = round((len(a.system_prompt) + len(utext)) / bcpt)
+                    eff_cap, cap_reason = effective_answer_cap(cur_spec.max_tokens, num_ctx, p_est, cap_margin)
+                    item_spec = cur_spec if eff_cap == cur_spec.max_tokens \
+                        else ModelSpec(**{**cur_spec.__dict__, "max_tokens": eff_cap})
+                    row = run_one(item_spec, a, it, rep, chat_fn, cfg.temperature, cfg.retries, num_ctx, bcpt,
                                   prefill, block_ok, cfg.raw.get("trunc_tolerance", 0.05), measured,
-                                  contract_reminder=reminder, cap_retry_max=cap_retry_max)
+                                  contract_reminder=reminder, cap_retry_max=cap_retry_max, cap_reason=cap_reason)
                     # Reply-channel fallback (exo exposes no capabilities, and a registry flag can be wrong):
                     # the model demonstrably thinks, so apply the floor for the rest of its run.
                     if not thinking_eff and (row.get("thinking_chars") or 0) > 0:

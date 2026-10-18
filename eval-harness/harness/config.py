@@ -31,6 +31,7 @@ THINKING_TOKEN_FLOOR = 16384
 # max_tokens / 25 tok/s + prefill headroom or a legitimate long reasoning run is killed as an error.
 ANSWER_TPS_FLOOR = 25.0
 PREFILL_HEADROOM_S = 120.0
+CAP_SAFETY_MARGIN = 512         # tokens kept free between prompt and answer so generation can't outrun num_ctx
 
 
 def effective_cap_and_timeout(spec, thinking: bool, default_max_tokens: Optional[int] = None,

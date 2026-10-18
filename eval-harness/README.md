@@ -300,3 +300,21 @@ are backfilled at score time: `degenerate_output` from the final turn's content,
 `finish_reason == "length"` or `completion_tokens >=` the cap in effect (from `max_tokens_sent`, else the
 `run_meta` provenance row, else config `default_max_tokens`). A backfilled capped row's status becomes
 OUTPUT_CAPPED and the row is marked `capped_backfilled=true`, so derived is never mistaken for recorded.
+
+## Effective answer budget and cap_reason
+
+The answer budget is NOT uniform across blocks. `effective_max_tokens = min(answer budget, num_ctx - prompt -
+cap_safety_margin)` is computed per (model, arm), SENT to the backend as the completion cap, and recorded with
+`cap_reason` on every row:
+
+- `thinking_floor` - our configured budget bound the answer (the normal case).
+- `context_bound` - the model's own context window bound it, because the prompt plus the full budget does not
+  fit. Measured example: a 16384 budget with the 28,215-token full kit at num_ctx 40960 leaves 12,233 tokens,
+  so qwen3:32b and magistral:24b are context_bound under full_kit while every 131072-window model gets 16384.
+
+`n_output_capped` is split into `n_output_capped_thinking_floor` and `n_output_capped_context_bound`. The cap
+retry is SUPPRESSED when `cap_reason == "context_bound"` (doubling the cap cannot help when the window is the
+bound) and the reason is recorded as `cap_retry_skipped_reason`. The report prints the effective budget per
+(model, arm) and carries an explicit "answer budget asymmetry" section naming the affected blocks, so a reader
+sees the confound instead of discovering it. Rows written before these fields existed are backfilled at score
+time from `num_ctx`, `prompt_tokens` and `max_tokens_sent`, and marked `effective_backfilled=true`.

@@ -1094,3 +1094,93 @@ class TestCappedBackfill(unittest.TestCase):
         class _Cfg:
             raw = {}
         self.assertEqual(default_max_tokens_for(f, _Cfg()), 4096)
+
+
+class TestEffectiveCap(unittest.TestCase):
+    """The answer budget differs per (model, arm) and is a confound, so it is computed, sent and recorded."""
+
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        self.kit = make_kit(self.td / "kit")
+        self.arm = build_arms(self.kit, [{"type": "vanilla"}])[0]
+        self.item = {"id": "FK-001", "category": "factual_keyed", "prompt": "What is 2+2?",
+                     "answer_key": "4", "accept_patterns": [], "forbidden_patterns": [], "planted_errors": [],
+                     "answer_numeric": 4, "tolerance": 0, "requires_context": False}
+
+    def _always_caps(self):
+        from harness.client import ChatResult
+
+        def fn(spec, messages):
+            return ChatResult(content="\\n" * 500, prompt_tokens=20000, completion_tokens=spec.max_tokens,
+                              latency_s=1.0, finish_reason="length", prompt_eval_duration_ns=int(5e7))
+        return fn
+
+    def _run(self, spec, cap_reason, cap_retry_max=1000):
+        return runner.run_one(spec, self.arm, self.item, 0, self._always_caps(), 0.0, 0, 4096, 4.0,
+                              None, True, 0.05, True, cap_retry_max=cap_retry_max, cap_reason=cap_reason)
+
+    def test_helper_bounds(self):
+        from harness.runner import effective_answer_cap
+        # lead-measured: 16384 budget, 40960 window, 28215-token kit -> ~12.7k and window-bound
+        self.assertEqual(effective_answer_cap(16384, 40960, 28215, 512), (12233, "context_bound"))
+        self.assertEqual(effective_answer_cap(16384, 131072, 28215, 512), (16384, "thinking_floor"))
+        self.assertEqual(effective_answer_cap(16384, None, 28215, 512), (16384, "thinking_floor"))
+        self.assertEqual(effective_answer_cap(None, 40960, 28215, 512), (12233, "context_bound"))
+        self.assertEqual(effective_answer_cap(16384, 1000, 2000, 512)[0], 0)      # never negative
+
+    def test_context_bound_suppresses_the_retry(self):
+        spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=100)
+        r = self._run(spec, "context_bound")
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertFalse(r["retried_for_cap"])            # doubling cannot help when the window is the bound
+        self.assertEqual(r["cap_retry_skipped_reason"], "context_bound")
+        self.assertEqual(r["cap_reason"], "context_bound")
+        self.assertEqual(r["effective_max_tokens"], 100)
+        self.assertEqual(r["max_tokens_sent"], 100)
+
+    def test_thinking_floor_still_retries(self):
+        spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=100)
+        r = self._run(spec, "thinking_floor")
+        self.assertTrue(r["retried_for_cap"])
+        self.assertIsNone(r["cap_retry_skipped_reason"])
+        self.assertTrue(r["cap_retry"]["hit_max_retry"])
+
+    def test_metrics_split_capped_by_reason(self):
+        rows = [{"status": "OUTPUT_CAPPED", "category": "factual_keyed", "cap_reason": "context_bound",
+                 "effective_max_tokens": 12233},
+                {"status": "OUTPUT_CAPPED", "category": "factual_keyed", "cap_reason": "thinking_floor",
+                 "effective_max_tokens": 16384},
+                {"status": "ok", "category": "factual_keyed", "correct": True, "effective_max_tokens": 16384}]
+        m = metrics.group_metrics(rows)
+        self.assertEqual(m["n_output_capped"], 2)
+        self.assertEqual(m["n_output_capped_context_bound"], 1)
+        self.assertEqual(m["n_output_capped_thinking_floor"], 1)
+        self.assertEqual(m["cap_reason"], "context_bound")
+        self.assertEqual(m["min_effective_max_tokens"], 12233)
+
+    def test_backfill_from_legacy_fields(self):
+        from harness.score import backfill_effective_cap
+        # a row that recorded the full floor as sent, but whose window left less
+        r = backfill_effective_cap({"status": "ok", "num_ctx": 40960, "prompt_tokens": 28215,
+                                    "max_tokens_sent": 16384}, 512)
+        self.assertEqual((r["cap_reason"], r["effective_max_tokens"]), ("context_bound", 12233))
+        self.assertTrue(r["effective_backfilled"])
+        r2 = backfill_effective_cap({"status": "ok", "num_ctx": 131072, "prompt_tokens": 28215,
+                                     "max_tokens_sent": 16384}, 512)
+        self.assertEqual((r2["cap_reason"], r2["effective_max_tokens"]), ("thinking_floor", 16384))
+        rec = {"status": "ok", "cap_reason": "thinking_floor", "effective_max_tokens": 16384}
+        self.assertNotIn("effective_backfilled", backfill_effective_cap(dict(rec), 512))
+
+    def test_report_states_the_asymmetry(self):
+        from harness.aggregate import _asymmetry_section
+        table = [{"model_id": "qwen3:32b", "arm_id": "full_kit", "slice": "all", "cap_reason": "context_bound",
+                  "mean_effective_max_tokens": 12233, "n_output_capped": 3, "n_output_capped_context_bound": 3},
+                 {"model_id": "gpt-oss:20b", "arm_id": "full_kit", "slice": "all", "cap_reason": "thinking_floor",
+                  "mean_effective_max_tokens": 16384, "n_output_capped": 0, "n_output_capped_context_bound": 0}]
+        out = "\n".join(_asymmetry_section(table))
+        self.assertIn("Answer budget asymmetry", out)
+        self.assertIn("qwen3:32b", out)
+        self.assertIn("12233", out)
+        self.assertIn("16384", out)                   # the reference budget the others got
+        self.assertNotIn("gpt-oss:20b |", out)        # only the constrained blocks are listed
+        self.assertEqual(_asymmetry_section([table[1]]), [])   # nothing to say when all blocks match
