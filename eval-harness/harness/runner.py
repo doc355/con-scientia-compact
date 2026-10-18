@@ -368,7 +368,10 @@ def canary_check(spec: ModelSpec, arm: Arm, chat_fn: ChatFn, temperature: float,
                  num_ctx: Optional[int], log) -> Dict[str, Any]:
     canary = "ORCHID-" + uuid.uuid4().hex[:8].upper()
     sys = CANARY_PREFIX.format(canary=canary) + arm.system_prompt
-    res = _call(ModelSpec(**{**spec.__dict__, "max_tokens": 64}),
+    # Thinking models spend a 64-token budget on reasoning and return empty content (gpt-oss:20b, 2026-10-18),
+    # which falsely failed every block; give them room to think and still answer.
+    budget = 64 if not spec.thinking else max(1024, int(spec.max_tokens or 0))
+    res = _call(ModelSpec(**{**spec.__dict__, "max_tokens": budget}),
                 [{"role": "system", "content": sys}, {"role": "user", "content": CANARY_PROMPT}],
                 chat_fn, temperature, retries, num_ctx)
     ok = (not res.error) and canary in (res.content or "")

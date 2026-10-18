@@ -38,3 +38,11 @@ class ContaminationGapTests(unittest.TestCase):
         from harness.drift import contamination_gap
         rows = {("m", "a", f"RG-bulk-{s}-{k}", 0): {"correct": s == 1618} for s in (1618, 55) for k in range(4)}
         self.assertEqual(contamination_gap(rows), {("m", "a", "bulk"): 1.0})
+
+
+class CanaryBudgetTests(unittest.TestCase):
+    def test_thinking_model_gets_room(self):
+        import inspect
+        from harness import runner
+        src = inspect.getsource(runner.canary_check)
+        self.assertIn("64 if not spec.thinking", src)
