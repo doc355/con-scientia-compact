@@ -121,3 +121,28 @@ class TestSigtermUnwinds(unittest.TestCase):
         p = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=20)
         self.assertIn("EVICTED", p.stdout)
         self.assertEqual(p.returncode, 143)
+
+
+class TestLoopDetectedInTail(unittest.TestCase):
+    def test_late_loop_after_sound_reasoning_is_flagged(self):
+        from harness.runner import is_degenerate_thinking
+        import random
+        random.seed(7)
+        prose = " ".join(f"step{random.randrange(10**6)} of the computation" for _ in range(1200))
+        loop = " Wait, I'll use 22.46." * 900
+        self.assertTrue(is_degenerate_thinking(prose + loop))      # gemma FK-017 shape
+        self.assertTrue(is_degenerate_thinking(loop))              # gemma FK-001 shape
+        self.assertFalse(is_degenerate_thinking(prose))            # long but healthy
+        self.assertFalse(is_degenerate_thinking(prose + " Wait, I'll use 22.46." * 3))
+
+    def test_real_fk017_trace_is_flagged(self):
+        import json, os
+        from harness.runner import is_degenerate_thinking
+        p = "run/results/stage1b.jsonl"
+        if not os.path.exists(p):
+            self.skipTest("results not present in this checkout")
+        rows = [json.loads(l) for l in open(p) if l.strip()]
+        r = [x for x in rows if x.get("item_id") == "FK-017" and x.get("model_id") == "gemma4:12b"]
+        if not r:
+            self.skipTest("FK-017 row not present")
+        self.assertTrue(is_degenerate_thinking(r[-1]["turns"][0].get("thinking") or ""))

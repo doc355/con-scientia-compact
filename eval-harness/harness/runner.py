@@ -116,15 +116,21 @@ def _call(spec: ModelSpec, messages, chat_fn: ChatFn, temperature: float, retrie
     return chat_fn(use, messages)
 
 
-def is_degenerate_thinking(text: str, n: int = 8, min_words: int = 2000, max_unique: float = 0.2) -> bool:
-    """Thinking channel stuck in a loop: under `max_unique` distinct word n-grams over a long trace.
-    gemma4:12b at temperature 0 on FK-001 (2026-10-18) found the answer, then wrote 'Wait, I should check...
-    Yes, it is.' until both the 16k and the 32k cap ran out (8-gram uniqueness 0.05). FLAG only."""
+def is_degenerate_thinking(text: str, n: int = 8, min_words: int = 2000, max_unique: float = 0.2,
+                           window: int = 1500) -> bool:
+    """Thinking channel stuck in a loop: a trailing window of `window` words with under `max_unique`
+    distinct word n-grams. Judged on the TAIL, not the whole trace: gemma4:12b on FK-017 (2026-10-18)
+    reasoned soundly for ~4,800 words and then repeated "Wait, I'll use 22.46." to the 32k cap, which
+    averaged out to 0.438 unique over the whole trace (no flag) but 0.001 over its second half.
+    Whole-trace loops (FK-001) still fire, since the tail of a loop is a loop. FLAG only."""
     w = (text or "").split()
     if len(w) < min_words:
         return False
-    grams = len(w) - n + 1
-    return len({tuple(w[i:i + n]) for i in range(grams)}) / grams < max_unique
+    tail = w[-window:] if len(w) > window else w
+    grams = len(tail) - n + 1
+    if grams < 1:
+        return False
+    return len({tuple(tail[i:i + n]) for i in range(grams)}) / grams < max_unique
 
 
 def is_degenerate(text: str) -> bool:
