@@ -87,3 +87,26 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+ANCHOR_SEEDS = (1618, 2718, 3141)
+
+
+def contamination_gap(rows, anchors=ANCHOR_SEEDS):
+    """Randomized items are named RG-<template>-<seed>-<k>. Per (model, arm, template): pass rate on fixed anchor
+    seeds minus pass rate on fresh seeds. A large positive gap means the anchors were memorized."""
+    acc = defaultdict(lambda: {"a": [], "f": []})
+    for (m, arm, iid, _rep), r in rows.items():
+        parts = str(iid).split("-")
+        if len(parts) < 4 or parts[0] != "RG":
+            continue
+        p = passed(r)
+        if p is None:
+            continue
+        side = "a" if int(parts[2]) in anchors else "f"
+        acc[(m, arm, parts[1])][side].append(p)
+    out = {}
+    for k, v in acc.items():
+        if v["a"] and v["f"]:
+            out[k] = sum(v["a"]) / len(v["a"]) - sum(v["f"]) / len(v["f"])
+    return out

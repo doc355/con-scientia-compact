@@ -32,3 +32,9 @@ class IndicatorProbeTests(unittest.TestCase):
     def test_category_valid(self):
         from harness.battery import validate_item
         self.assertEqual(validate_item({"id": "X", "category": "indicator_probe", "prompt": "p"}), [])
+
+class ContaminationGapTests(unittest.TestCase):
+    def test_gap(self):
+        from harness.drift import contamination_gap
+        rows = {("m", "a", f"RG-bulk-{s}-{k}", 0): {"correct": s == 1618} for s in (1618, 55) for k in range(4)}
+        self.assertEqual(contamination_gap(rows), {("m", "a", "bulk"): 1.0})
