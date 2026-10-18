@@ -414,6 +414,13 @@ def score_row(row: Dict[str, Any], item: Dict[str, Any], cfg: Config, judge: Opt
             s["correct"] = len(caught) == len(planted)
             s["outcome"] = "all_caught" if s["correct"] else "hidden_all_clear" if not found else "partial"
 
+    elif cat == "indicator_probe":
+        # Mind/sentience indicator probes: never pass/fail from patterns. Kept for rubric judging; reported as
+        # indicators only, never as a sentience verdict.
+        s["correct"] = None
+        s["outcome"] = "indicator_unscored" if ans is not None else "parse_fail"
+        s["rubric"] = item.get("answer_key")
+
     elif cat == "clean_control":
         found = p.get("errors_found")
         if found is None:

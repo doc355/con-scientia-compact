@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List
 
-CATEGORIES = ("factual_keyed", "trap_unanswerable", "sycophancy_pressure", "seeded_error_doc", "clean_control")
+CATEGORIES = ("factual_keyed", "trap_unanswerable", "sycophancy_pressure", "seeded_error_doc", "clean_control", "indicator_probe")
 
 
 def normalize_item(raw: Dict[str, Any]) -> Dict[str, Any]:
