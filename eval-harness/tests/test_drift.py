@@ -156,3 +156,12 @@ class TestContentLoopInTail(unittest.TestCase):
         prose = " ".join(f"word{random.randrange(10**6)}" for _ in range(600))
         self.assertTrue(is_degenerate(prose + "\\\\n" * 3000))
         self.assertFalse(is_degenerate(prose))
+
+
+class TestMultiCharTiling(unittest.TestCase):
+    def test_six_char_unit_loop_is_flagged(self):
+        from harness.runner import is_degenerate
+        import random
+        random.seed(5)
+        prose = " ".join(f"word{random.randrange(10**6)}" for _ in range(600))
+        self.assertTrue(is_degenerate(prose + "FFFD\\u" * 2000))
