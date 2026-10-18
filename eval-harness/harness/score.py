@@ -27,7 +27,7 @@ from .client import ChatFn, ModelSpec, chat
 from .config import Config, load_config
 from .contract import _json_objects, strip_thinking
 from .exo import ExoLifecycle, maybe_instance
-from .runner import JsonlWriter, read_jsonl, row_key
+from .runner import JsonlWriter, is_degenerate, read_jsonl, row_key
 
 _NUM_RE = re.compile(r"(?<![\w.])[-+−]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:[eE][-+]?\d+)?")
 STOP = set("a an the of in on at to is are was were be been it its this that and or for with as by from".split())
@@ -304,7 +304,8 @@ def score_row(row: Dict[str, Any], item: Dict[str, Any], cfg: Config, judge: Opt
         "kit_chars", "kit_tokens_est", "kit_commit", "status", "prompt_tokens", "completion_tokens",
         "latency_s", "cost_usd", "cost_uncached_usd", "prefill", "prompt_eval_duration_ns", "num_ctx",
         "block_canary_ok", "cache_read_input_tokens", "cache_creation_input_tokens",
-        "finish_reason", "hit_max_tokens", "degenerate_output", "max_tokens_sent")}
+        "finish_reason", "hit_max_tokens", "degenerate_output", "max_tokens_sent",
+        "thinking", "thinking_chars", "thinking_tokens", "retried_for_cap", "capped_backfilled")}
     s["requires_context"] = item.get("requires_context")
     s["difficulty"] = item.get("difficulty")
     s["correct"] = None
@@ -447,10 +448,44 @@ def latest_rows(results: Path) -> List[Dict[str, Any]]:
     return list(latest.values())
 
 
+def default_max_tokens_for(results: Path, cfg: Config) -> Optional[int]:
+    """The cap in effect for rows that never recorded one: the run's provenance row, else the config."""
+    for r in read_jsonl(results):
+        if r.get("status") == "run_meta" and r.get("default_max_tokens"):
+            return int(r["default_max_tokens"])
+    d = cfg.raw.get("default_max_tokens")
+    return int(d) if d else None
+
+
+def backfill_capped(row: Dict[str, Any], default_max_tokens: Optional[int]) -> Dict[str, Any]:
+    """Rows written before the cap fields existed (the lead's Stage 1 rows came from 2ebe7bf) would otherwise
+    re-score as capped 0 / degenerate 0 even when completion_tokens sat exactly on the cap. Derive the fields
+    and mark them DERIVED, never recorded."""
+    if "hit_max_tokens" in row or row.get("status") in ("canary", "run_meta"):
+        return row
+    turns = row.get("turns") or []
+    last = turns[-1] if turns else {}
+    row["degenerate_output"] = is_degenerate(last.get("content") or "")
+    if row.get("thinking_chars") is None:
+        row["thinking_chars"] = sum(len(t.get("thinking") or "") for t in turns)
+    fr = row.get("finish_reason") or last.get("finish_reason")
+    cap = row.get("max_tokens_sent") or default_max_tokens
+    ctok = row.get("completion_tokens")
+    hit = (str(fr).lower() in ("length", "max_tokens")) if fr is not None \
+        else bool(cap and ctok is not None and ctok >= cap)
+    row["hit_max_tokens"] = hit
+    row["max_tokens_sent"] = row.get("max_tokens_sent") or cap
+    row["capped_backfilled"] = True
+    if hit and row.get("status") == "ok":
+        row["status"] = "OUTPUT_CAPPED"      # a capped row is a lost datum, not a wrong answer
+    return row
+
+
 def score(cfg: Config, results: Path, battery: Path, out: Path, judge_cache: Path,
           chat_fn: ChatFn = chat, use_judge: bool = True, lifecycle_log: Optional[Path] = None, log=print) -> int:
     items = {it["id"]: it for it in load_battery(battery)}
-    rows = [r for r in latest_rows(results) if r["item_id"] in items]
+    _dmt = default_max_tokens_for(results, cfg)
+    rows = [backfill_capped(r, _dmt) for r in latest_rows(results) if r["item_id"] in items]
     judge = Judge(cfg, judge_cache, chat_fn, log) if (use_judge and cfg.judge_pool) else None
     lc = ExoLifecycle(cfg.exo_base, JsonlWriter(lifecycle_log) if lifecycle_log else None, log=log) if cfg.exo_base else None
     if judge:

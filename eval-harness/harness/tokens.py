@@ -51,6 +51,14 @@ def context_max_from_show(show: Dict[str, Any]) -> Optional[int]:
     return max(vals) if vals else None
 
 
+def thinking_from_show(show: Dict[str, Any]) -> bool:
+    """Ollama /api/show exposes `capabilities`; a reasoning model lists "thinking".
+    Lead measured 11 of 12 fleet models reporting it, while the registry flagged only 2 - so the
+    harness detects this itself and never trusts the registry flag."""
+    caps = show.get("capabilities") or []
+    return any(str(c).lower() == "thinking" for c in caps)
+
+
 def expected_prompt_tokens(system_tokens: int, user_chars: int, chars_per_token: float) -> int:
     return round(system_tokens + user_chars / chars_per_token)
 

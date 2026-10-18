@@ -1,8 +1,8 @@
 # Kit honesty/accuracy report
 
-> SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). NOT fleet data. Format only. Memory figures are GiB; kv_bytes_per_token is bytes (49152 = 48 KiB/token). Runs include the contract reminder on every user turn of every arm. Capped/degenerate counts and strict trap accuracy appear in the tables.
+> SAMPLE OUTPUT from the mock self-test (fake 3-skill kit, 7 example items, scripted mock models). NOT fleet data. Format only. Memory figures are GiB; kv_bytes_per_token is bytes (49152 = 48 KiB/token). Runs include the contract reminder on every user turn of every arm. Tables carry strict trap accuracy, capped/degenerate/cap-retry counts, and mean thinking length.
 
-Generated 2026-10-18 16:21 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
+Generated 2026-10-18 16:37 UTC by harness aggregate.py. Scored rows: 98. Kit commit(s): unknown.
 
 `n/m` = not measured (no rows of that kind, or no judge verdict). Brackets are Wilson 95% intervals. Numbers are computed from scored rows only; nothing is imputed.
 
@@ -27,22 +27,22 @@ Generated 2026-10-18 16:21 UTC by harness aggregate.py. Scored rows: 98. Kit com
 
 ## Cost, tokens, latency per model x arm
 
-| model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | invalid trunc | capped | degenerate | ctx-overflow-risk rows |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| subjA | full_kit | 303 | 76 | 76 | 389 | 31 | 0.67 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| subjA | lean:ab | 228 | 57 | 58 | 367 | 31 | 0.67 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| subjA | master_only | 82 | 20 | 21 | 325 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| subjA | single:alpha | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| subjA | single:beta | 69 | 17 | 18 | 321 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| subjA | single:gamma | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| subjA | vanilla | 0 | 0 | 0 | 301 | 30 | 0.31 | 0.25 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | full_kit | 303 | 76 | 76 | 389 | 31 | 0.67 | 0.55 | 0.00045 | 0.0032 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | lean:ab | 228 | 57 | 58 | 367 | 31 | 0.67 | 0.55 | 0.00043 | 0.0030 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | master_only | 82 | 20 | 21 | 325 | 31 | 0.66 | 0.55 | 0.00039 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | single:alpha | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | single:beta | 69 | 17 | 18 | 321 | 31 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | single:gamma | 73 | 18 | 19 | 323 | 31 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 |
-| thinker | vanilla | 0 | 0 | 0 | 301 | 30 | 0.31 | 0.25 | 0.00036 | 0.0025 | 0 | 0.00 | 0 | 0 | 0 | 0 |
+| model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean think chars | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | invalid trunc | capped | cap retries | degenerate | ctx-overflow-risk rows |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| subjA | full_kit | 303 | 76 | 76 | 389 | 31 | 0 | 0.67 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| subjA | lean:ab | 228 | 57 | 58 | 367 | 31 | 0 | 0.67 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| subjA | master_only | 82 | 20 | 21 | 325 | 31 | 0 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| subjA | single:alpha | 73 | 18 | 19 | 323 | 31 | 0 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| subjA | single:beta | 69 | 17 | 18 | 321 | 31 | 0 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| subjA | single:gamma | 73 | 18 | 19 | 323 | 31 | 0 | 0.66 | 0.55 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| subjA | vanilla | 0 | 0 | 0 | 301 | 30 | 0 | 0.31 | 0.25 | 0.00000 | 0.0000 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | full_kit | 303 | 76 | 76 | 389 | 31 | 15 | 0.67 | 0.55 | 0.00045 | 0.0032 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | lean:ab | 228 | 57 | 58 | 367 | 31 | 15 | 0.67 | 0.55 | 0.00043 | 0.0030 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | master_only | 82 | 20 | 21 | 325 | 31 | 15 | 0.66 | 0.55 | 0.00039 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | single:alpha | 73 | 18 | 19 | 323 | 31 | 15 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | single:beta | 69 | 17 | 18 | 321 | 31 | 15 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | single:gamma | 73 | 18 | 19 | 323 | 31 | 15 | 0.66 | 0.55 | 0.00038 | 0.0027 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| thinker | vanilla | 0 | 0 | 0 | 301 | 30 | 15 | 0.31 | 0.25 | 0.00036 | 0.0025 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 
 ## Validity, prefill and caching per model x arm
 

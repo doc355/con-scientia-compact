@@ -45,6 +45,10 @@ def group_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     m["n_invalid_truncated"] = sum(1 for r in rows if r.get("status") == "INVALID_TRUNCATED")
     m["n_output_capped"] = sum(1 for r in rows if r.get("status") == "OUTPUT_CAPPED")
     m["n_degenerate"] = sum(1 for r in rows if r.get("degenerate_output") is True)
+    m["n_cap_retried"] = sum(1 for r in rows if r.get("retried_for_cap") is True)
+    # derived at score time for rows written before the cap fields existed, so it is visible that the
+    # capped/degenerate counts for those rows were not recorded by the runner
+    m["n_capped_backfilled"] = sum(1 for r in rows if r.get("capped_backfilled") is True)
     m["n_skipped_ctx"] = sum(1 for r in rows if r.get("status") == "context_exceeds_model_max")
     m["n_canary_failed_rows"] = sum(1 for r in ok if r.get("block_canary_ok") is False)
     m["syco_hint_judge_agreement"] = rate([r for r in ok if r.get("hint_agrees_with_judge") is not None],
@@ -125,6 +129,11 @@ def group_metrics(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     m["mean_total_tokens"] = _m([(r["prompt_tokens"] + r["completion_tokens"])
                                  if r.get("prompt_tokens") is not None and r.get("completion_tokens") is not None
                                  else None for r in ok])
+    # The kit may change how much a model THINKS, which is a real cost finding (lead: gemma4:12b spent
+    # 13.6k chars of thinking and never answered).
+    m["mean_thinking_chars"] = _m([r.get("thinking_chars") for r in ok])
+    m["mean_thinking_chars_all"] = _m([r.get("thinking_chars") for r in rows
+                                       if r.get("thinking_chars") is not None])
     m["mean_latency_s"] = _m([r.get("latency_s") for r in ok])
     m["mean_latency_warm_s"] = _m([r.get("latency_s") for r in ok if r.get("prefill") != "cold"])
     m["n_cold"] = sum(1 for r in ok if r.get("prefill") == "cold")

@@ -36,6 +36,9 @@ from .config import Config, load_config
 from .contract import parse_response
 from .exo import ExoLifecycle, maybe_instance
 from .config import DEFAULT_NUM_CTX, kit_chars_per_token
+from .config import (ANSWER_TPS_FLOOR, PREFILL_HEADROOM_S, THINKING_TOKEN_FLOOR,
+                     effective_cap_and_timeout)
+from .tokens import thinking_from_show
 from .exo_sched import ExoScheduler, KVEstimateInvalid, ollama_keep_alive
 from .tokens import (HEADROOM, PrefillTracker, context_max_from_show, ollama_show,
                      required_num_ctx, truncation_check)
@@ -114,11 +117,12 @@ def is_degenerate(text: str) -> bool:
     return _C(t).most_common(1)[0][1] >= 0.8 * len(t)
 
 
-def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: ChatFn,
-            temperature: float, retries: int, num_ctx: Optional[int], cpt: float,
-            prefill: Optional[PrefillTracker], block_canary_ok: Optional[bool],
-            trunc_tolerance: float, cpt_measured: bool = False,
-            contract_reminder: Optional[str] = None) -> Dict[str, Any]:
+def _run_turns(spec: ModelSpec, arm: Arm, item: Dict[str, Any], chat_fn: ChatFn, temperature: float,
+               retries: int, num_ctx: Optional[int], cpt: float, prefill: Optional[PrefillTracker],
+               trunc_tolerance: float, cpt_measured: bool,
+               contract_reminder: Optional[str]) -> Tuple[List[Dict[str, Any]], Optional[str], Dict[str, Any]]:
+    """Runs an item's user turns against one spec. Pulled out of run_one so a capped generation can be
+    retried with a bigger cap without duplicating the turn/guard logic."""
     def with_reminder(u: str) -> str:
         return f"{u}\n\n{contract_reminder}" if contract_reminder else u
     first_user = with_reminder(first_user_message(item))
@@ -153,20 +157,54 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
             trunc = tc
             break
         messages.append({"role": "assistant", "content": res.content})
-    ptoks = _sum(t.get("prompt_tokens") for t in turns)
+    return turns, error, trunc
+
+
+def _cap_hit(turns: List[Dict[str, Any]], ctoks: Optional[int], cap: Optional[int],
+             error: Optional[str]) -> bool:
+    return bool(error is None and (
+        any(str(t.get("finish_reason")).lower() in ("length", "max_tokens") for t in turns)
+        or (cap and ctoks is not None and ctoks >= cap)))
+
+
+def thinking_chars(turns: List[Dict[str, Any]]) -> int:
+    return sum(len(t.get("thinking") or "") for t in turns)
+
+
+def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: ChatFn,
+            temperature: float, retries: int, num_ctx: Optional[int], cpt: float,
+            prefill: Optional[PrefillTracker], block_canary_ok: Optional[bool],
+            trunc_tolerance: float, cpt_measured: bool = False,
+            contract_reminder: Optional[str] = None, cap_retry_max: int = 0) -> Dict[str, Any]:
+    args = (arm, item, chat_fn, temperature, retries, num_ctx, cpt, prefill, trunc_tolerance,
+            cpt_measured, contract_reminder)
+    turns, error, trunc = _run_turns(spec, *args)
     ctoks = _sum(t.get("completion_tokens") for t in turns)
+    cap = spec.max_tokens
+    hit_max = _cap_hit(turns, ctoks, cap, error)
+    cap_retry: Optional[Dict[str, Any]] = None
+    # A capped generation has NO answer: it is a lost datum, not a result. Retry ONCE with a bigger bounded
+    # cap before accepting it as capped (lead's requirement), and record both attempts.
+    if hit_max and not trunc and cap and cap_retry_max > cap:
+        retry_cap = min(cap * 2, cap_retry_max)
+        eff = ModelSpec(**{**spec.__dict__, "max_tokens": retry_cap,
+                           "timeout_s": max(spec.timeout_s,
+                                            retry_cap / ANSWER_TPS_FLOOR + PREFILL_HEADROOM_S)})
+        t2, e2, tr2 = _run_turns(eff, *args)
+        c2 = _sum(t.get("completion_tokens") for t in t2)
+        h2 = _cap_hit(t2, c2, retry_cap, e2)
+        cap_retry = {"cap_first": cap, "cap_retry": retry_cap, "hit_max_first": True, "hit_max_retry": h2,
+                     "completion_tokens_first": ctoks, "completion_tokens_retry": c2,
+                     "thinking_chars_first": thinking_chars(turns)}
+        turns, error, trunc, ctoks, cap, hit_max = t2, e2, tr2, c2, retry_cap, h2
+    ptoks = _sum(t.get("prompt_tokens") for t in turns)
     cost = spec.cost_breakdown(ChatResult(
         prompt_tokens=ptoks, completion_tokens=ctoks,
         cache_creation_input_tokens=_sum(t.get("cache_creation_input_tokens") for t in turns),
         cache_read_input_tokens=_sum(t.get("cache_read_input_tokens") for t in turns)))
-    # OUTPUT_CAPPED: the generation hit the output cap (a model breakdown, often a degenerate loop), which must
-    # not look like a normal completion. finish_reason "length"/"max_tokens", or completion_tokens at the cap.
-    cap = spec.max_tokens
-    hit_max = bool(error is None and (
-        any(str(t.get("finish_reason")).lower() in ("length", "max_tokens") for t in turns)
-        or (cap and ctoks is not None and ctoks >= cap)))
     degen = any(is_degenerate(t.get("content") or "") for t in turns)
     status = "error" if error else ("INVALID_TRUNCATED" if trunc else "OUTPUT_CAPPED" if hit_max else "ok")
+    _tt = [t.get("thinking_tokens") for t in turns if t.get("thinking_tokens") is not None]
     row: Dict[str, Any] = {
         "run_id": uuid.uuid4().hex, "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "item_id": item["id"], "category": item["category"], "requires_context": item.get("requires_context"),
@@ -181,6 +219,9 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         "status": status, "error": error,
         "finish_reason": turns[-1].get("finish_reason") if turns else None,
         "hit_max_tokens": hit_max, "degenerate_output": degen, "max_tokens_sent": cap,
+        "thinking": spec.thinking, "thinking_chars": thinking_chars(turns),
+        "thinking_tokens": sum(_tt) if _tt else None,
+        "retried_for_cap": cap_retry is not None,
         "prompt_tokens": ptoks, "completion_tokens": ctoks,
         "prompt_eval_duration_ns": turns[0].get("prompt_eval_duration_ns") if turns else None,
         "prefill": turns[0].get("prefill") if turns else None,
@@ -189,6 +230,8 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         "cache_read_input_tokens": _sum(t.get("cache_read_input_tokens") for t in turns),
         **cost,
     }
+    if cap_retry:
+        row["cap_retry"] = cap_retry
     if trunc:
         row["trunc"] = trunc
     if status == "ok":
@@ -220,6 +263,17 @@ def model_max_ctx(spec: ModelSpec, fetch_show: bool, log) -> Optional[int]:
     return None
 
 
+def model_thinking(spec: ModelSpec, fetch_show: bool, log) -> Optional[bool]:
+    """Ollama /api/show `capabilities`. Returns None when it cannot be determined (exo exposes no
+    capabilities; those models are detected from the reply channel instead)."""
+    if spec.backend == "ollama" and fetch_show:
+        try:
+            return thinking_from_show(ollama_show(spec.base_url, spec.model))
+        except Exception as e:  # noqa: BLE001 - recorded, run continues on the registry flag
+            log(f"[warn] /api/show capabilities failed for {spec.id}: {e}")
+    return None
+
+
 def size_num_ctx(spec: ModelSpec, arm: Arm, longest_user_chars: int, cpt: float, max_ctx: Optional[int],
                  default_num_ctx: int = DEFAULT_NUM_CTX) -> Tuple[Optional[int], Optional[int], Optional[str]]:
     """Returns (num_ctx, max_ctx, skip_reason). Only sizes ollama/exo backends.
@@ -231,7 +285,12 @@ def size_num_ctx(spec: ModelSpec, arm: Arm, longest_user_chars: int, cpt: float,
     """
     if spec.backend not in ("ollama", "exo"):
         return None, max_ctx, None
-    raw = round(len(arm.system_prompt) / cpt) + round(longest_user_chars / cpt) + HEADROOM + (spec.max_tokens or 0)
+    # The SKIP decision is PROMPT fit only (system + longest item + headroom). The completion reserve still
+    # raises the num_ctx target below, but must not cause a skip: with the 16384 thinking floor, counting the
+    # full reserve here would skip qwen3:32b (40960) and magistral:24b (40000) whose PROMPTS fit fine, which
+    # contradicts the lead's measured "the kit fits every model". A model whose window cannot hold prompt +
+    # full answer budget simply gets whatever generation room is left, and the cap/degenerate guards catch it.
+    raw = round(len(arm.system_prompt) / cpt) + round(longest_user_chars / cpt) + HEADROOM
     # Compare the UNROUNDED requirement with the trained max: ladder rounding (e.g. 36k -> 40960) must not
     # skip a block that fits under a non-ladder limit such as magistral:24b's 40000.
     if max_ctx is not None and raw > max_ctx:
@@ -285,6 +344,8 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
     w.write({"status": "run_meta", "kind": "provenance",
              "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
              "contract_reminder": reminder, "contract_reminder_enabled": reminder is not None,
+             "default_max_tokens": cfg.raw.get("default_max_tokens"),
+             "thinking_max_tokens": int(cfg.raw.get("thinking_max_tokens", THINKING_TOKEN_FLOOR)),
              "arms": [a.get("id") or a.get("type") for a in cfg.arms]})
     lcw = JsonlWriter(lifecycle_log) if lifecycle_log else None
     exo_lc = ExoLifecycle(cfg.exo_base, lcw, log=log) if cfg.exo_base else None
@@ -305,8 +366,24 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
         w.write(row)
         stats[row["status"]] = stats.get(row["status"], 0) + 1
 
+    floor = int(cfg.raw.get("thinking_max_tokens", THINKING_TOKEN_FLOOR))
+    cap_retry_max = int(cfg.raw.get("cap_retry_max", 2 * floor))
     for mid in model_ids:
         spec = cfg.models[mid]
+        # Auto-detect thinking rather than trusting the registry flag: the lead's registry had gemma4:12b
+        # wrong and it burned its whole 4096 cap on the thinking channel, answering nothing.
+        shown = model_thinking(spec, fetch_show, log)
+        thinking_eff = bool(spec.thinking or shown)
+        if shown and not spec.thinking:
+            log(f"[warn] {mid}: /api/show capabilities report 'thinking' but the registry says "
+                f"thinking=false; applying the {floor}-token answer budget anyway")
+        _cap, _tmo = effective_cap_and_timeout(spec, thinking_eff, cfg.raw.get("default_max_tokens"), floor)
+        if (_cap, _tmo) != (spec.max_tokens, spec.timeout_s):
+            log(f"{mid}: answer budget max_tokens={_cap} timeout={_tmo:.0f}s "
+                f"(thinking={thinking_eff}, registry={spec.thinking})")
+            spec = ModelSpec(**{**spec.__dict__, "max_tokens": _cap, "timeout_s": _tmo,
+                                "thinking": thinking_eff})
+        cur_spec = spec
         maxc = model_max_ctx(spec, fetch_show, log)
         plan = {a.id: size_num_ctx(spec, a, longest_user, cpt, maxc, cfg.raw.get("default_num_ctx", DEFAULT_NUM_CTX))
                 for a in arms}
@@ -358,9 +435,19 @@ def run(cfg: Config, battery_path: Path, out: Path, model_ids: Optional[List[str
                     if aborted:
                         emit(_skip_row(s, a, it, rep, "kv_estimate_invalid", {"detail": aborted}))
                         continue
-                    row = run_one(s, a, it, rep, chat_fn, cfg.temperature, cfg.retries, num_ctx, bcpt,
+                    row = run_one(cur_spec, a, it, rep, chat_fn, cfg.temperature, cfg.retries, num_ctx, bcpt,
                                   prefill, block_ok, cfg.raw.get("trunc_tolerance", 0.05), measured,
-                                  contract_reminder=reminder)
+                                  contract_reminder=reminder, cap_retry_max=cap_retry_max)
+                    # Reply-channel fallback (exo exposes no capabilities, and a registry flag can be wrong):
+                    # the model demonstrably thinks, so apply the floor for the rest of its run.
+                    if not thinking_eff and (row.get("thinking_chars") or 0) > 0:
+                        thinking_eff = True
+                        c2, t2 = effective_cap_and_timeout(cur_spec, True,
+                                                           cfg.raw.get("default_max_tokens"), floor)
+                        log(f"[warn] {mid}: emitted a non-empty thinking channel but was not flagged "
+                            f"thinking; raising the answer budget to max_tokens={c2} timeout={t2:.0f}s")
+                        cur_spec = ModelSpec(**{**cur_spec.__dict__, "max_tokens": c2, "timeout_s": t2,
+                                                "thinking": True})
                     if not measured and row["status"] == "ok" and row["turns"][0].get("prompt_tokens") \
                             and row["turns"][0].get("prefill") == "cold":
                         chars = len(a.system_prompt) + len(row["turns"][0]["user"])

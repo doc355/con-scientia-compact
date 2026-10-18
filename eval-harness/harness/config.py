@@ -23,6 +23,26 @@ REGISTRY_MODEL_KEYS = {"id", "backend", "lineage", "price_in", "price_out", "tie
 DEFAULT_NUM_CTX = 100000        # Doc's standing order; capped per model at max_ctx
 TIMEOUT_FLOOR_LARGE_S = 300.0   # lead: >=300 s for large/thinking models (gpt-oss:20b measured 13-30 s/item vanilla)
 DEFAULT_TIMEOUT_S = 600.0
+# Lead-measured: gemma4:12b (registry said thinking:false) spent its ENTIRE 4096 cap on the thinking channel
+# and never emitted an answer on 3 of 5 items, 135 s each. Ollama counts thinking inside eval_count, so the
+# only fix for that backend is a bigger cap for reasoning models.
+THINKING_TOKEN_FLOOR = 16384
+# Lead's budget note: at ~30 tok/s a 16k cap allows ~9 min/item, so the timeout must clear
+# max_tokens / 25 tok/s + prefill headroom or a legitimate long reasoning run is killed as an error.
+ANSWER_TPS_FLOOR = 25.0
+PREFILL_HEADROOM_S = 120.0
+
+
+def effective_cap_and_timeout(spec, thinking: bool, default_max_tokens: Optional[int] = None,
+                              floor: int = THINKING_TOKEN_FLOOR) -> Tuple[Optional[int], float]:
+    """Answer budget for a model, and a timeout that can actually wait for it.
+    A thinking model gets at least `floor`; the timeout clears cap/ANSWER_TPS_FLOOR + prefill headroom."""
+    base = spec.max_tokens if spec.max_tokens is not None else default_max_tokens
+    cap = (max(base or 0, floor) or floor) if thinking else base
+    timeout = spec.timeout_s
+    if cap:
+        timeout = max(timeout, cap / ANSWER_TPS_FLOOR + PREFILL_HEADROOM_S)
+    return cap, timeout
 
 
 def timeout_for(m: Dict[str, Any]) -> float:
@@ -87,6 +107,15 @@ def load_registry(path: str | Path, default_num_ctx: Optional[int] = None,
         be = m["backend"]
         if be not in ("ollama", "exo", "openai", "anthropic"):
             raise ValueError(f"registry model {m['id']}: backend must be ollama|exo|openai|anthropic, got {be!r}")
+        # A registry-flagged thinking model gets the answer-budget floor and a timeout that clears it. Models
+        # the registry has WRONG are caught at runtime from /api/show capabilities or the reply channel.
+        _thinking = bool(m.get("thinking", False))
+        _mt = m.get("max_tokens", default_max_tokens)
+        if _thinking:
+            _mt = max(_mt or 0, THINKING_TOKEN_FLOOR) or THINKING_TOKEN_FLOOR
+        _to = timeout_for(m)
+        if _mt:
+            _to = max(_to, _mt / ANSWER_TPS_FLOOR + PREFILL_HEADROOM_S)
         base = m.get("base_url") or {"ollama": d.get("ollama_base"), "exo": d.get("exo_base")}.get(be)
         if not base:
             raise ValueError(f"registry model {m['id']}: no base url (set base_url, or ollama_base/exo_base)")
@@ -94,8 +123,8 @@ def load_registry(path: str | Path, default_num_ctx: Optional[int] = None,
             id=m["id"], backend=be, base_url=base, model=m.get("model", m["id"]),
             family=m.get("family") or m["lineage"], lineage=m["lineage"],
             price_per_mtok_in=float(m.get("price_in", 0) or 0), price_per_mtok_out=float(m.get("price_out", 0) or 0),
-            num_ctx=m.get("num_ctx", default_num_ctx), max_tokens=m.get("max_tokens", default_max_tokens),
-            api_key_env=m.get("api_key_env"), timeout_s=timeout_for(m),
+            num_ctx=m.get("num_ctx", default_num_ctx), max_tokens=_mt,
+            api_key_env=m.get("api_key_env"), timeout_s=_to,
             options=m.get("options") or {}, system_role=m.get("system_role", True),
             tier=str(m.get("tier", "")), thinking=bool(m.get("thinking", False)), think=m.get("think"),
             needs_instance=bool(m.get("needs_instance", False)),

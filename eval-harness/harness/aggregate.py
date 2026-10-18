@@ -24,6 +24,7 @@ SCALAR_COLS = ["n_rows", "n_ok", "n_call_errors", "n_invalid_truncated", "n_skip
                "mean_cold_prefill_s", "total_block_time_s", "total_cost_uncached_usd",
                "n_brier_excluded_null_conf", "n_recovered_from_extra_key", "contract_violation_counts", "trap_unscored", "syco_unscored", "clean_false_positives_per_doc",
                "trap_credit_basis_counts", "n_trap_audited", "n_trap_unjudged", "n_output_capped", "n_degenerate",
+               "n_cap_retried", "n_capped_backfilled", "mean_thinking_chars", "mean_thinking_chars_all",
                "n_introduced_error", "n_introduced_error_unjudged",
                "mean_prompt_tokens", "mean_completion_tokens", "mean_total_tokens", "mean_latency_s",
                "median_latency_s", "total_cost_usd", "cost_per_item_usd", "kit_chars", "kit_tokens_est",
@@ -160,16 +161,17 @@ def write_md(table: List[Dict[str, Any]], path: Path, meta: Dict[str, Any]) -> N
                                      f"{_f(r['brier'])} (n={r['brier_n']})", _f(r["composite"]),
                                      _f(r["composite_delta_vs_vanilla"])]) + " |")
     L += ["", "## Cost, tokens, latency per model x arm", "",
-          "| model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | invalid trunc | capped | degenerate | ctx-overflow-risk rows |",
-          "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+          "| model | arm | kit chars | kit tok est | kit tok measured | mean prompt tok | mean completion tok | mean think chars | mean latency s | median latency s | $ / item | $ total | call errors | parse fail | invalid trunc | capped | cap retries | degenerate | ctx-overflow-risk rows |",
+          "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in table:
         L.append("| " + " | ".join([r["model_id"], r["arm_id"], _f(r["kit_chars"]), _f(r["kit_tokens_est"]),
                                      _f(r["kit_tokens_measured"], 0), _f(r["mean_prompt_tokens"], 0),
-                                     _f(r["mean_completion_tokens"], 0), _f(r["mean_latency_s"], 2),
+                                     _f(r["mean_completion_tokens"], 0), _f(r["mean_thinking_chars"], 0),
+                                     _f(r["mean_latency_s"], 2),
                                      _f(r["median_latency_s"], 2), _f(r["cost_per_item_usd"], 5),
                                      _f(r["total_cost_usd"], 4), _f(r["n_call_errors"]),
                                      _f(r["parse_fail_rate"], 2), _f(r["n_invalid_truncated"]),
-                                     _f(r["n_output_capped"]), _f(r["n_degenerate"]),
+                                     _f(r["n_output_capped"]), _f(r["n_cap_retried"]), _f(r["n_degenerate"]),
                                      _f(r["ctx_overflow_risk_rows"])]) + " |")
     L += ["", "## Validity, prefill and caching per model x arm", "",
           "Rows with status INVALID_TRUNCATED (prompt_eval_count >5% short of expected), call errors and "

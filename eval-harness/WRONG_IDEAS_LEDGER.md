@@ -199,3 +199,33 @@ Format: date (UTC) · what was wrong · how it was found · what replaced it · 
     normalization) reported as n_degenerate and NEVER changing correctness. In aggregate, invalid-trunc / capped
     / degenerate sit in one row of the cost/latency table (no silent exclusions); capped rows' wall time counts
     in total block time and their tokens in total spend, but they are excluded from per-item means. · fixed.
+35. 2026-10-18 · THINKING-BUDGET BUG, lead-measured, Stage 1 stopped for it. gemma4:12b (registry said
+    thinking:false - his error) spent its ENTIRE 4096-token cap on the thinking channel and never emitted an
+    answer: FK-001/002/003 all ctok=4096, 133-136 s each, 11-13.6k chars of thinking; FK-004/005 fine at
+    ~300 ctok. 3 of 5 items lost. Ollama counts thinking INSIDE eval_count, so one cap is shared between
+    reasoning and answer and a reasoning model can starve its own answer. He also checked and REFUTED his own
+    first theory that num_ctx=100000 was the cause (8192 -> 113.1 s then 15.6 s; 100000 -> 3.9 s then 13.7 s):
+    context size is not the driver, so the num_ctx driver logic is untouched. Fixed: per-model max_tokens with a
+    THINKING FLOOR (16384 default, configurable), the cap actually sent recorded on every row, timeout floored
+    at max_tokens/25 tok/s + 120 s prefill headroom so a long legitimate reasoning run is not killed as an
+    error, thinking_chars/thinking_tokens per row with mean thinking length per (model, arm), and OUTPUT_CAPPED
+    retried once with a doubled bounded cap before the row is accepted as capped. · fixed.
+36. 2026-10-18 · Registry flags are NOT trusted any more. /api/show `capabilities` reports "thinking" for 11 of
+    the lead's 12 Ollama models (all but llama3.2:3b) while his registry flagged only the two deepseek builds.
+    The harness now detects thinking itself: capabilities first, else a non-empty thinking channel in any reply
+    (the only route for exo, which exposes no capabilities), warns loudly when a model thinks but the registry
+    says otherwise, and applies the floor regardless. · fixed.
+37. 2026-10-18 · CONSEQUENCE I am flagging rather than hiding: with a 16384 answer budget, the old num_ctx
+    SKIP test (system + longest item + headroom + FULL completion reserve > max_ctx) would have skipped
+    qwen3:32b (40960) and magistral:24b (40000), whose PROMPTS fit fine - contradicting the lead's measured
+    "the kit fits every model". The skip test now uses PROMPT fit only; the completion reserve still raises the
+    num_ctx target but is clamped at max_ctx instead of skipping the arm. A model whose window cannot hold
+    prompt + full answer budget gets the generation room that is left, and the cap/degenerate guards catch it.
+    The num_ctx DRIVER (100000 default capped at max_ctx) is unchanged, as instructed. · open for the lead's
+    review; it changes which arms run, so he should confirm.
+38. 2026-10-18 · Write-time-only fields re-scored as zero. hit_max_tokens / degenerate_output / OUTPUT_CAPPED
+    were computed only in runner.py, so re-scoring the lead's 318 Stage 1 rows (written by 2ebe7bf) reported
+    capped 0 and degenerate 0 even though full_kit FK-045 and SP-015 both sat at completion_tokens=4096 and
+    FK-045 was a repeated "\n" loop. Added a score-time backfill for rows missing the fields, resolving the cap
+    from max_tokens_sent, else the run_meta provenance row, else config default_max_tokens, and marking every
+    derived row capped_backfilled=true so derived is never mistaken for recorded. · fixed.

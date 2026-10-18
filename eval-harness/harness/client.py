@@ -90,6 +90,8 @@ class ChatResult:
     error: Optional[str] = None
     raw: Optional[Dict[str, Any]] = None
     prompt_eval_duration_ns: Optional[int] = None    # ollama only
+    thinking_tokens: Optional[int] = None            # only when the backend reports it separately
+                                                     # (Ollama counts thinking INSIDE eval_count)
     cache_creation_input_tokens: Optional[int] = None
     cache_read_input_tokens: Optional[int] = None
 
@@ -175,6 +177,7 @@ def _chat_openai(spec: ModelSpec, messages: List[Message], temperature: float) -
         finish_reason=choice.get("finish_reason"),
         raw=body,
         cache_read_input_tokens=(usage.get("prompt_tokens_details") or {}).get("cached_tokens"),
+        thinking_tokens=(usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
     )
 
 

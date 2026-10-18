@@ -438,7 +438,10 @@ class TestRegistryCtxAndTimeouts(unittest.TestCase):
         self.assertEqual(raw_over[2], "context_exceeds_model_max")
         self.assertEqual(size("big", van), 100000)
         self.assertEqual(size("big", full), 65536)
-        self.assertEqual(models["qwen3:32b"].timeout_s, 600.0)
+        # qwen3:32b is thinking -> max_tokens floored to 16384, timeout floored to clear it
+        self.assertEqual(models["qwen3:32b"].max_tokens, 16384)
+        self.assertAlmostEqual(models["qwen3:32b"].timeout_s, 16384 / 25 + 120)
+        self.assertIsNone(models["magistral:24b"].max_tokens)   # not thinking, no floor
         self.assertEqual(models["big"].timeout_s, 60.0)
         self.assertEqual(timeout_for({"tier": "large", "timeout_s": 60}), 300.0)
         self.assertEqual(timeout_for({"thinking": True, "timeout_s": 100}), 300.0)
@@ -985,3 +988,109 @@ class TestTrapStrictAccuracy(unittest.TestCase):
         from harness.aggregate import _gap_cell
         self.assertEqual(_gap_cell({"abstention_correctness": 1.0, "trap_accuracy_judge_strict": 0.5}), "+0.50")
         self.assertEqual(_gap_cell({"abstention_correctness": None, "trap_accuracy_judge_strict": 0.5}), "n/m")
+
+
+class TestThinkingBudget(unittest.TestCase):
+    def setUp(self):
+        self.td = Path(tempfile.mkdtemp())
+        self.kit = make_kit(self.td / "kit")
+        self.arm = build_arms(self.kit, [{"type": "vanilla"}])[0]
+        self.item = {"id": "FK-001", "category": "factual_keyed", "prompt": "What is 2+2?",
+                     "answer_key": "4", "accept_patterns": [], "forbidden_patterns": [], "planted_errors": [],
+                     "answer_numeric": 4, "tolerance": 0, "requires_context": False}
+
+    def test_thinking_from_show(self):
+        from harness.tokens import thinking_from_show
+        self.assertTrue(thinking_from_show({"capabilities": ["completion", "thinking"]}))
+        self.assertFalse(thinking_from_show({"capabilities": ["completion"]}))
+        self.assertFalse(thinking_from_show({}))
+
+    def test_effective_cap_and_timeout(self):
+        from harness.config import effective_cap_and_timeout, THINKING_TOKEN_FLOOR
+        sp = ModelSpec(id="a", backend="ollama", base_url="x", model="m", family="f",
+                       max_tokens=4096, timeout_s=300.0)
+        cap, to = effective_cap_and_timeout(sp, True, 4096)
+        self.assertEqual(cap, THINKING_TOKEN_FLOOR)
+        self.assertAlmostEqual(to, THINKING_TOKEN_FLOOR / 25 + 120)
+        self.assertEqual(effective_cap_and_timeout(sp, False, 4096), (4096, 300.0))
+
+    def _chat(self, cap_below, big_content, big_ctok=20, think="reasoning here"):
+        from harness.client import ChatResult
+
+        def fn(spec, messages):
+            if (spec.max_tokens or 0) <= cap_below:
+                return ChatResult(content="\\n" * 500, prompt_tokens=20000, completion_tokens=spec.max_tokens,
+                                  latency_s=1.0, finish_reason="length", thinking=think,
+                                  prompt_eval_duration_ns=int(5e7))
+            return ChatResult(content=big_content, prompt_tokens=20000, completion_tokens=big_ctok,
+                              latency_s=1.0, finish_reason="stop", thinking=think,
+                              prompt_eval_duration_ns=int(5e7))
+        return fn
+
+    def _run(self, spec, fn, cap_retry_max=0):
+        return runner.run_one(spec, self.arm, self.item, 0, fn, 0.0, 0, 4096, 4.0,
+                              None, True, 0.05, True, cap_retry_max=cap_retry_max)
+
+    def test_cap_retry_recovers(self):
+        spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=100)
+        good = '{"answer":"4","abstain":false,"confidence":1,"errors_found":[],"notes":""}'
+        r = self._run(spec, self._chat(100, good), cap_retry_max=1000)
+        self.assertEqual(r["status"], "ok")                 # the retry at 2x cap succeeded
+        self.assertTrue(r["retried_for_cap"])
+        self.assertEqual(r["cap_retry"]["cap_retry"], 200)
+        self.assertEqual(r["max_tokens_sent"], 200)
+
+    def test_cap_retry_still_capped(self):
+        spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=100)
+        r = self._run(spec, self._chat(10 ** 9, "x"), cap_retry_max=1000)   # caps at any cap
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertTrue(r["retried_for_cap"])
+        self.assertTrue(r["cap_retry"]["hit_max_retry"])
+
+    def test_no_retry_when_disabled(self):
+        spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=100)
+        r = self._run(spec, self._chat(100, "x"), cap_retry_max=0)
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertFalse(r["retried_for_cap"])
+
+    def test_thinking_chars_recorded(self):
+        spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=5000)
+        good = '{"answer":"4","abstain":false,"confidence":1,"errors_found":[],"notes":""}'
+        r = self._run(spec, self._chat(100, good, think="abc" * 10))
+        self.assertEqual(r["thinking_chars"], 30)
+
+
+class TestCappedBackfill(unittest.TestCase):
+    def test_legacy_degenerate_cap_is_backfilled(self):
+        from harness.score import backfill_capped
+        legacy = {"status": "ok", "completion_tokens": 4096, "turns": [{"content": "\\n" * 500}]}
+        r = backfill_capped(dict(legacy), 4096)
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertTrue(r["hit_max_tokens"])
+        self.assertTrue(r["degenerate_output"])
+        self.assertTrue(r["capped_backfilled"])
+
+    def test_finish_reason_length_backfills(self):
+        from harness.score import backfill_capped
+        r = backfill_capped({"status": "ok", "finish_reason": "length", "completion_tokens": 10,
+                             "turns": [{"content": "short answer"}]}, 4096)
+        self.assertEqual(r["status"], "OUTPUT_CAPPED")
+        self.assertFalse(r["degenerate_output"])
+
+    def test_recorded_row_is_not_touched(self):
+        from harness.score import backfill_capped
+        rec = {"status": "ok", "hit_max_tokens": False, "completion_tokens": 4096, "turns": []}
+        out = backfill_capped(dict(rec), 4096)
+        self.assertNotIn("capped_backfilled", out)
+        self.assertEqual(out["status"], "ok")
+
+    def test_default_max_tokens_from_run_meta(self):
+        from harness.score import default_max_tokens_for
+        td = Path(tempfile.mkdtemp())
+        f = td / "results.jsonl"
+        f.write_text(json.dumps({"status": "run_meta", "default_max_tokens": 4096}) + "\n"
+                     + json.dumps({"status": "ok", "item_id": "x"}) + "\n")
+
+        class _Cfg:
+            raw = {}
+        self.assertEqual(default_max_tokens_for(f, _Cfg()), 4096)

@@ -269,3 +269,34 @@ normalization) and is reported as `n_degenerate` without ever changing correctne
 invalid-truncated / capped / degenerate counts sit together so there are no silent exclusions; capped rows' wall
 time is included in total block time and their tokens in total spend (real compute), but they are excluded from
 per-item latency and token means.
+
+## Thinking budget (why max_tokens is not 4096)
+
+Ollama counts thinking tokens INSIDE `eval_count`, so a reasoning model shares one cap between its reasoning
+and its answer and can starve the answer entirely (lead-measured: gemma4:12b spent all 4096 tokens thinking and
+answered nothing on 3 of 5 items, ~135 s each).
+
+- `max_tokens` is per-model from the registry, with a THINKING FLOOR (`thinking_max_tokens`, default 16384)
+  applied to any model detected as a reasoning model. The cap actually sent is recorded on every row as
+  `max_tokens_sent`.
+- Thinking is DETECTED, not trusted: Ollama `/api/show` `capabilities` containing "thinking", else a non-empty
+  thinking channel in any reply (the only route for exo, which exposes no capabilities). A model that thinks
+  while the registry says `thinking:false` logs a warning and gets the floor anyway.
+- Timeouts clear the budget: `max_tokens / 25 tok/s + 120 s` prefill headroom, so a long legitimate reasoning
+  run is not killed as a call error.
+- `thinking_chars` / `thinking_tokens` are recorded per row and reported as mean thinking length per
+  (model, arm) - the kit may change how much a model thinks, which is a real cost finding.
+- An OUTPUT_CAPPED row is retried ONCE with a doubled, bounded cap (`cap_retry_max`, default 2x the floor)
+  before being accepted as capped; both attempts are recorded in `cap_retry` and counted as `n_cap_retried`.
+- `think: false` is honoured from the registry for a thinking-off ablation. Defaults are unchanged.
+
+Context sizing is deliberately NOT driven by any of this: the lead measured that num_ctx is not the cause
+(8192 -> 113.1 s then 15.6 s; 100000 -> 3.9 s then 13.7 s). See ledger 37 for the one sizing consequence.
+
+## Re-scoring older runs
+
+`hit_max_tokens` / `degenerate_output` are recorded by the runner, but rows written before those fields existed
+are backfilled at score time: `degenerate_output` from the final turn's content, `hit_max_tokens` from
+`finish_reason == "length"` or `completion_tokens >=` the cap in effect (from `max_tokens_sent`, else the
+`run_meta` provenance row, else config `default_max_tokens`). A backfilled capped row's status becomes
+OUTPUT_CAPPED and the row is marked `capped_backfilled=true`, so derived is never mistaken for recorded.
