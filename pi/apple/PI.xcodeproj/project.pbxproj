@@ -1,0 +1,694 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07BFEE92B908987B8D581F41 /* PIWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9A4B44DEF723BCD1332B12 /* PIWatchApp.swift */; };
+		43420D6A344437910F86224A /* CasualViewAccessibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBD6D60F64E7DC495BA85A86 /* CasualViewAccessibilityTests.swift */; };
+		8C85616B2B966DFA381EA686 /* PIUI in Frameworks */ = {isa = PBXBuildFile; productRef = 47D12EB30B7AA814D5C16824 /* PIUI */; };
+		C4B08A58F20057DBAB433658 /* PIUI in Frameworks */ = {isa = PBXBuildFile; productRef = 66204C344CF8B03081DBDAEB /* PIUI */; };
+		C8FB5E3B021C47206F6687BC /* PIKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4ADA5E6F9949F4C62912927C /* PIKit */; };
+		E1548D59697D967831C53A42 /* PIUI in Frameworks */ = {isa = PBXBuildFile; productRef = E966B768AC351E4B65675A0D /* PIUI */; };
+		E858E2E4B5718EB497E59370 /* PIKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0C588A551BA20E254E79A71A /* PIKit */; };
+		EA73E27684A8401F29C865AF /* PIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0C0A1814FDA18536511256 /* PIApp.swift */; };
+		F35DB6B28475B741A3A4B853 /* PIVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9895A76141A67F9BC4B0E6 /* PIVisionApp.swift */; };
+		F6E0EDD2E8BF2E1543DE2E3E /* PIKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5F0D40BA14CADEDD0E553C43 /* PIKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		396EA39B5A11EB96781F87A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF8F5F05C2C1E0104D886B83 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7AC2D8419B90570C1AA6A9ED;
+			remoteInfo = PI;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		232D7365EBB326BFB0995285 /* PIWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PIWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		672284F875AC5E95BD0AC9A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7731EE5A89CBF503B30E0F23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7C0C0A1814FDA18536511256 /* PIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PIApp.swift; sourceTree = "<group>"; };
+		984AA1C3F52A790BB2C8CDA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9908DC56E28E566B271FA64E /* PIVision.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PIVision.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE6E0567254AD45BF52F5992 /* PI.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE9895A76141A67F9BC4B0E6 /* PIVisionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PIVisionApp.swift; sourceTree = "<group>"; };
+		B004974918168F747DFBBB08 /* PIUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBD6D60F64E7DC495BA85A86 /* CasualViewAccessibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CasualViewAccessibilityTests.swift; sourceTree = "<group>"; };
+		DABD0F345AEE514BD0592564 /* PIKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PIKit; path = PIKit; sourceTree = SOURCE_ROOT; };
+		EE9A4B44DEF723BCD1332B12 /* PIWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PIWatchApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		483626E01BDEDDF860F66FCE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4B08A58F20057DBAB433658 /* PIUI in Frameworks */,
+				E858E2E4B5718EB497E59370 /* PIKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB2E66DBFC4D41F84445ACAB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C85616B2B966DFA381EA686 /* PIUI in Frameworks */,
+				F6E0EDD2E8BF2E1543DE2E3E /* PIKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE5CC87ADD9ECA3C143077F6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1548D59697D967831C53A42 /* PIUI in Frameworks */,
+				C8FB5E3B021C47206F6687BC /* PIKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		22F81EF9C05AD67BB2B38997 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				CBD6D60F64E7DC495BA85A86 /* CasualViewAccessibilityTests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		296B2F41EE57D9DC8E710CD6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AE6E0567254AD45BF52F5992 /* PI.app */,
+				B004974918168F747DFBBB08 /* PIUITests.xctest */,
+				9908DC56E28E566B271FA64E /* PIVision.app */,
+				232D7365EBB326BFB0995285 /* PIWatch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3945F5E1F6C83F529F3F309A /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				DABD0F345AEE514BD0592564 /* PIKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		3C56F84E6217C8D986CF1C3C /* visionOS */ = {
+			isa = PBXGroup;
+			children = (
+				984AA1C3F52A790BB2C8CDA5 /* Info.plist */,
+				AE9895A76141A67F9BC4B0E6 /* PIVisionApp.swift */,
+			);
+			path = visionOS;
+			sourceTree = "<group>";
+		};
+		448364C83041A50287645E76 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				672284F875AC5E95BD0AC9A7 /* Info.plist */,
+				7C0C0A1814FDA18536511256 /* PIApp.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		4783B0E3C6D7414CD4F00C34 /* Apps */ = {
+			isa = PBXGroup;
+			children = (
+				448364C83041A50287645E76 /* iOS */,
+				22F81EF9C05AD67BB2B38997 /* UITests */,
+				3C56F84E6217C8D986CF1C3C /* visionOS */,
+				8EAC7DAB47ACA5BE7FA8A7E7 /* watchOS */,
+			);
+			path = Apps;
+			sourceTree = "<group>";
+		};
+		8EAC7DAB47ACA5BE7FA8A7E7 /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				7731EE5A89CBF503B30E0F23 /* Info.plist */,
+				EE9A4B44DEF723BCD1332B12 /* PIWatchApp.swift */,
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
+		9F6A52987E155D103F7D8083 = {
+			isa = PBXGroup;
+			children = (
+				4783B0E3C6D7414CD4F00C34 /* Apps */,
+				3945F5E1F6C83F529F3F309A /* Packages */,
+				296B2F41EE57D9DC8E710CD6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7AC2D8419B90570C1AA6A9ED /* PI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F685D7D75D4B86BAC66EE95F /* Build configuration list for PBXNativeTarget "PI" */;
+			buildPhases = (
+				7F368CEEEE0AE703D3B98E9F /* Sources */,
+				BB2E66DBFC4D41F84445ACAB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PI;
+			packageProductDependencies = (
+				47D12EB30B7AA814D5C16824 /* PIUI */,
+				5F0D40BA14CADEDD0E553C43 /* PIKit */,
+			);
+			productName = PI;
+			productReference = AE6E0567254AD45BF52F5992 /* PI.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C1AB599C192007F539F2690B /* PIVision */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 33F583E252801E6AF3BB710B /* Build configuration list for PBXNativeTarget "PIVision" */;
+			buildPhases = (
+				F3A8C0864D890BB34D18434F /* Sources */,
+				483626E01BDEDDF860F66FCE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PIVision;
+			packageProductDependencies = (
+				66204C344CF8B03081DBDAEB /* PIUI */,
+				0C588A551BA20E254E79A71A /* PIKit */,
+			);
+			productName = PIVision;
+			productReference = 9908DC56E28E566B271FA64E /* PIVision.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CCCB1459AA89D3B91027DD70 /* PIUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A45EF7C39A82937EBAEFF30D /* Build configuration list for PBXNativeTarget "PIUITests" */;
+			buildPhases = (
+				83A621DA8B8A1A1169D372E2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3642BF827E9208BF36FEC0B9 /* PBXTargetDependency */,
+			);
+			name = PIUITests;
+			packageProductDependencies = (
+			);
+			productName = PIUITests;
+			productReference = B004974918168F747DFBBB08 /* PIUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		F0CAA47B024EE36054ED1F36 /* PIWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE44ECE338BB0A6AAB2FB385 /* Build configuration list for PBXNativeTarget "PIWatch" */;
+			buildPhases = (
+				5AF0AE15E773AA557567532D /* Sources */,
+				BE5CC87ADD9ECA3C143077F6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PIWatch;
+			packageProductDependencies = (
+				E966B768AC351E4B65675A0D /* PIUI */,
+				4ADA5E6F9949F4C62912927C /* PIKit */,
+			);
+			productName = PIWatch;
+			productReference = 232D7365EBB326BFB0995285 /* PIWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BF8F5F05C2C1E0104D886B83 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7AC2D8419B90570C1AA6A9ED = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					C1AB599C192007F539F2690B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					CCCB1459AA89D3B91027DD70 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = 7AC2D8419B90570C1AA6A9ED;
+					};
+					F0CAA47B024EE36054ED1F36 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A96D7BFD283CCD32424C7D5E /* Build configuration list for PBXProject "PI" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 9F6A52987E155D103F7D8083;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FEDC6EC7756EFD62868866B9 /* XCLocalSwiftPackageReference "PIKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 296B2F41EE57D9DC8E710CD6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7AC2D8419B90570C1AA6A9ED /* PI */,
+				F0CAA47B024EE36054ED1F36 /* PIWatch */,
+				C1AB599C192007F539F2690B /* PIVision */,
+				CCCB1459AA89D3B91027DD70 /* PIUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5AF0AE15E773AA557567532D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07BFEE92B908987B8D581F41 /* PIWatchApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F368CEEEE0AE703D3B98E9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA73E27684A8401F29C865AF /* PIApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		83A621DA8B8A1A1169D372E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43420D6A344437910F86224A /* CasualViewAccessibilityTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3A8C0864D890BB34D18434F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F35DB6B28475B741A3A4B853 /* PIVisionApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3642BF827E9208BF36FEC0B9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7AC2D8419B90570C1AA6A9ED /* PI */;
+			targetProxy = 396EA39B5A11EB96781F87A3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1AD4F21459E6EB58A18D0A4E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = Apps/watchOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PI;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "PI connects to your PI gateway on your private network (Tailscale).";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PI listens when you tap Talk or a microphone button, to turn your speech into text.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PI turns your speech into text, on this device when possible, so you can talk to PI.";
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.watch;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+		30E59018B147BE79006F3975 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Debug;
+		};
+		38163CD33F6D4AF3B3871EE3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = Apps/watchOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PI;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "PI connects to your PI gateway on your private network (Tailscale).";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PI listens when you tap Talk or a microphone button, to turn your speech into text.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PI turns your speech into text, on this device when possible, so you can talk to PI.";
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.watch;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		53F21C4E5386DED7466C312E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PI;
+			};
+			name = Release;
+		};
+		56EB0E889F3D7E64109E8908 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Release;
+		};
+		7067335E295A8C10B343C40C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Apps/iOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PI;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "PI connects to your PI gateway on your private network (Tailscale).";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PI listens when you tap Talk or a microphone button, to turn your speech into text.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PI turns your speech into text, on this device when possible, so you can talk to PI.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		79485BBFAB94F003457AEC11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Apps/iOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PI;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "PI connects to your PI gateway on your private network (Tailscale).";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PI listens when you tap Talk or a microphone button, to turn your speech into text.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PI turns your speech into text, on this device when possible, so you can talk to PI.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7FCFC4CE2CFD0F7C5F6FCF04 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = Apps/visionOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PI;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "PI connects to your PI gateway on your private network (Tailscale).";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PI listens when you tap Talk or a microphone button, to turn your speech into text.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PI turns your speech into text, on this device when possible, so you can talk to PI.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.vision;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Release;
+		};
+		A73D72F314423404BF2B78CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = Apps/visionOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PI;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "PI connects to your PI gateway on your private network (Tailscale).";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "PI listens when you tap Talk or a microphone button, to turn your speech into text.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "PI turns your speech into text, on this device when possible, so you can talk to PI.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.vision;
+				SDKROOT = xros;
+				TARGETED_DEVICE_FAMILY = 7;
+			};
+			name = Debug;
+		};
+		FF9FCBFD3DB767E60F47DC6F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.polstar.pi.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PI;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		33F583E252801E6AF3BB710B /* Build configuration list for PBXNativeTarget "PIVision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A73D72F314423404BF2B78CB /* Debug */,
+				7FCFC4CE2CFD0F7C5F6FCF04 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A45EF7C39A82937EBAEFF30D /* Build configuration list for PBXNativeTarget "PIUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF9FCBFD3DB767E60F47DC6F /* Debug */,
+				53F21C4E5386DED7466C312E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A96D7BFD283CCD32424C7D5E /* Build configuration list for PBXProject "PI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30E59018B147BE79006F3975 /* Debug */,
+				56EB0E889F3D7E64109E8908 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F685D7D75D4B86BAC66EE95F /* Build configuration list for PBXNativeTarget "PI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79485BBFAB94F003457AEC11 /* Debug */,
+				7067335E295A8C10B343C40C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FE44ECE338BB0A6AAB2FB385 /* Build configuration list for PBXNativeTarget "PIWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38163CD33F6D4AF3B3871EE3 /* Debug */,
+				1AD4F21459E6EB58A18D0A4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		FEDC6EC7756EFD62868866B9 /* XCLocalSwiftPackageReference "PIKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = PIKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0C588A551BA20E254E79A71A /* PIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PIKit;
+		};
+		47D12EB30B7AA814D5C16824 /* PIUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PIUI;
+		};
+		4ADA5E6F9949F4C62912927C /* PIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PIKit;
+		};
+		5F0D40BA14CADEDD0E553C43 /* PIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PIKit;
+		};
+		66204C344CF8B03081DBDAEB /* PIUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PIUI;
+		};
+		E966B768AC351E4B65675A0D /* PIUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PIUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = BF8F5F05C2C1E0104D886B83 /* Project object */;
+}
