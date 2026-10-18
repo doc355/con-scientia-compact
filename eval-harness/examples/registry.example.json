@@ -1,0 +1,153 @@
+{
+  "_comment": "Reconstruction for format only. The authoritative registry is the lead's /home/ubuntu/council/models.json (13 models); use that file directly. max_ctx values below are the lead's MEASURED ones; lineage/tier for ids not given verbatim are placeholders; prices 0 = local.",
+  "ollama_base": "http://christophers-macbook-pro-3:11434",
+  "exo_base": "http://project-iris-1:52415",
+  "models": [
+    {
+      "id": "llama3.2:3b",
+      "backend": "ollama",
+      "lineage": "meta",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "small",
+      "max_ctx": 131072,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
+      "timeout_s": 120
+    },
+    {
+      "id": "qwen3:32b",
+      "backend": "ollama",
+      "lineage": "qwen",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "thinking": true,
+      "max_ctx": 40960,
+      "num_ctx_default": 40960,
+      "num_ctx_full_kit": 40960
+    },
+    {
+      "id": "magistral:24b",
+      "backend": "ollama",
+      "lineage": "mistral",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "medium",
+      "max_ctx": 40000,
+      "num_ctx_default": 40000,
+      "num_ctx_full_kit": 40000
+    },
+    {
+      "id": "gpt-oss:20b",
+      "backend": "ollama",
+      "lineage": "openai",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "thinking": true,
+      "max_ctx": 131072,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
+      "timeout_s": 300
+    },
+    {
+      "id": "Qwen3.5-122B-A10B-4bit",
+      "backend": "exo",
+      "lineage": "qwen",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "needs_instance": true,
+      "thinking": true,
+      "max_ctx": 100000,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
+      "weights_gb": 69.6,
+      "kv_bytes_per_token": 48000,
+      "timeout_s": 600
+    },
+    {
+      "id": "GLM-4.5-Air-8bit",
+      "backend": "exo",
+      "lineage": "zhipu",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "needs_instance": true,
+      "max_ctx": 100000,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000,
+      "weights_gb": 122.4,
+      "kv_bytes_per_token": 48000,
+      "timeout_s": 600
+    },
+    {
+      "id": "gpt-oss:120b",
+      "backend": "ollama",
+      "lineage": "openai",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "thinking": true,
+      "max_ctx": 131072,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000
+    },
+    {
+      "id": "qwen3.5:122b",
+      "backend": "ollama",
+      "lineage": "qwen",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "thinking": true,
+      "max_ctx": 262144,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000
+    },
+    {
+      "id": "deepseek-r1:70b",
+      "backend": "ollama",
+      "lineage": "deepseek",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "large",
+      "thinking": true,
+      "max_ctx": 131072,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000
+    },
+    {
+      "id": "gemma4:31b",
+      "backend": "ollama",
+      "lineage": "google",
+      "price_in": 0,
+      "price_out": 0,
+      "tier": "medium",
+      "max_ctx": 131072,
+      "num_ctx_default": 100000,
+      "num_ctx_full_kit": 100000
+    },
+    {
+      "id": "PAID_ANTHROPIC_MODEL",
+      "backend": "anthropic",
+      "base_url": "https://api.anthropic.com",
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "lineage": "anthropic",
+      "price_in": 0,
+      "price_out": 0,
+      "price_cache_write": 0,
+      "price_cache_read": 0,
+      "tier": "paid",
+      "prompt_cache": true,
+      "timeout_s": 300
+    }
+  ],
+  "judge_pool": [
+    "gpt-oss:120b",
+    "qwen3.5:122b",
+    "deepseek-r1:70b",
+    "gemma4:31b"
+  ]
+}

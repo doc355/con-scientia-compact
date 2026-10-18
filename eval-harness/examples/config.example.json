@@ -1,0 +1,48 @@
+{
+  "kit_root": "~/repos/con-scientia-compact",
+  "registry": "registry.example.json",
+  "temperature": 0.0,
+  "concurrency": 1,
+  "retries": 2,
+  "strip_frontmatter": false,
+  "confab_confidence_threshold": 0.5,
+  "judge_match_lineage": true,
+  "n_judges": 1,
+  "trunc_tolerance": 0.05,
+  "seeded_match_threshold": 0.5,
+  "default_max_tokens": 4096,
+  "arms": [
+    {
+      "type": "vanilla"
+    },
+    {
+      "type": "full_kit"
+    },
+    {
+      "type": "master_only"
+    },
+    {
+      "type": "single_skill",
+      "skills": "all"
+    },
+    {
+      "type": "lean_kit",
+      "name": "honesty-core",
+      "skills": [
+        "sophistry-refusal",
+        "instrument-naming",
+        "falsifiability-grammar",
+        "recovery-vs-discovery-audit"
+      ],
+      "include_master": false
+    }
+  ],
+  "default_num_ctx": 100000,
+  "exo_scheduler": true,
+  "exo_scheduler_opts": {
+    "margin": 0.15,
+    "kill_factor": 2.0,
+    "ready_timeout_s": 1200,
+    "require_sizing": true
+  }
+}
