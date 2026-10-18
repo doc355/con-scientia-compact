@@ -46,13 +46,13 @@ public struct CasualView: View {
             } header: { SectionHeader("Recent jobs") }
             .headerProminence(.increased)
             Section {
-                NavigationLink { ChatView() } label: { Label("Chat", systemImage: "bubble.left.and.bubble.right").largeHitTarget() }
+                NavigationLink { ChatView() } label: { Label("Chat", systemImage: "bubble.left.and.bubble.right").accessibilityLabel("Chat").largeHitTarget() }
                     .accessibilityHint("Opens the full conversation.")
                     .accessibilityIdentifier("nav.chat")
-                NavigationLink { JobsView() } label: { Label("Jobs", systemImage: "list.bullet.rectangle").largeHitTarget() }
+                NavigationLink { JobsView() } label: { Label("Jobs", systemImage: "list.bullet.rectangle").accessibilityLabel("Jobs").largeHitTarget() }
                     .accessibilityHint("Opens all jobs and lets you add one.")
                     .accessibilityIdentifier("nav.jobs")
-                NavigationLink { SettingsView() } label: { Label("Settings", systemImage: "gearshape").largeHitTarget() }
+                NavigationLink { SettingsView() } label: { Label("Settings", systemImage: "gearshape").accessibilityLabel("Settings").largeHitTarget() }
                     .accessibilityHint("Gateway address, token and model.")
                     .accessibilityIdentifier("nav.settings")
             } header: { SectionHeader("More") }
