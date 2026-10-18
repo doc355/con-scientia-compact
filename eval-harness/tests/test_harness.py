@@ -1072,6 +1072,8 @@ class TestThinkingBudget(unittest.TestCase):
         self.assertTrue(r["retried_for_cap"])
         self.assertEqual(r["cap_retry"]["cap_retry"], 200)
         self.assertEqual(r["max_tokens_sent"], 200)
+        self.assertEqual(r["cap_retry"]["thinking_tail_first"], "reasoning here")   # first attempt kept
+        self.assertFalse(r["cap_retry"]["degenerate_thinking_first"])
 
     def test_cap_retry_still_capped(self):
         spec = ModelSpec(id="o", backend="ollama", base_url="x", model="m", family="f", max_tokens=100)

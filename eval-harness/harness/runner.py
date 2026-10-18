@@ -296,7 +296,12 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
         h2 = _cap_hit(t2, c2, retry_cap, e2)
         cap_retry = {"cap_first": cap, "cap_retry": retry_cap, "hit_max_first": True, "hit_max_retry": h2,
                      "completion_tokens_first": ctoks, "completion_tokens_retry": c2,
-                     "thinking_chars_first": thinking_chars(turns)}
+                     "thinking_chars_first": thinking_chars(turns),
+                     # kept so a capped first attempt stays auditable after the retry replaces its turns
+                     # (exo FK-024: the retry looped; whether the first already had was unknowable)
+                     "degenerate_thinking_first": any(is_degenerate_thinking(t.get("thinking") or "") for t in turns),
+                     "thinking_tail_first": ((turns[-1].get("thinking") or "")[-2000:] if turns else ""),
+                     "content_tail_first": ((turns[-1].get("content") or "")[-1000:] if turns else "")}
         turns, error, trunc, ctoks, cap, hit_max = t2, e2, tr2, c2, retry_cap, h2
     ptoks = _sum(t.get("prompt_tokens") for t in turns)
     cost = spec.cost_breakdown(ChatResult(
