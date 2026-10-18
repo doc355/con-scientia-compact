@@ -143,6 +143,8 @@ def is_degenerate(text: str) -> bool:
     t = _re.sub(r"\s+", "", text or "")
     if len(t) < 40:
         return False
+    if len(t) > 4000 and is_degenerate(t[-2000:]):   # loop that starts late (llama3.2:3b FK-045 full_kit)
+        return True
     for w in range(1, 5):
         unit = t[:w]
         if unit and t.count(unit) * w >= 0.8 * len(t):
@@ -279,7 +281,9 @@ def run_one(spec: ModelSpec, arm: Arm, item: Dict[str, Any], rep: int, chat_fn: 
     elif hit_max and not trunc and not _can_retry:
         cap_retry_skipped_reason = "retry_disabled_or_not_larger"
     # A looping trace only loops longer with a doubled cap (FK-001 above: 19 min, no answer either time).
-    if _can_retry and any(is_degenerate_thinking(t.get("thinking") or "") for t in turns):
+    if _can_retry and any(is_degenerate_thinking(t.get("thinking") or "")
+                           or (len(t.get("content") or "") >= 4000 and is_degenerate(t.get("content") or ""))
+                           for t in turns):   # a long content loop (FK-045, 12k chars) is futile; a short one may be truncation
         _can_retry, cap_retry_skipped_reason = False, "degenerate_thinking_loop"
     if _can_retry:
         retry_cap = min(cap * 2, cap_retry_max)

@@ -146,3 +146,13 @@ class TestLoopDetectedInTail(unittest.TestCase):
         if not r:
             self.skipTest("FK-017 row not present")
         self.assertTrue(is_degenerate_thinking(r[-1]["turns"][0].get("thinking") or ""))
+
+
+class TestContentLoopInTail(unittest.TestCase):
+    def test_late_escaped_newline_loop_is_flagged(self):
+        from harness.runner import is_degenerate
+        import random
+        random.seed(3)
+        prose = " ".join(f"word{random.randrange(10**6)}" for _ in range(600))
+        self.assertTrue(is_degenerate(prose + "\\\\n" * 3000))
+        self.assertFalse(is_degenerate(prose))
