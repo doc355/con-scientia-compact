@@ -195,7 +195,11 @@ class ExoScheduler:
             self.evict(self.resident["instance_id"])
         st = self.state()
         before_ids, ram = instance_ids_in_state(st), ram_from_state(st)
-        prev = self.http("GET", f"{self.base}/instance/previews?" + urllib.parse.urlencode({"model_id": mid}))
+        pin = list(getattr(spec, "exo_nodes", None) or [])
+        q = [("model_id", mid)]
+        if pin:   # exo only previews its own preferred node unless asked; node_ids is a repeated query param
+            q += [("node_ids", n) for n in (ram.get("per_node_free_gib") or {}) if any(n.endswith(x) for x in pin)]
+        prev = self.http("GET", f"{self.base}/instance/previews?" + urllib.parse.urlencode(q))
         pinned = list(getattr(spec, "exo_nodes", None) or [])
         chosen = pinned_preview(prev, pinned) if pinned else None
         if pinned and chosen is None:

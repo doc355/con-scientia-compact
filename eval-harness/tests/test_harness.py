@@ -616,6 +616,7 @@ class PinnedExo(FakeExo):
         path = url.split(":52415")[1]
         if path.startswith("/instance/previews"):
             self.log.append((method, "/instance/previews"))
+            self.preview_query = path
             two = {"MlxRingInstance": {"instanceId": "p-ab", "shardAssignments": {"nodeToRunner": {"node-a": "r1", "node-b": "r2"}}}}
             one = {"MlxRingInstance": {"instanceId": "p-b", "shardAssignments": {"nodeToRunner": {"node-b": "r3"}}}}
             return {"previews": [
@@ -662,6 +663,8 @@ class TestPinnedPlacement(unittest.TestCase):
         self.assertIn(("POST", "/instance"), fx.log)
         self.assertNotIn(("POST", "/place_instance"), fx.log)
         self.assertEqual(fx.posted["instance"]["MlxRingInstance"]["instanceId"], "p-b")
+        self.assertIn("node_ids=node-b", fx.preview_query)
+        self.assertNotIn("node_ids=node-a", fx.preview_query)
         placed = [e for e in ev if e["event"] == "placed"][0]
         self.assertEqual(placed["nodes"], ["node-b"])
         samples = [e for e in ev if e["event"] == "sample"]
