@@ -46,6 +46,7 @@ class ModelSpec:
     kv_bytes_per_token: Optional[float] = None  # exo scheduler: KV-cache estimate (lead-supplied, may be ASSUMED)
     keep_alive: Optional[str] = None      # ollama: hold model loaded for the block
     max_ctx: Optional[int] = None         # model max context override (else /api/show for ollama)
+    exo_nodes: Optional[List[str]] = None  # exo scheduler: place on EXACTLY these node ids (suffix match)
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "ModelSpec":

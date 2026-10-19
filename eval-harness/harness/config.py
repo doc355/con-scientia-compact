@@ -19,7 +19,7 @@ REGISTRY_MODEL_KEYS = {"id", "backend", "lineage", "price_in", "price_out", "tie
                        "model", "num_ctx", "max_tokens", "think", "options", "timeout_s", "family", "system_role",
                        "api_key_env", "base_url", "price_cache_write", "price_cache_read", "prompt_cache",
                        "max_ctx", "num_ctx_default", "num_ctx_full_kit", "weights_gib", "weights_bytes", "kv_bytes_per_token",
-                       "keep_alive"}
+                       "keep_alive", "exo_nodes"}
 DEFAULT_NUM_CTX = 100000        # Doc's standing order; capped per model at max_ctx
 TIMEOUT_FLOOR_LARGE_S = 300.0   # lead: >=300 s for large/thinking models (gpt-oss:20b measured 13-30 s/item vanilla)
 DEFAULT_TIMEOUT_S = 600.0
@@ -135,7 +135,7 @@ def load_registry(path: str | Path, default_num_ctx: Optional[int] = None,
             weights_gib=(m.get("weights_gib") if m.get("weights_gib") is not None else
                          (m["weights_bytes"] / 1024 ** 3 if m.get("weights_bytes") is not None else None)),
             kv_bytes_per_token=m.get("kv_bytes_per_token"),
-            keep_alive=m.get("keep_alive"),
+            keep_alive=m.get("keep_alive"), exo_nodes=m.get("exo_nodes"),
         )
         if spec.id in models:
             raise ValueError(f"duplicate model id {spec.id}")

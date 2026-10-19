@@ -78,6 +78,56 @@ def ram_from_state(state: Any) -> Dict[str, Any]:
             "measured": bool(free)}
 
 
+
+def _walk_dicts(o: Any):
+    if isinstance(o, dict):
+        yield o
+        for v in o.values():
+            yield from _walk_dicts(v)
+    elif isinstance(o, list):
+        for v in o:
+            yield from _walk_dicts(v)
+
+
+def preview_nodes(pv: Any) -> set:
+    """Node ids a placement uses: memory_delta_by_node keys, else nodeToRunner keys."""
+    nodes = set((pv.get("memory_delta_by_node") or {}) if isinstance(pv, dict) else ())
+    for d in _walk_dicts(pv):
+        if isinstance(d.get("nodeToRunner"), dict):
+            nodes.update(d["nodeToRunner"])
+    return {str(n) for n in nodes}
+
+
+def _matches(nodes, suffixes) -> bool:
+    return bool(nodes) and all(any(n.endswith(x) for x in suffixes) for n in nodes) and \
+        all(any(n.endswith(x) for n in nodes) for x in suffixes)
+
+
+def pinned_preview(previews: Any, suffixes) -> Optional[Dict[str, Any]]:
+    """First valid MlxRing preview whose node set is exactly `suffixes` (so a pinned model can't spill
+    onto nodes other work is using)."""
+    plist = previews.get("previews") if isinstance(previews, dict) else previews
+    for pv in plist if isinstance(plist, list) else []:
+        if not isinstance(pv, dict) or pv.get("instance") is None or pv.get("error"):
+            continue
+        if pv.get("instance_meta") not in (None, "MlxRing"):
+            continue
+        if _matches(preview_nodes(pv), suffixes):
+            return pv
+    return None
+
+
+def instance_nodes(state: Any, instance_id: Optional[str]) -> set:
+    inst = (state.get("instances") or {}).get(instance_id) if isinstance(state, dict) and instance_id else None
+    return preview_nodes({"instance": inst}) if inst else set()
+
+
+def free_on(ram: Dict[str, Any], nodes) -> Optional[float]:
+    per = ram.get("per_node_free_gib") or {}
+    hit = [v for k, v in per.items() if any(k.endswith(n) or n.endswith(k) for n in nodes)]
+    return round(sum(hit), 2) if nodes and hit else None
+
+
 class BlockMonitor:
     def __init__(self, sched: "ExoScheduler", spec, num_ctx: int, free_before_gib: Optional[float]):
         self.sched, self.spec, self.num_ctx = sched, spec, num_ctx
@@ -89,12 +139,14 @@ class BlockMonitor:
 
     def sample(self) -> Dict[str, Any]:
         r = self.sched.free_ram()
-        used = None if (self.free_before is None or r["total_free_gib"] is None) else self.free_before - r["total_free_gib"]
+        nodes = (self.sched.resident or {}).get("nodes")
+        now = free_on(r, nodes) if nodes else r["total_free_gib"]   # only this block's nodes: other exo work
+        used = None if (self.free_before is None or now is None) else self.free_before - now   # elsewhere isn't ours
         if used is not None:
             self.peak_used_gib = used if self.peak_used_gib is None else max(self.peak_used_gib, used)
         ev = {"event": "sample", "model_id": self.spec.id, "used_gib": None if used is None else round(used, 2),
               "peak_used_gib": None if self.peak_used_gib is None else round(self.peak_used_gib, 2),
-              "limit_gib": self.limit_gib, "free_gib": r["total_free_gib"]}
+              "limit_gib": self.limit_gib, "free_gib": now, "nodes": sorted(nodes) if nodes else None}
         if used is not None and self.limit_gib is not None and used > self.limit_gib:
             self.sched._event(**ev, verdict="kv_estimate_invalid")
             raise KVEstimateInvalid(f"{self.spec.id}: observed {used:.1f} GiB > weights {self.spec.weights_gib} GiB "
@@ -144,24 +196,33 @@ class ExoScheduler:
         st = self.state()
         before_ids, ram = instance_ids_in_state(st), ram_from_state(st)
         prev = self.http("GET", f"{self.base}/instance/previews?" + urllib.parse.urlencode({"model_id": mid}))
-        offered = preview_instance_ids(prev)
+        pinned = list(getattr(spec, "exo_nodes", None) or [])
+        chosen = pinned_preview(prev, pinned) if pinned else None
+        if pinned and chosen is None:
+            self._event(event="no_pinned_placement", model_id=mid, exo_nodes=pinned)
+            raise InsufficientMemory(f"{mid}: no valid placement on exactly nodes {pinned}")
+        offered = preview_instance_ids({"previews": [chosen]}) if chosen else preview_instance_ids(prev)
+        free_gib = free_on(ram, pinned) if pinned else ram["total_free_gib"]
         if not offered:   # every preview had instance==null or a non-empty error (or no instanceId)
             self._event(event="no_valid_placement", model_id=mid, previews=prev)
             raise InsufficientMemory(f"{mid}: no valid placement in /instance/previews")
         kv = self.kv_estimate_gib(spec, num_ctx)
         projected = None if spec.weights_gib is None else (spec.weights_gib + (kv or 0)) * (1 + self.margin)
-        if projected is None or kv is None or ram["total_free_gib"] is None:
+        if projected is None or kv is None or free_gib is None:
             msg = (f"{mid}: memory check not computable (weights_gib={spec.weights_gib}, kv_est_gib={kv}, "
-                   f"free_gib={ram['total_free_gib']})")
+                   f"free_gib={free_gib})")
             self._event(event="memory_check_not_computable", model_id=mid, detail=msg)
             if self.require_sizing:
                 raise InsufficientMemory(msg)
-        elif projected > ram["total_free_gib"]:
+        elif projected > free_gib:
             self._event(event="refused_insufficient_ram", model_id=mid, projected_gib=round(projected, 2),
-                        free_gib=ram["total_free_gib"])
-            raise InsufficientMemory(f"{mid}: projected {projected:.1f} GiB > free {ram['total_free_gib']} GiB")
+                        free_gib=free_gib, exo_nodes=pinned or None)
+            raise InsufficientMemory(f"{mid}: projected {projected:.1f} GiB > free {free_gib} GiB")
         t0 = time.perf_counter()
-        resp = self.http("POST", self.base + "/place_instance", {"model_id": mid})
+        if chosen:
+            resp = self.http("POST", self.base + "/instance", {"instance": chosen["instance"]})
+        else:
+            resp = self.http("POST", self.base + "/place_instance", {"model_id": mid})
         iid = _find_instance_id(resp) or (preview_instance_ids(resp) or offered or [None])[0]
         ready = False
         while time.perf_counter() - t0 < self.ready_timeout_s:
@@ -182,16 +243,21 @@ class ExoScheduler:
                 ready = True
                 break
             self.sleep(self.poll_s)
-        after = ram_from_state(self.state())
+        st_after = self.state()
+        after = ram_from_state(st_after)
+        nodes = instance_nodes(st_after, iid)
         load_s = round(time.perf_counter() - t0, 2)
         self._event(event="placed" if ready else "place_timeout", model_id=mid, instance_id=iid, load_s=load_s,
                     free_before_gib=ram["total_free_gib"], free_after_gib=after["total_free_gib"],
-                    per_node_free_after_gib=after["per_node_free_gib"], projected_gib=projected)
+                    per_node_free_after_gib=after["per_node_free_gib"], projected_gib=projected,
+                    nodes=sorted(nodes) or None)
         if not ready:
             if iid:
                 self.evict(iid)
             raise TimeoutError(f"{mid}: not ready after {self.ready_timeout_s}s")
-        self.resident = {"model": mid, "instance_id": iid, "free_before_gib": ram["total_free_gib"], "load_s": load_s}
+        nb = free_on(ram, nodes) if nodes else None
+        self.resident = {"model": mid, "instance_id": iid, "load_s": load_s, "nodes": sorted(nodes) if nb is not None else None,
+                         "free_before_gib": nb if nb is not None else ram["total_free_gib"]}
         return iid
 
     def evict(self, instance_id: str) -> bool:

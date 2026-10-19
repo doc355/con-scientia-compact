@@ -610,6 +610,80 @@ class TestExoScheduler(unittest.TestCase):
         self.assertIsNotNone([e for e in ev if e["event"] == "block_end"][0]["peak_used_gib"])
 
 
+class PinnedExo(FakeExo):
+    """Two nodes; previews offer {a,b} first and {b} second; the real instance reports its nodeToRunner."""
+    def http(self, method, url, payload=None, timeout=60.0):
+        path = url.split(":52415")[1]
+        if path.startswith("/instance/previews"):
+            self.log.append((method, "/instance/previews"))
+            two = {"MlxRingInstance": {"instanceId": "p-ab", "shardAssignments": {"nodeToRunner": {"node-a": "r1", "node-b": "r2"}}}}
+            one = {"MlxRingInstance": {"instanceId": "p-b", "shardAssignments": {"nodeToRunner": {"node-b": "r3"}}}}
+            return {"previews": [
+                {"model_id": "m", "sharding": "Pipeline", "instance_meta": "MlxRing", "instance": two,
+                 "memory_delta_by_node": {"node-a": 1, "node-b": 1}, "error": None},
+                {"model_id": "m", "sharding": "Pipeline", "instance_meta": "MlxJaccl", "instance": one, "error": None},
+                {"model_id": "m", "sharding": "Pipeline", "instance_meta": "MlxRing", "instance": one,
+                 "memory_delta_by_node": {"node-b": 1}, "error": None}]}
+        if path == "/instance" and method == "POST":
+            self.log.append((method, "/instance"))
+            self.posted = payload
+            self.inst["p-b"] = dict(payload["instance"]["MlxRingInstance"], status="RunnerReady")
+            self.b_used = self.w
+            return {"message": "ok", "command_id": "c1"}
+        if method == "DELETE":
+            self.log.append((method, "/instance"))
+            if self.inst.pop(path.rsplit("/", 1)[1], None) is not None:
+                self.b_used = 0.0
+            return None
+        self.log.append((method, path.split("?")[0]))
+        self.n_state += 1
+        if self.extra_after is not None and self.n_state > self.extra_after:
+            self.a_used = getattr(self, "a_used", 0.0) + self.extra_gib     # OTHER work on node a
+            self.extra_gib = 0
+        a = 96.0 - getattr(self, "a_used", 0.0)
+        b = 64.0 - getattr(self, "b_used", 0.0) if hasattr(self, "b_used") else 64.0
+        g = 1024 ** 3
+        return {"nodeMemory": {"node-a": {"ramAvailable": {"inBytes": a * g}},
+                               "node-b": {"ramAvailable": {"inBytes": b * g}}},
+                "instances": dict(self.inst)}
+
+
+class TestPinnedPlacement(unittest.TestCase):
+    def _spec(self, **kw):
+        return ModelSpec(id="m", backend="exo", base_url="http://exo:52415", model="m", family="f", lineage="l",
+                         needs_instance=True, weights_gib=26.0, kv_bytes_per_token=24576, **kw)
+
+    def test_pinned_uses_exact_node_preview_and_post_instance(self):
+        fx = PinnedExo(weights_gib=26.0, extra_after_samples=3, extra_gib=60.0)
+        sch, ev = TestExoScheduler()._sched(fx)
+        with sch.block(self._spec(exo_nodes=["-b"]), 100000) as mon:
+            for _ in range(4):
+                mon.sample()          # 60 GiB of other work appears on node a: must NOT count as ours
+        self.assertIn(("POST", "/instance"), fx.log)
+        self.assertNotIn(("POST", "/place_instance"), fx.log)
+        self.assertEqual(fx.posted["instance"]["MlxRingInstance"]["instanceId"], "p-b")
+        placed = [e for e in ev if e["event"] == "placed"][0]
+        self.assertEqual(placed["nodes"], ["node-b"])
+        samples = [e for e in ev if e["event"] == "sample"]
+        self.assertTrue(all(e["used_gib"] == 26.0 for e in samples))
+        self.assertNotIn("kv_estimate_invalid", [e.get("verdict") for e in ev])
+
+    def test_pinned_refuses_when_no_exact_preview(self):
+        from harness.exo_sched import InsufficientMemory
+        sch, ev = TestExoScheduler()._sched(PinnedExo(weights_gib=26.0))
+        with self.assertRaises(InsufficientMemory):
+            sch.ensure_resident(self._spec(exo_nodes=["-c"]), 100000)
+        self.assertEqual(ev[-1]["event"], "no_pinned_placement")
+
+    def test_pinned_memory_check_uses_pinned_node_only(self):
+        from harness.exo_sched import InsufficientMemory
+        sch, ev = TestExoScheduler()._sched(PinnedExo(weights_gib=70.0))
+        with self.assertRaises(InsufficientMemory):       # 70 GiB fits the cluster (160) but not node b (64)
+            sch.ensure_resident(self._spec(exo_nodes=["-b"]).__class__(**{**self._spec(exo_nodes=["-b"]).__dict__,
+                                                                          "weights_gib": 70.0}), 100000)
+        self.assertEqual(ev[-1]["event"], "refused_insufficient_ram")
+
+
 class TestVerifiedExoShapes(unittest.TestCase):
     PREV = {"previews": [{"model_id": "m", "sharding": "Pipeline", "instance_meta": "MlxRing", "instance": {
         "MlxRingInstance": {"instanceId": "u-1", "shardAssignments": {"modelId": "m", "runnerToShard": {
