@@ -13,7 +13,8 @@ class Fake(BaseHTTPRequestHandler):
         Fake.seen.append((self.path, self.headers["Authorization"], body))
         self._r(200, {"session_id": "devin-x", "url": "https://app.devin.ai/sessions/x"} if self.path == "/v1/sessions" else {})
     def do_GET(self):
-        self._r(200, {"session_id": "devin-x", "status_enum": "working"}) if self.path == "/v1/session/devin-x" else self._r(404, {})
+        ok = self.path in ("/v1/session/devin-x", "/v3/organizations/org-t/sessions/devin-x")
+        self._r(200, {"session_id": "devin-x", "status_enum": "working"}) if ok else self._r(404, {})
 
 
 class T(unittest.TestCase):
@@ -21,8 +22,18 @@ class T(unittest.TestCase):
         self.s = ThreadingHTTPServer(("127.0.0.1", 0), Fake); threading.Thread(target=self.s.serve_forever, daemon=True).start()
         self.ledger = os.path.join(tempfile.mkdtemp(), "l.jsonl")
         os.environ.update(DEVIN_API_URL=f"http://127.0.0.1:{self.s.server_address[1]}/v1", DEVIN_API_KEY="sk-secret", PI_DEVIN_LEDGER=self.ledger)
+        os.environ.pop("DEVIN_ORG_ID", None)
         import importlib, pi_devin; self.d = importlib.reload(pi_devin)
     def tearDown(self): self.s.shutdown()
+
+    def test_v3_paths_when_org_set(self):
+        import importlib
+        os.environ.update(DEVIN_ORG_ID="org-t", DEVIN_API_URL=f"http://127.0.0.1:{self.s.server_address[1]}/v3/organizations/org-t")
+        d = importlib.reload(self.d)
+        self.assertEqual(d.status("devin-x")[1]["status_enum"], "working")
+        d.message("devin-x", "hi"); self.assertEqual(Fake.seen[-1][0], "/v3/organizations/org-t/sessions/devin-x/messages")
+        d.start("x"); self.assertEqual(Fake.seen[-1][0], "/v3/organizations/org-t/sessions")
+        os.environ.pop("DEVIN_ORG_ID")
 
     def test_start_has_guardrails_and_acu_cap(self):
         st, out = self.d.start("build X", "t")

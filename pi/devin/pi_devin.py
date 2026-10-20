@@ -1,8 +1,10 @@
 """Devin as a callable cloud agent inside PI.
 
 PI (or anything holding the gateway) can start a Devin session, message it, and read its status/result.
-Uses the Devin public API v1 (https://docs.devin.ai/api-reference): POST /v1/sessions, GET /v1/session/{id},
-POST /v1/session/{id}/message. Key: DEVIN_API_KEY on the PI host only, never sent to clients.
+API v3 (current) when DEVIN_ORG_ID is set: POST /v3/organizations/{org}/sessions, GET .../sessions/{devin_id},
+POST .../sessions/{devin_id}/messages; key = service-user key or personal access token with ManageOrgSessions.
+Legacy v1 otherwise: POST /v1/sessions, GET /v1/session/{id}, POST /v1/session/{id}/message.
+Key: DEVIN_API_KEY on the PI host only, never sent to clients. Live API calls UNVERIFIED until run with a real key.
 Every call is appended to an append-only JSONL ledger (PI_DEVIN_LEDGER) with the key never written.
 Cost guard: max_acu_limit is always sent (default PI_DEVIN_MAX_ACU=10).
 
@@ -10,7 +12,8 @@ CLI:  pi_devin.py start "<prompt>" [--title T]  |  status <session_id>  |  messa
 """
 import json, os, sys, time, urllib.error, urllib.request
 
-API = os.environ.get("DEVIN_API_URL", "https://api.devin.ai/v1")
+ORG = os.environ.get("DEVIN_ORG_ID")
+API = os.environ.get("DEVIN_API_URL", f"https://api.devin.ai/v3/organizations/{ORG}" if ORG else "https://api.devin.ai/v1")
 LEDGER = os.path.expanduser(os.environ.get("PI_DEVIN_LEDGER", "~/.pi-gateway/devin-ledger.jsonl"))
 PREAMBLE = ("You were started by Project Iris (PI) for Christopher Hoffpauir. Rules: truth over polish, append-only ledgers, "
             "no deletes (retire to _to_delete/), no PII off device, no money moves, nothing goes live without Christopher's word SHIP. "
@@ -52,11 +55,11 @@ def start(prompt, title=None, max_acu=None):
 
 
 def status(session_id):
-    return _call("GET", f"/session/{session_id}")
+    return _call("GET", f"/sessions/{session_id}" if ORG else f"/session/{session_id}")
 
 
 def message(session_id, text):
-    return _call("POST", f"/session/{session_id}/message", {"message": text})
+    return _call("POST", f"/sessions/{session_id}/messages" if ORG else f"/session/{session_id}/message", {"message": text})
 
 
 if __name__ == "__main__":
