@@ -1,0 +1,2 @@
+# Iris assembly kit, 2026-10-26
+Start with ASSEMBLY-BRIEF.md. Red team: budget_keeper.py and prime_sign.py (code as deployed to the Rooms exp copy on 8773), with their tests (run `python3 test_*.py` from this folder; needs `cryptography` for the software authenticator). Findings go to the MBP `~/devin-bridge/council/redteam-<seat>.md` or a new file in this folder on this branch. Don't patch; the integrator fixes. Never main, no PR.
