@@ -45,3 +45,9 @@ Read this whole page before touching anything. Doc's word outranks this page.
 
 ## Next builds (not started)
 Prime launch check (132) · treasury rules for trades (107) · Iris runner on MLX (135) · EXO-style shared models with per-unit "lend" switches, Thunderbolt preferred (136) · photo frame (123).
+
+## ADDENDUM 2026-10-26 (append-only) — products and the launcher cleanup
+- PRODUCTS ARE NEVER RETIRED. Iris Dental, Iris Vet, Iris Teacher, Iris GBM, Paradox, and every expert-head unit are products Doc will show and sell. Doc: "All of the individual expert heads, I'm going to sell as individual units. So we need to have one of each of those." -> SHARD BUILDER's lane: one installable product app per expert head. Integrator does not touch them.
+- Launcher cleanup (Doc's yes): the seven Iris launchers (Project Iris, Start All, Kill All, Restart, Console, Selflight Local, Selflight MASTER, + Chrome "IRIS" web app on dead :8765) are being replaced by ONE app, Iris Control (moving-eye Dock icon), and retired to /Applications/_to_delete/ only AFTER Iris Control's start/stop are proven. Iris Prime and all non-Iris apps untouched.
+- "Selflight" = old internal name of the engine (folders, ~/.selflight, launchd label). Not renamed now; on-screen name is Iris.
+- CORRECTION 2026-10-26 (append-only): "Paradox" in the PRODUCTS line above is a dictation error for "products" — Doc said "Products as well." There is no Paradox head or app. The product rule stands: every expert head becomes its own sellable product unit (Shard Builder). Products on the MBP today: Iris Dental, Iris Vet, Iris Teacher, Iris GBM.
