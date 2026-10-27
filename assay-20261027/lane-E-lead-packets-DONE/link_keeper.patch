@@ -1,0 +1,165 @@
+--- link_keeper.py.orig	2026-10-27 16:45:18.700591796 +0000
++++ link_keeper.py	2026-10-27 16:45:18.714591742 +0000
+@@ -25,6 +25,21 @@
+   GET  /api/link/v1/transitions   the ledger tail
+ 
+ Bolted on from main.py inside try/except; absent or raising, Project Iris runs exactly as before.
++
++LINK-SSH-001 (lane-E-lead-packets, 2026-10-27; Gopher's packet gopher_20261027_hal-probe-to-lead): a target may
++carry `"via": "ssh:<user>@<host>"`. The keeper then runs `ssh -n -o BatchMode=yes <user>@<host> curl -s -m T
++-o /dev/null -w %{http_code} <via_url>` (default via_url = http://127.0.0.1:<port><path>) instead of an HTTP GET
++from this Mac — the only honest way to see a service that binds 127.0.0.1 on another box without opening its
++port (a door decision, Doc's alone). Three outcomes, not two: UP (HTTP answer 200-499 on the far side), DOWN
++(ssh got there, curl found nothing listening), and BLIND (ssh itself failed — key, Tailscale check-mode re-auth,
++host unreachable). BLIND is not DOWN: the state and fail counter are left as they were, no recovery rung runs,
++no all-call hold is raised; `sight` flips seeing↔blind with a transitions line carrying the reason (and the
++Tailscale check URL when that is the reason), so the record says "could not see", never "was down".
++LINK-SCOPE-001 (same packet): when SELFLIGHT_HOME is set (every candidate/instance launcher sets it) the keeper's
++files live under <SELFLIGHT_HOME>/link-keeper/. Before, every copy (live Prime :8765, staged :8790, exp :8772)
++wrote the ONE shared ~/.selflight/link-keeper/ — the "state.tmp -> state.json" FileNotFoundError in exp.log was
++two keepers racing one tmp file, and any targets change from exp would have changed live Prime's watch list.
++Without SELFLIGHT_HOME the path is unchanged (the live release never set it; its behaviour is untouched).
+ """
+ from __future__ import annotations
+ import os, json, time, socket, asyncio, urllib.request, threading
+@@ -32,13 +47,17 @@
+ from fastapi import APIRouter, Request
+ from fastapi.responses import JSONResponse
+ 
+-BASE = Path(os.path.expanduser("~/.selflight/link-keeper")); BASE.mkdir(parents=True, exist_ok=True)
++BASE = Path(os.environ.get("SELFLIGHT_HOME") or os.path.expanduser("~/.selflight")) / "link-keeper"; BASE.mkdir(parents=True, exist_ok=True)
+ TARGETS = BASE / "targets.json"; STATE = BASE / "state.json"; TRANS = BASE / "transitions.jsonl"
+ DEFAULT_TARGETS = [
+     # HAL moved off the 172.20.20.x subnet (measured 2026-10-22: LAN now 172.20.1.130); the tailnet
+     # IP is the durable handle — it follows the machine across network moves, the LAN record does not.
+     {"name": "hal-9000 ssh (Iris Portal, Joe's box)", "kind": "tcp", "host": "100.106.102.44", "port": 22, "every_s": 60},
+-    {"name": "hal-9000 project-iris", "kind": "http", "host": "100.106.102.44", "port": 8765, "path": "/api/health", "every_s": 60},
++    # LINK-SSH-001: HAL's Project Iris binds 127.0.0.1:8765 only (measured 2026-10-27, `ss -ltnp` on HAL). A GET from
++    # here is refused by design, not by failure — so the check rides Tailscale SSH (root@HAL, the only login HAL's
++    # policy allows) and asks curl on HAL itself. The port stays closed until Doc opens that door.
++    {"name": "hal-9000 project-iris", "kind": "http", "host": "100.106.102.44", "port": 8765, "path": "/api/health", "every_s": 60,
++     "via": "ssh:root@100.106.102.44"},
+     {"name": "project-iris-2 (.183)", "kind": "http", "host": "172.20.20.183", "port": 8765, "path": "/api/health", "every_s": 60},
+     {"name": "ollama (this Mac)", "kind": "http", "host": "127.0.0.1", "port": 11434, "path": "/api/version", "every_s": 30},
+     {"name": "iris unit 8766", "kind": "http", "host": "127.0.0.1", "port": 8766, "path": "/status", "every_s": 30},
+@@ -57,6 +76,48 @@
+     "notify": re.compile(r"^$"),
+ }
+ CLASS_FOR = {"local_kickstart": "restart", "local_systemctl": "restart", "ssh_restart": "ssh", "wol": "network", "notify": None}
++VIA_RE = re.compile(r"^ssh:([a-z_][a-z0-9_-]{0,31}@[A-Za-z0-9.-]{3,80})$")      # LINK-SSH-001: the one shape of `via`
++SSH_CHECK_TEXT = "Tailscale SSH requires an additional check"
++SSH_URL_RE = re.compile(r"https://login\.tailscale\.com/\S+")
++
++def via_userhost(t: dict) -> str | None:
++    """`via` validated to exactly `ssh:user@host`; anything else is treated as absent (and the probe says so)."""
++    m = VIA_RE.match(str(t.get("via") or ""))
++    return m.group(1) if m else None
++
++def via_url(t: dict) -> str:
++    return str(t.get("via_url") or f"http://127.0.0.1:{int(t['port'])}{t.get('path') or '/'}")
++
++def probe_via_ssh(t: dict) -> tuple[bool | None, str, float]:
++    """LINK-SSH-001. (up, reason, ms) with up=None meaning BLIND: ssh itself did not get through, so nothing is
++    known about the service. ssh exit 255 is ssh's own failure code; any other code is curl's, run on the far box."""
++    t0 = time.time()
++    uh = via_userhost(t)
++    if not uh:
++        return None, f"via malformed: {str(t.get('via'))[:60]} (want ssh:user@host)", 0.0
++    url = via_url(t)
++    args = ["ssh", "-n", "-o", "BatchMode=yes", "-o", f"ConnectTimeout={max(1, int(TIMEOUT_S * 2))}", uh,
++            f"curl -s -m {int(TIMEOUT_S)} -o /dev/null -w '%{{http_code}}' {url}"]
++    try:
++        r = subprocess.run(args, capture_output=True, text=True, timeout=TIMEOUT_S * 4 + 2)
++    except subprocess.TimeoutExpired:
++        return None, f"ssh {uh}: no answer in {TIMEOUT_S * 4 + 2:.0f}s (BLIND)", round((time.time() - t0) * 1000)
++    except Exception as e:
++        return None, f"ssh {uh}: {type(e).__name__}: {str(e)[:100]} (BLIND)", round((time.time() - t0) * 1000)
++    ms = round((time.time() - t0) * 1000)
++    err = (r.stderr or "").strip()
++    if r.returncode == 255:
++        if SSH_CHECK_TEXT in err:
++            m = SSH_URL_RE.search(err)
++            return None, f"ssh {uh}: Tailscale check-mode re-auth needed — Doc's click: {m.group(0) if m else 'url not shown'} (BLIND)", ms
++        return None, f"ssh {uh}: {err.splitlines()[-1][:120] if err else 'exit 255'} (BLIND)", ms
++    code_txt = (r.stdout or "").strip().strip("'")
++    if r.returncode != 0:
++        return False, f"via ssh {uh}: curl exit {r.returncode} on {url} (nothing listening there)", ms
++    try: code = int(code_txt)
++    except ValueError: return False, f"via ssh {uh}: curl answered '{code_txt[:20]}' on {url}", ms
++    if code == 0: return False, f"via ssh {uh}: no HTTP answer on {url}", ms
++    return (200 <= code < 500), f"http {code} via ssh {uh}", ms
+ 
+ # PORTABILITY-001 (devin seat, 2026-10-14): the restart rungs route through
+ # sl_platform. local_kickstart keeps its name (targets carry it) but now means
+@@ -138,7 +199,7 @@
+     try:
+         import allcall
+         url = (f"http://{t['host']}:{t['port']}{t.get('path') or '/'}"
+-               if t.get("kind") == "http" else None)
++               if t.get("kind") == "http" and not via_userhost(t) else None)   # LINK-SSH-001: no GET can reach a via target
+         allcall.emit(
+             what_failed=f"{t['name']} is down",
+             machine=str(t.get("host") or t["name"]),
+@@ -195,9 +256,13 @@
+     clean = []
+     for x in t:
+         if not isinstance(x, dict) or x.get("kind") not in ("tcp", "http"): continue
+-        clean.append({"name": str(x.get("name") or f"{x.get('host')}:{x.get('port')}"), "kind": x["kind"], "host": str(x.get("host")),
+-                      "port": int(x.get("port") or 0), "path": str(x.get("path") or "/"), "every_s": int(x.get("every_s") or 60),
+-                      "recover": [str(r_) for r_ in (x.get("recover") or [])], "after_fails": int(x.get("after_fails") or 3)})
++        row = {"name": str(x.get("name") or f"{x.get('host')}:{x.get('port')}"), "kind": x["kind"], "host": str(x.get("host")),
++               "port": int(x.get("port") or 0), "path": str(x.get("path") or "/"), "every_s": int(x.get("every_s") or 60),
++               "recover": [str(r_) for r_ in (x.get("recover") or [])], "after_fails": int(x.get("after_fails") or 3)}
++        if x.get("via") is not None: row["via"] = str(x["via"])                 # LINK-SSH-001: carried, not stripped
++        if x.get("via_url") is not None: row["via_url"] = str(x["via_url"])
++        if x.get("allcall") is False: row["allcall"] = False                     # ALLCALL-002 opt-out survives a rewrite
++        clean.append(row)
+     TARGETS.write_text(json.dumps(clean, indent=1)); return clean
+ 
+ def read_state() -> dict:
+@@ -207,10 +272,12 @@
+ def _save_state(s: dict):
+     tmp = STATE.with_suffix(".tmp"); tmp.write_text(json.dumps(s, indent=1)); tmp.replace(STATE)
+ 
+-def probe(t: dict) -> tuple[bool, str, float]:
+-    """One check. Returns (up, reason, latency_ms). Never raises."""
++def probe(t: dict) -> tuple[bool | None, str, float]:
++    """One check. Returns (up, reason, latency_ms); up=None means BLIND (LINK-SSH-001). Never raises."""
+     t0 = time.time()
+     try:
++        if t.get("via") is not None and t["kind"] == "http":
++            return probe_via_ssh(t)
+         if t["kind"] == "tcp":
+             with socket.create_connection((t["host"], int(t["port"])), timeout=TIMEOUT_S): pass
+             return True, "tcp connect ok", round((time.time() - t0) * 1000)
+@@ -235,6 +302,20 @@
+         cur = s.get(key) or {"name": t["name"], "state": "UNKNOWN", "since": _utc(), "fails": 0, "checks": 0, "ups": 0}
+         if not force and cur.get("last_check_ts") and now - cur["last_check_ts"] < int(t.get("every_s") or 60): continue
+         up, why, ms = probe(t)
++        if up is None:                                   # LINK-SSH-001: BLIND — the probe could not see; the target is not judged
++            cur.update(name=t["name"], last_check=_utc(), last_check_ts=now, last_reason=why, latency_ms=ms,
++                       blind=cur.get("blind", 0) + 1, last_blind=_utc())
++            if cur.get("sight") != "blind":
++                line = {"utc": _utc(), "target": key, "name": t["name"], "from": cur.get("sight", "seeing"), "to": "blind", "state_kept": cur["state"], "reason": why, "latency_ms": ms}
++                with open(TRANS, "a") as f: f.write(json.dumps(line) + "\n")
++                cur["sight"] = "blind"; cur["blind_since"] = _utc(); changed.append(line)
++            s[key] = cur
++            continue
++        if cur.get("sight") == "blind":
++            line = {"utc": _utc(), "target": key, "name": t["name"], "from": "blind", "to": "seeing", "reason": why, "latency_ms": ms}
++            with open(TRANS, "a") as f: f.write(json.dumps(line) + "\n")
++            changed.append(line)
++        cur["sight"] = "seeing"
+         new = "UP" if up else "DOWN"
+         cur.update(name=t["name"], last_check=_utc(), last_check_ts=now, last_reason=why, latency_ms=ms, checks=cur.get("checks", 0) + 1)
+         if up:
+@@ -279,7 +360,8 @@
+     @r.get("/status")
+     def st():
+         s = read_state(); down = [k for k, v in s.items() if v.get("state") == "DOWN"]
+-        return {"utc": _utc(), "targets": s, "down": down, "all_up": bool(s) and not down, "ideal": "never unconnected (lo 3284)", "mode": "watch, record, recover (v0.3): fixed-menu ladders under the Iris panel; notify when exhausted", "keeper_thread_alive": bool(_thread and _thread.is_alive()), "tick_s": TICK_S}
++        blind = [k for k, v in s.items() if v.get("sight") == "blind"]
++        return {"utc": _utc(), "targets": s, "down": down, "blind": blind, "all_up": bool(s) and not down, "via_ssh": "LINK-SSH-001", "store": str(BASE), "ideal": "never unconnected (lo 3284)", "mode": "watch, record, recover (v0.3): fixed-menu ladders under the Iris panel; notify when exhausted", "keeper_thread_alive": bool(_thread and _thread.is_alive()), "tick_s": TICK_S}
+     @r.get("/targets")
+     def tg(): return {"targets": read_targets(), "path": str(TARGETS)}
+     @r.post("/targets")

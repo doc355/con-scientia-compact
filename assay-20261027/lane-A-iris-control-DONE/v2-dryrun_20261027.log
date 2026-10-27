@@ -1,0 +1,4 @@
+2026-10-27T16:50:08Z start-all start (app=/Applications/Iris Prime (Staged).app port=8790 instance=staged-verify dry=1)
+2026-10-27T16:50:08Z start-all ports before: :8790=27957 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:50:08Z start-all :8790 already up as staged-verify
+2026-10-27T16:50:09Z start-all ports after: :8790=27957 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818

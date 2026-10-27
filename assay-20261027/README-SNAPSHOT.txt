@@ -1,0 +1,1 @@
+Read-only snapshot of MBP garden/bridge/inbound DONE packets (lanes A-E + megaplan), pulled by gopher-cloud 2026-10-27 because the Assayer is blocked on HAL check. Not a source of truth: verify live on the MBP once through. Branch only, never main, no PR.

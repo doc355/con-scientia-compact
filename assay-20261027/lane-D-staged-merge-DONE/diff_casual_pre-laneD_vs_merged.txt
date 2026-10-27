@@ -1,0 +1,11 @@
+63c63
+<     "business": {"pieces": ["Helm of Truth", "Cuirass of the Ledger"],
+---
+>     "business": {"pieces": ["Helm of Truth", "Cuirass of the Ledger", "Design Hat"],  # DESIGN-HAT-PIN-001
+67c67,70
+<                          "unit and signed by Christopher; if none is cleared, say so and stop."},
+---
+>                          "unit and signed by Christopher; if none is cleared, say so and stop."
+>                          " Design Hat (standing pin, his ruling 2026-10-26): before you show, ship or sign off any design, "  # DESIGN-HAT-PIN-001
+>                          "build or check, walk the gates in garden/skills/design-hat.md (1-17) in order; name the "  # DESIGN-HAT-PIN-001
+>                          "gates you checked and any you could not check, and why; never skip one silently."},  # DESIGN-HAT-PIN-001

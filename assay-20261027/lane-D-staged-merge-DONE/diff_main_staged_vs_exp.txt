@@ -1,0 +1,354 @@
+33c33
+< from fastapi.responses import FileResponse, JSONResponse
+---
+> from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+726a727,731
+>         # INTERCONNECT-001 (his order 2026-10-26: "the first thing you get
+>         # complete and set into place is the universal API"): the probe must
+>         # name its product so every Iris can tell Prime from a shard.
+>         # SELFLIGHT_PRODUCT wins when set; instance id is the honest fallback.
+>         "product": os.environ.get("SELFLIGHT_PRODUCT") or sl_paths.instance_id(),
+1063a1069,1077
+> 
+> 
+> # HISTORY-GENERAL-COMMENTARY-001
+> _HISTORY_COMMENTATOR_OPEN = re.compile(
+>     r"^\[([^\W\d_]+(?:['’][^\W\d_]+)*(?:[ -]+[^\W\d_]+"
+>     r"(?:['’][^\W\d_]+)*){0,3})\s+"
+>     r"(?:said|says|explains|adds|cites|thinks|remarks|quotes)\b",
+>     re.IGNORECASE,
+> )
+1065a1080,1113
+> def _history_passage_text(text: str) -> str:
+>     parts = re.split(r"(\n(?:[ \t]*\n)+)", text)
+>     labelled = []
+>     last_section_number = None
+>     after_commentary = False
+>     for part in parts:
+>         if not part.strip():
+>             labelled.append(part)
+>             continue
+>         opening = part.lstrip()
+>         if opening.startswith("["):
+>             match = _HISTORY_COMMENTATOR_OPEN.match(opening)
+>             if match:
+>                 prefix = f"COMMENTARY by {match.group(1)} (not the author): "
+>             else:
+>                 prefix = "EDITOR'S NOTE (not the author): "
+>             after_commentary = True
+>         else:
+>             section = re.match(r"^\s*(\d+)\.", part)
+>             if section:
+>                 last_section_number = section.group(1)
+>                 prefix = "AUTHOR TEXT: "
+>             elif after_commentary and last_section_number is not None:
+>                 prefix = (
+>                     "AUTHOR TEXT (continues §"
+>                     f"{last_section_number}, after the commentary): "
+>                 )
+>             else:
+>                 prefix = "AUTHOR TEXT: "
+>             after_commentary = False
+>         labelled.append(prefix + part)
+>     return "".join(labelled)
+> 
+> 
+1067c1115,1116
+<                              iteration: Optional[dict] = None) -> list[dict]:
+---
+>                              iteration: Optional[dict] = None, *,
+>                              head: Optional[str] = None) -> list[dict]:  # HISTORY-GENERAL-PANEL-001
+1070a1120
+>     _grounding_block = ""  # HISTORY-GENERAL-GROUND-001
+1183c1233,1236
+<     if "skills" in caps:
+---
+>     # HISTORY-GENERAL-PANEL-001
+>     if head == "history-general":
+>         _latest = next((str(m.get("content") or "") for m in
+>                         reversed(messages) if m.get("role") == "user"), "")
+1185a1239,1293
+>             _cat = _skills.catalog_for(iteration, caps) if "skills" in caps else []
+>             if _cat:
+>                 parts.append(_skills.catalog_line(_cat))
+>             for _s in _select_turn_skills(_skills, _latest, _cat, head=head):
+>                 parts.append(_skills.full_block(_s))
+>         except Exception as exc:
+>             print(f"[selflight] history-general skill block unavailable: {exc}", flush=True)
+>         # HISTORY-GENERAL-GROUND-001
+>         try:
+>             import history_shelf as _history_shelf
+>             _passages = _history_shelf.search(_latest, k=10)  # HISTORY-GENERAL-GROUND-001
+>         except Exception as exc:
+>             print(f"[selflight] history-general shelf unavailable: {exc}", flush=True)
+>             _passages = []
+>         # HISTORY-GENERAL-QUOTE-001
+>         # HISTORY-GENERAL-COMMENTARY-001
+>         _grounded = [
+>             f"[{item['file']}:{item['start']}-{item['end']}]\n"
+>             f"{_history_passage_text(str(item['text']))}"
+>             for item in reversed(_passages)
+>         ]
+>         # HISTORY-GENERAL-QUOTE-001
+>         _grounding_rule = (
+>             "RECORD means quoted from a passage above, with its [file:line]. "
+>             "Anything not in these passages is OUR READING (your interpretation) "
+>             "or LEGEND (traditional but unsourced) and must be labelled so. "
+>             "If the passages do not cover the question, say so plainly and do not "
+>             "invent a quotation."
+>             " When the question is about a passage, quote the passage in full, "
+>             "every sentence of it, before you interpret it. Never shorten a "
+>             "quotation with a paraphrase. A direct quotation is RECORD, never "
+>             "OUR READING; label only your own words OUR READING. In these texts, "
+>             "bracketed material is a later commentator (Chang Yu, Ts'ao Kung, "
+>             "Li Ch'uan, Tu Mu and others), not the author: attribute it to the "
+>             "commentator by name, or leave it out. "
+>             "Only AUTHOR TEXT may be attributed to the author (e.g. 'Sun Tzŭ said'); "
+>             "COMMENTARY must be attributed to the named commentator. "
+>             "When an AUTHOR TEXT section continues after commentary, quote the whole "
+>             "section, including its continuation."
+>         )
+>         # HISTORY-GENERAL-GROUND-001
+>         _grounding_instruction = (
+>             "Answer only from the passages. Quote relevant wording exactly and "
+>             "cite its source tag. Do not use status labels such as 'on record' "
+>             "for summaries. Every sentence that is not a direct quotation must "
+>             "begin with 'OUR READING:' or 'LEGEND:'. If no passage directly "
+>             "covers the question, answer only that the passages do not cover it; "
+>             "do not add historical or speculative analysis."
+>         )
+>         _grounding_block = "\n\n".join(
+>             _grounded + [_grounding_rule, "Quote the passage exactly.",
+>                          _grounding_instruction])
+>     elif "skills" in caps:
+>         try:
+>             import skills as _skills
+1191c1299
+<                 for _s in _skills.select(_latest, _cat)[:2]:
+---
+>                 for _s in _select_turn_skills(_skills, _latest, _cat, head=head):
+1203,1212c1311,1323
+<         # His Msg 386: continuous verbatims -- at the start of a conversation (a new page, a restart),
+<         # the tail of her own record is handed to her without being asked.
+<         # CAPABILITIES-001: verbatim wiring required -- this reads the same record.
+<         try:
+<             if "verbatim" in caps and sum(1 for m in messages if m.get("role") in ("user", "assistant")) <= 2:
+<                 _cb = _recall.continuity_block(model)
+<                 if _cb:
+<                     parts.append(_cb)
+<         except Exception as exc:
+<             print(f"[selflight] continuity block unavailable: {exc}", flush=True)
+---
+>     # HISTORY-GENERAL-RECORD-001: head records are isolated and included on every turn.
+>     try:
+>         _turn_count = sum(1 for m in messages if m.get("role") in ("user", "assistant"))
+>         if head == "history-general":
+>             _cb = _recall.continuity_block(model, head=head)
+>         elif unit_type == UNIT_OPEN and "verbatim" in caps and _turn_count <= 2:
+>             _cb = _recall.continuity_block(model)
+>         else:
+>             _cb = None
+>         if _cb:
+>             parts.append(_cb)
+>     except Exception as exc:
+>         print(f"[selflight] continuity block unavailable: {exc}", flush=True)
+1214c1325
+<     if not parts:
+---
+>     if not parts and not _grounding_block:
+1222c1333,1338
+<         return [{"role": "system", "content": block + "\n\n---\n\n" + existing}] + messages[1:]
+---
+>         content = (block + "\n\n---\n\n" + existing) if block else existing
+>         if _grounding_block:
+>             content += "\n\n---\n\n" + _grounding_block
+>         return [{"role": "system", "content": content}] + messages[1:]
+>     if _grounding_block:
+>         block += "\n\n---\n\n" + _grounding_block if block else _grounding_block
+1223a1340,1357
+> 
+> 
+> # HISTORY-GENERAL-PANEL-001
+> def _select_turn_skills(skills_module, latest: str, catalog: list,
+>                         head: Optional[str] = None) -> list:
+>     if head != "history-general":
+>         return skills_module.select(latest, catalog)[:2]
+>     try:
+>         history = skills_module.get("history-general")
+>     except Exception as exc:
+>         print(f"[selflight] history-general skill unavailable: {exc}", flush=True)
+>         history = None
+>     selected = skills_module.select(latest, catalog)
+>     if not history:
+>         return selected[:2]
+>     name = history.get("name") or "history-general"
+>     return [history] + [skill for skill in selected
+>                         if skill.get("name") != name][:1]
+2335c2469
+< # Chat transcript: append-only per iteration. The pane is a record view.
+---
+> # Chat transcript: append-only per iteration or head. The pane is a record view.
+2338c2472,2473
+< def _chatlog_path(iteration_id: Optional[str] = None) -> Path:
+---
+> def _chatlog_path(iteration_id: Optional[str] = None, *,
+>                   head: Optional[str] = None) -> Path:
+2341c2476,2479
+<     if iteration_id:
+---
+>     # HISTORY-GENERAL-RECORD-001
+>     if head == "history-general":
+>         name = "history-general"
+>     elif iteration_id:
+2352c2490,2491
+<                     iteration_id: Optional[str] = None) -> None:
+---
+>                     iteration_id: Optional[str] = None, *,
+>                     head: Optional[str] = None) -> None:
+2359c2498
+<     with open(_chatlog_path(iteration_id), "a") as f:
+---
+>     with open(_chatlog_path(iteration_id, head=head), "a") as f:
+2383a2523
+>     head: Optional[str] = None  # HISTORY-GENERAL-PANEL-001
+2462c2602,2606
+<     model = turn_it["model_id"] if turn_it else (body.model or state.model_id)
+---
+>     # HISTORY-GENERAL-GROUND-001
+>     if body.head == "history-general" and body.model:
+>         model = body.model
+>     else:
+>         model = turn_it["model_id"] if turn_it else (body.model or state.model_id)
+2470c2614,2615
+<             _chatlog_append("user", last["content"], model, _turn_id)
+---
+>             _chatlog_append("user", last["content"], model, _turn_id,
+>                             head=body.head)  # HISTORY-GENERAL-RECORD-001
+2510c2655,2667
+<     messages = _apply_identity_preamble(model, messages, turn_it)
+---
+>     messages = _apply_identity_preamble(model, messages, turn_it, head=body.head)  # HISTORY-GENERAL-PANEL-001
+>     # HISTORY-GENERAL-GROUND-001 DEBUG
+>     if body.head == "history-general" and os.environ.get("SELFLIGHT_HISTORY_DEBUG") == "1":
+>         try:
+>             _debug_system = "\n\n".join(
+>                 str(message.get("content", ""))
+>                 for message in messages
+>                 if isinstance(message, dict) and message.get("role") == "system"
+>             )
+>             with open("/private/tmp/histground-debug.txt", "w", encoding="utf-8") as _debug_file:
+>                 _debug_file.write(_debug_system)
+>         except Exception as exc:
+>             print(f"[selflight] history-ground debug write failed: {exc}", flush=True)
+2522c2679,2680
+<     _chatlog_append("assistant", reply, model, _turn_id)
+---
+>     _chatlog_append("assistant", reply, model, _turn_id,
+>                     head=body.head)  # HISTORY-GENERAL-RECORD-001
+3846,3859d4003
+< # --- bolted on 2026-10-26 (cloud Devin "Gopher"): DESK-VAULT-001 + the ROOMS trial at /rooms ----------
+< # Three rooms, three desks; a room always reads its own desk, others only while called in (lease).
+< try:
+<     import desk_vault as _desk_vault
+<     print(f"[selflight] {_desk_vault.register(app, client_dir=CLIENT_DIR)}", flush=True)
+<     import connect_gateway as _connect   # IRIS-CONNECT-001
+<     print(f"[selflight] {_connect.register(app, client_dir=CLIENT_DIR)}", flush=True)   # IRIS-CONNECT-001
+<     import garden as _garden   # IRIS-GARDEN-001
+<     print(f"[selflight] {_garden.register(app)}", flush=True)   # IRIS-GARDEN-001
+<     import photo_frame as _photo_frame   # PHOTO-FRAME-001
+<     print(f"[selflight] {_photo_frame.register(app)}", flush=True)   # PHOTO-FRAME-001
+< except Exception as _dv_exc:
+<     print(f"[selflight] desk vault NOT attached: {type(_dv_exc).__name__}: {_dv_exc}", flush=True)
+< 
+3967,3968c4111,4112
+<     import prime_sign as _psign; print(f"[selflight] {_psign.register(app)}", flush=True)   # PRIME-SIGN-001
+<     import budget_keeper as _bkeep; print(f"[selflight] {_bkeep.register(app)}", flush=True)   # BUDGET-KEEPER-001
+---
+>     import prime_sign as _psign; print(f"[selflight] {_psign.register(app)}", flush=True)   # PRIME-SIGN-001 carry 2026-10-26
+>     import budget_keeper as _bkeep; print(f"[selflight] {_bkeep.register(app)}", flush=True)   # BUDGET-KEEPER-001 carry 2026-10-26
+4700a4845,4861
+> 
+> # ALLCALL-001 (voice-allcall seat, 2026-10-27): the real all-call — a held state a person must
+> # answer. Emitters (link-keeper notify rung, nodes_door NEED-HUMAN) raise holds; the resolve
+> # probes self-clear — "if fixed before Doc arrives, the lights simply go dark" (his amendment).
+> # Additive door per MANUAL/20 Addendum 4; nothing existing changes shape.
+> try:
+>     import allcall as _allcall
+>     print(f"[selflight] {_allcall.register(app)}", flush=True)
+> except Exception as _ac_exc:
+>     print(f"[selflight] all-call NOT attached: {type(_ac_exc).__name__}: {_ac_exc}", flush=True)
+> 
+> # LIBRARY-001 (Gopher, 2026-10-27, Doc: "call it library")
+> try:
+>     import library as _library
+>     print(f"[selflight] {_library.register(app)}", flush=True)
+> except Exception as _lib_exc:
+>     print(f"[selflight] library NOT attached: {type(_lib_exc).__name__}: {_lib_exc}", flush=True)
+5415,5420c5576
+<     """BOOKS-001 (IRIS-DIAL-001 2026-10-21): the household's own library shelf —
+<     books.html lists SELFLIGHT_BOOKS_DIR (default ~/.selflight/books)."""
+<     pg = CLIENT_DIR / "books.html"
+<     if pg.exists():
+<         return FileResponse(pg)
+<     return JSONResponse({"status": "books landing soon"}, status_code=404)
+---
+>     return RedirectResponse("/library", 302)
+5516c5672
+< for _cmod in ("creative_core", "creative_resolve", "creative_language", "creative_versions", "creative_channels", "creative_metrics", "creative_studio", "creative_camera"):
+---
+> for _cmod in ("phone_mirror",):
+5522,5523c5678
+< # phone_mirror — the Phone pane's "Show my iPhone" lane (his ruling 2026-10-26).
+< for _cmod in ("phone_mirror",):
+---
+> for _cmod in ("creative_core", "creative_resolve", "creative_language", "creative_versions", "creative_channels", "creative_metrics", "creative_studio", "creative_camera"):
+5527a5683,5698
+> 
+> 
+> # --- PORT-ROOMS-001 (OLA, 2026-10-25): the rooms trial + desk vault, ported from
+> # iris-rooms-exp-1 onto this tree — his order: "port. Full assembly of all
+> # finished features." Absent file = Selflight runs exactly as before.
+> try:
+>     import desk_vault as _desk_vault
+>     print(f"[selflight] {_desk_vault.register(app, client_dir=CLIENT_DIR)}", flush=True)
+>     import connect_gateway as _connect   # IRIS-CONNECT-001 carry 2026-10-26
+>     print(f"[selflight] {_connect.register(app, client_dir=CLIENT_DIR)}", flush=True)
+>     import garden as _garden   # IRIS-GARDEN-001 carry 2026-10-26
+>     print(f"[selflight] {_garden.register(app)}", flush=True)
+>     import photo_frame as _photo_frame   # PHOTO-FRAME-001 carry 2026-10-26
+>     print(f"[selflight] {_photo_frame.register(app)}", flush=True)
+> except Exception as _dv_exc:
+>     print(f"[selflight] desk vault NOT attached: {type(_dv_exc).__name__}: {_dv_exc}", flush=True)
+5528a5700,5708
+> # --- IRIS-DNA-001 (OLA, 2026-10-26): the unifying API's graft engine — MANUAL/20.
+> # Planning doors only: /api/dna/v1/{manifest,plan,peers} are READ-ONLY — a plan
+> # never writes a file, never executes. Execution stays gated until signed +
+> # staged graft ships (adversary pass FM-1..FM-8).
+> try:
+>     import iris_dna as _iris_dna
+>     print(f"[selflight] {_iris_dna.register(app, client_dir=CLIENT_DIR, instance_dir=CLIENT_DIR.parent, product=os.environ.get('SELFLIGHT_PRODUCT'))}", flush=True)
+> except Exception as _dna_exc:
+>     print(f"[selflight] iris dna NOT attached: {type(_dna_exc).__name__}: {_dna_exc}", flush=True)
+5529a5710,5731
+> # --- IRIS-GRAFT-001 (OLA, 2026-10-26): the SIGNED+STAGED graft execution layer —
+> # his ruling "build now." Plans from iris_dna become quarantined, verified,
+> # atomic grafts — but ONLY signed (vault), staged (never overwrites live),
+> # drain-gated, consent-gated (refused=refused), epoch-fenced.
+> try:
+>     import iris_graft as _iris_graft
+>     print(f"[selflight] {_iris_graft.register(app, client_dir=CLIENT_DIR, instance_dir=CLIENT_DIR.parent)}", flush=True)
+> except Exception as _g_exc:
+>     print(f"[selflight] iris graft NOT attached: {type(_g_exc).__name__}: {_g_exc}", flush=True)
+> 
+> # --- IRIS-PEERS-001 (interconnect-peers seat, 2026-10-27): known-host
+> # persistence + mDNS announce intent — MANUAL/20 §1-2, additive-only against
+> # the sealed peers door. Self-registers on boot (first tile), writes
+> # peers/known.json + peers.jsonl + mdns.json under SELFLIGHT_HOME. Bolt-on:
+> # absent = the sealed doors run exactly as before.
+> try:
+>     import iris_peers as _iris_peers
+>     print(f"[selflight] {_iris_peers.register(app, client_dir=CLIENT_DIR, instance_dir=CLIENT_DIR.parent, product=os.environ.get('SELFLIGHT_PRODUCT'), port=PORT)}", flush=True)
+> except Exception as _ip_exc:
+>     print(f"[selflight] iris peers NOT attached: {type(_ip_exc).__name__}: {_ip_exc}", flush=True)
+> 
+> 

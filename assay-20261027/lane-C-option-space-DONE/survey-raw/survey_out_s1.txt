@@ -1,0 +1,955 @@
+### date
+Tue Oct 27 16:31:42 UTC 2026
+ProductName:		macOS
+ProductVersion:		27.0.1
+BuildVersion:		26A434
+### whoami
+christopherhoffpauir
+Christophers-MacBook-Pro-2.local
+### ---- A. macOS symbolic hotkeys (system-level owners of Ctrl+Space / Cmd+Space / Opt+Space) ----
+bash: line 8: --: No such file or directory
+### Spotlight pref
+        "com.apple.shortcuts" =         {
+            "com.apple.UniversalAccess.UASettingsShortcuts.UAToggleAccessibilityKeyboardIntent" = tak;
+(end spotlight)
+### Input source switching (HIToolbox)
+{
+    AppleCurrentKeyboardLayoutInputSourceID = "com.apple.keylayout.US";
+    AppleDictationAutoEnable = 1;
+    AppleEnabledInputSources =     (
+                {
+            InputSourceKind = "Keyboard Layout";
+            "KeyboardLayout ID" = 0;
+            "KeyboardLayout Name" = "U.S.";
+        },
+                {
+            "Bundle ID" = "com.apple.CharacterPaletteIM";
+            InputSourceKind = "Non Keyboard Input Method";
+        },
+                {
+            "Bundle ID" = "com.apple.PressAndHold";
+            InputSourceKind = "Non Keyboard Input Method";
+        },
+                {
+            "Bundle ID" = "com.apple.inputmethod.ironwood";
+            InputSourceKind = "Non Keyboard Input Method";
+        }
+    );
+    AppleSelectedInputSources =     (
+                {
+            InputSourceKind = "Keyboard Layout";
+            "KeyboardLayout ID" = 0;
+            "KeyboardLayout Name" = "U.S.";
+        },
+                {
+            "Bundle ID" = "com.apple.PressAndHold";
+            InputSourceKind = "Non Keyboard Input Method";
+        }
+    );
+}
+### ---- B. Global NSUserKeyEquivalents (custom app shortcuts) ----
+Error: Could not find key 'NSUserKeyEquivalents' in domain 'kCFPreferencesAnyApplication'.
+Error: No domain, key, nor value containing 'NSUserKeyEquivalents'
+### ---- C. Installed apps (likely hotkey owners) ----
+/Applications:
+AI Presenter.app
+Actions For Obsidian.app
+Adobe Acrobat DC
+Adobe Aero 2022 (Beta)
+Adobe After Effects 2026
+Adobe Animate 2024
+Adobe Audition 2026
+Adobe Bridge 2024
+Adobe Bridge 2025
+Adobe Bridge 2026
+Adobe Character Animator 2026
+Adobe Creative Cloud
+Adobe Dimension
+Adobe Dreamweaver 2021
+Adobe Illustrator 2024
+Adobe Illustrator 2025
+Adobe Illustrator 2026
+Adobe InCopy 2026
+Adobe InDesign 2026
+Adobe Lightroom CC
+Adobe Lightroom Classic
+Adobe Media Encoder 2026
+Adobe Photoshop 2024
+Adobe Photoshop 2025
+Adobe Photoshop 2026
+Adobe Premiere Pro 2026
+Adobe Premiere Rush 2.0
+Adobe UXP Developer Tools
+Adobe XD
+Artstudio Pro.app
+Artstudio Pro.localized
+Audible.app
+BambuStudio.app
+Bionic.app
+Blackmagic ATEM Switchers
+Blackmagic Cameras
+Blackmagic Disk Speed Test.app
+Blackmagic Proxy Generator.app
+Blackmagic RAW
+Blackmagic RAW Speed Test.app
+Camera Management Platform.app
+Canon Utilities
+Claude.app
+Comet.app
+Companion.app
+CrimsonDesert.app
+D&D Beyond.app
+DJI Mimo.app
+DJI Store.app
+DSLR Assistant.app
+DaVinci Resolve
+Descript.app
+Detail Studio.app
+Developer.app
+Devin.app
+Discord.app
+DisplayLink Manager.app
+Docker.app
+EOS Webcam Utility
+EXO.app
+Elgato Camera Hub.app
+Elgato Control Center.app
+Elgato Stream Deck.app
+Elgato Wave Link.app
+Epic Games Launcher.app
+GarageBand.app
+Gemini.app
+Godox Light.app
+GodoxKNOWLED.app
+Google Chrome.app
+Google Earth Pro.app
+Grok Bot.app
+Insta360 Link Controller.app
+Insta360 Studio.app
+Iris Control.app
+Iris Dental.app
+Iris GBM.app
+Iris Prime (Staged).app
+Iris Prime.app
+Iris Teacher.app
+Iris Vet.app
+Julia-1.12.app
+Keynote.app
+LM Studio.app
+LUNA.app
+LivemindRecorder.app
+MKPlayer.app
+Maxon Cinema 4D 2023
+Maxon Cinema 4D 2024
+Maxon Cinema 4D 2025
+Maxon Cinema 4D 2026
+Microsoft Excel.app
+Microsoft OneNote.app
+Microsoft PowerPoint.app
+Microsoft Word.app
+NDI Access Manager.app
+NDI Launcher.app
+NDI Router.app
+NDI Scan Converter.app
+NDI Test Patterns.app
+NDI Video Monitor.app
+NDI Virtual Input.app
+Numbers.app
+OBS.app
+OBSBOT_Center.app
+Obsidian.app
+Ollama.app
+PTZ-Director One.app
+Pages.app
+Perplexity.app
+PigeonCast.app
+Plaud.app
+Project Iris Console.app
+Project Iris Kill All.app
+Project Iris Restart.app
+Project Iris Start All.app
+Project Iris.app
+Protect.app
+PugetBench for Creators.app
+PureRef.app
+REW
+RODE Central.app
+RODECaster App.app
+Riverside Studio.app
+Safari.app
+SamsungPortableSSD_1.0.app
+Selflight Local.app
+Selflight MASTER.app
+ShotPro.app
+Shure
+ShurePlus MOTIV.app
+Sidus Link.app
+Slack.app
+Speedtest.app
+Steam.app
+Tailscale.app
+Topaz Gigapixel AI.app
+Topaz Photo AI.app
+Topaz Video AI.app
+UA Connect.app
+UniFi Endpoint.app
+Unzip - RAR ZIP 7Z Unarchiver.app
+Utilities
+Wirecast.app
+Wondershare UniConverter 17.app
+Xcode.app
+YoloLiv Compose.app
+_to_delete
+amaran.app
+iLok License Manager.app
+iMovie.app
+iPhoto.app
+stagetimer.io.app
+test_push.txt
+xTool Creative Space.app
+xTool Studio.app
+zoom.us.app
+
+/Users/christopherhoffpauir/Applications:
+Chrome Apps.localized
+Claude Code URL Handler.app
+Dungeon Alchemist.app
+HIFIDecant
+Riverside | The Dental Business Conference 2024 (Friday).app
+StreamDeckApps
+### running GUI-ish apps (ps)
+12457 01:03:20 /Applications/Adobe Acrobat DC/Adobe Acrobat.app
+36533 02:47:34 /Applications/Claude.app
+ 2986 03:08:34 /Applications/Devin.app
+  860 03:09:36 /Applications/EXO.app
+  814 03:09:36 /Applications/Elgato Camera Hub.app
+  851 03:09:36 /Applications/Elgato Stream Deck.app
+  736 03:09:37 /Applications/Gemini.app
+ 1681 03:09:17 /Applications/Google Chrome.app
+  884 03:09:35 /Applications/Ollama.app
+  800 03:09:36 /Applications/Plaud.app
+ 2296 03:08:57 /Applications/Tailscale.app
+  739 03:09:37 /Applications/Utilities/Adobe Sync/CoreSync/Core Sync.app
+  585 03:09:39 /Library/PrivilegedHelperTools/licenseDaemon.app
+34187 01:49:37 /System/Applications/Books.app
+  902 03:09:34 /System/Applications/Calendar.app
+74399 01:23:57 /System/Applications/Dictionary.app
+54504 01:34:15 /System/Applications/Mail.app
+ 1891 03:09:12 /System/Applications/Messages.app
+  908 03:09:34 /System/Applications/Photos.app
+30706    52:55 /System/Applications/Shortcuts.app
+  723 03:09:37 /System/Applications/Siri AI.app
+  866 03:09:35 /System/Applications/Weather.app
+  993 03:09:33 /System/Library/Input Methods/PressAndHold.app
+ 1890 03:09:12 /System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app
+  846 03:09:36 /Users/christopherhoffpauir/Library/Application Support/Portable_SSD/SamsungPortableSSD_1.0.app
+  832 03:09:36 Contents/Library/LaunchAgents/Perplexity Helper.app
+### ---- D. Gemini ----
+ls: /Users/christopherhoffpauir/Applications/*emini*: No such file or directory
+/Applications/Gemini.app
+bundle: /Applications/Gemini.app
+com.google.GeminiMacOS
+1.119.2.914
+com.google.Chrome.plist
+com.google.GECommonSettings.plist
+com.google.GeminiMacOS.plist
+com.google.GeminiMacOS.shareddata.plist
+com.google.GoogleEarthPro.plist
+com.google.Keystone.Agent.plist
+com.google.gmp.measurement.monitor.plist
+Google
+Google Earth
+com.google.GeminiMacOS
+com.google.GeminiMacOS.launcher
+google-heartbeat-storage
+com.google.GeminiMacOS.FinderSync
+com.google.GeminiMacOS.WidgetExtension
+--- /Users/christopherhoffpauir/Library/Preferences/com.google.GeminiMacOS.plist
+{
+    "NSWindow Frame SettingsWindow" = "678 517 700 600 0 0 2056 1290 ";
+    "WindowBoundsTracker.fullViewFrame" =     (
+        514,
+        195,
+        1028,
+        900
+    );
+    "app_enableClearcutSpoolTrimming" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "app_enableFastLaunch" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "app_enableSkillAutocomplete" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "app_enableThemePickerInSettings" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "app_enableToolMention" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "com.google.Gemini.deviceID" = "E04D9B31-546E-4F7D-A1D6-DBD32D6B30C3";
+    "com.google.GeminiMacOS.firstExecution.systemSettingsClose" = "1.119.2.914-PROD";
+    "com.google.GeminiMacOS.hasRegisteredAccessibilityTCC" = 1;
+    "com.google.GeminiMacOS.wasPreviouslyTrustedAccessibility" = 1;
+    connectedFolderBannerImpressionCount = 1;
+    connectedFolderBannerLastShownDate = "1790511420.42346";
+    "gemini_use_macos_system_voice" = 0;
+    hasCompletedSTCDiscoveryFlow = 1;
+    shortcutPromotionImpressionCount = 2;
+    shortcutPromotionLastShownDate = "1790707026.425458";
+    "user1_disableAgentMode" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableAudioOverview" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableAvatar" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableBlockRenderCache" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableConnectedAppsSidebarLink" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableConnectedFoldersPerChat" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableCustomizePage" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableDeviceTriggerCoordinator" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableDiscoveryTooltips" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableFileGen2" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableHoverPrefetch" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableImageGenTemplates" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableLocalCCTool" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableMacOSSystemVoice" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableMcpCustomLocal" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableMcpToolUiFrame" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableMiniAppContentBlock" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableMosaicWatermark" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableNativeMaps" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableNotebookConsentFlow" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableP42MentionsConvergence" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableP42SideNav" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableRageshakeFeedback" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableRemoteControl" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableRemyChatConvergence" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableScheduledTasksFreeTierTimeWindows" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableScheduledTasksP42Refactor" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableSharedSearch" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableSkillAutocomplete" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableSkillsMenuLink" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableSuperprojects" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableToolMention" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableU18AgeVerification" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableUpdatePillPrompt" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableVideoGenTemplates" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableWideTablesAndScrolling" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableWindowShareAttachmentChips" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enable_smart_model_selection" = 1;
+    "user1_isSidebarVisible" = 1;
+    "user1_shouldSendCrashesAndUsageData" = 1;
+    "user1_stcUseReasoning" = 0;
+}
+--- /Users/christopherhoffpauir/Library/Preferences/com.google.GeminiMacOS.shareddata.plist
+{
+    "com.google.Gemini.OmahaMetrics.isAppActive" = 0;
+    "com.google.Gemini.OmahaMetrics.lastActiveDay" = 7239;
+    "com.google.Gemini.OmahaMetrics.lastRollcallDay" = 7239;
+    "com.google.Gemini.OmahaMetrics.pingFreshness" = "446D36F6-B742-42C8-9A43-76F1F5B3F8C1";
+    hasCompletedInitialLoginItemRegistration = 1;
+    loginItemEnabled = 1;
+    "statusBar_isPastOnboarding" = 1;
+}
+--- /Users/christopherhoffpauir/Library/Preferences/com.google.GeminiMacOS.plist
+{
+    "NSWindow Frame SettingsWindow" = "678 517 700 600 0 0 2056 1290 ";
+    "WindowBoundsTracker.fullViewFrame" =     (
+        514,
+        195,
+        1028,
+        900
+    );
+    "app_enableClearcutSpoolTrimming" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "app_enableFastLaunch" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "app_enableSkillAutocomplete" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "app_enableThemePickerInSettings" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "app_enableToolMention" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "com.google.Gemini.deviceID" = "E04D9B31-546E-4F7D-A1D6-DBD32D6B30C3";
+    "com.google.GeminiMacOS.firstExecution.systemSettingsClose" = "1.119.2.914-PROD";
+    "com.google.GeminiMacOS.hasRegisteredAccessibilityTCC" = 1;
+    "com.google.GeminiMacOS.wasPreviouslyTrustedAccessibility" = 1;
+    connectedFolderBannerImpressionCount = 1;
+    connectedFolderBannerLastShownDate = "1790511420.42346";
+    "gemini_use_macos_system_voice" = 0;
+    hasCompletedSTCDiscoveryFlow = 1;
+    shortcutPromotionImpressionCount = 2;
+    shortcutPromotionLastShownDate = "1790707026.425458";
+    "user1_disableAgentMode" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableAudioOverview" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableAvatar" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableBlockRenderCache" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableConnectedAppsSidebarLink" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableConnectedFoldersPerChat" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableCustomizePage" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableDeviceTriggerCoordinator" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableDiscoveryTooltips" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableFileGen2" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableHoverPrefetch" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableImageGenTemplates" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableLocalCCTool" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableMacOSSystemVoice" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableMcpCustomLocal" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableMcpToolUiFrame" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableMiniAppContentBlock" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableMosaicWatermark" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableNativeMaps" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableNotebookConsentFlow" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableP42MentionsConvergence" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableP42SideNav" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableRageshakeFeedback" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableRemoteControl" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableRemyChatConvergence" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableScheduledTasksFreeTierTimeWindows" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableScheduledTasksP42Refactor" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableSharedSearch" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableSkillAutocomplete" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableSkillsMenuLink" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableSuperprojects" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableToolMention" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableU18AgeVerification" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableUpdatePillPrompt" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableVideoGenTemplates" = {length = 28, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 223a7472 75657d7d };
+    "user1_enableWideTablesAndScrolling" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enableWindowShareAttachmentChips" = {length = 29, bytes = 0x7b226465 6661756c 7456616c 7565223a ... 3a66616c 73657d7d };
+    "user1_enable_smart_model_selection" = 1;
+    "user1_isSidebarVisible" = 1;
+    "user1_shouldSendCrashesAndUsageData" = 1;
+    "user1_stcUseReasoning" = 0;
+}
+--- /Users/christopherhoffpauir/Library/Preferences/com.google.GeminiMacOS.shareddata.plist
+{
+    "com.google.Gemini.OmahaMetrics.isAppActive" = 0;
+    "com.google.Gemini.OmahaMetrics.lastActiveDay" = 7239;
+    "com.google.Gemini.OmahaMetrics.lastRollcallDay" = 7239;
+    "com.google.Gemini.OmahaMetrics.pingFreshness" = "446D36F6-B742-42C8-9A43-76F1F5B3F8C1";
+    hasCompletedInitialLoginItemRegistration = 1;
+    loginItemEnabled = 1;
+    "statusBar_isPastOnboarding" = 1;
+}
+--- container /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.FinderSync
+com.apple.security.plist
+com.apple.security_common.plist
+--- /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.FinderSync/Data/Library/Preferences/com.apple.security.plist
+Error: Domain '/Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.FinderSync/Data/Library/Preferences/com.apple.security.plist' not found.
+--- /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.FinderSync/Data/Library/Preferences/com.apple.security_common.plist
+Error: Domain '/Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.FinderSync/Data/Library/Preferences/com.apple.security_common.plist' not found.
+--- container /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.WidgetExtension
+com.apple.security.plist
+com.apple.security_common.plist
+--- /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.WidgetExtension/Data/Library/Preferences/com.apple.security.plist
+Error: Domain '/Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.WidgetExtension/Data/Library/Preferences/com.apple.security.plist' not found.
+--- /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.WidgetExtension/Data/Library/Preferences/com.apple.security_common.plist
+Error: Domain '/Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS.WidgetExtension/Data/Library/Preferences/com.apple.security_common.plist' not found.
+### Gemini app support keys (grep for hotkey/shortcut/space, filenames only + small json)
+--- /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS
+total 16
+drwxr-xr-x@   6 christopherhoffpauir  staff   192 Sep 27 07:16 .
+drwx------+ 171 christopherhoffpauir  staff  5472 Oct 25 22:08 ..
+drwxr-xr-x@   7 christopherhoffpauir  staff   224 Sep 27 07:16 Crashpad
+drwxr-xr-x@  12 christopherhoffpauir  staff   384 Sep 27 07:17 Data
+-rw-r--r--@   1 christopherhoffpauir  staff    18 Sep 27 07:16 account_config
+-rw-r--r--@   1 christopherhoffpauir  staff    16 Sep 27 07:16 crash_count_watermark
+--- /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS.launcher
+total 0
+drwxr-xr-x@   3 christopherhoffpauir  staff    96 Sep 27 07:16 .
+drwx------+ 171 christopherhoffpauir  staff  5472 Oct 25 22:08 ..
+drwxr-xr-x@   7 christopherhoffpauir  staff   224 Sep 27 07:16 Crashpad
+### ---- E. Other known Option+Space / Ctrl+Space / Cmd+J defaults: Raycast, Alfred, ChatGPT, Claude, Copilot, Devin, Cursor ----
+--- com.anthropic.claudefordesktop
+--- com.apple.finder
+--- com.google.Chrome
+--- com.apple.Safari
+    "WebKitPreferences.webSecurityEnabled" = 1;
+    WebKitRespectStandardStyleKeyEquivalents = 1;
+    WebKitWebSecurityEnabled = 1;
+    WebsiteNameProviderLastUpdateTime = "2026-08-28 19:07:57 +0000";
+    "com.apple.MobileAsset.SafariBackgroundImage.UpdateDate" = "2026-10-22 04:41:05 +0000";
+### all prefs plists mentioning hotkey-ish keys (names only)
+ai.perplexity.macv3.plist
+com.apple.ServicesMenu.Services.plist
+com.apple.symbolichotkeys.plist
+com.apple.universalaccess.plist
+### ---- F. Karabiner / BetterTouchTool / Hammerspoon / skhd ----
+ls: /Users/christopherhoffpauir/.config/karabiner/: No such file or directory
+ls: /Users/christopherhoffpauir/Library/Application Support/BetterTouchTool/: No such file or directory
+ls: /Users/christopherhoffpauir/.hammerspoon: No such file or directory
+ls: /Users/christopherhoffpauir/.config/skhd: No such file or directory
+ls: /Users/christopherhoffpauir/.skhdrc: No such file or directory
+ai.perplexity.CometUpdater.wake.plist
+ai.perplexity.keystone.agent.plist
+ai.perplexity.keystone.xpcservice.plist
+com.adobe.GC.Invoker-1.0.plist
+com.devin.interseat-rover.plist
+com.elgato.CameraHub.plist
+com.elgato.StreamDeck.plist
+com.elgato.WaveLink.plist
+com.epicgames.launcher.plist
+com.google.GoogleUpdater.wake.plist
+com.google.keystone.agent.plist
+com.google.keystone.xpcservice.plist
+com.hifidecant.ctl-runner.plist
+com.hifidecant.dr-nightly.plist
+com.hifidecant.freecompute-watchdog.plist
+com.hifidecant.garden-autocommit.plist
+com.hifidecant.ingram-nag.plist
+com.hifidecant.iris-check.plist
+com.hifidecant.iris-mdns.plist
+com.hifidecant.iris-peer-watch.plist
+com.hifidecant.iris-scout.plist
+com.hifidecant.iris-unit.plist
+com.hifidecant.lane-services-reviver.plist
+com.hifidecant.node-tunnels.plist
+com.hifidecant.ola-fire.plist
+com.hifidecant.ola-watch.plist
+com.hifidecant.powergate.plist
+com.hifidecant.selflight.mbp.plist
+com.iris.immune.plist
+com.iris.never-sleep.plist
+com.samsung.portablessdplus.mon.plist
+com.selflight.lane-shuttle.plist
+com.selflight.unit-watch.plist
+com.valvesoftware.steamclean.plist
+com.adobe.ARMDCHelper.cc24aef4a1b90ed56a725c38014c95072f92651fb65e1bf9c8e43c37a23d420d.plist
+com.adobe.AdobeCreativeCloud.plist
+com.adobe.AdobeDesktopService.plist
+com.adobe.GC.Invoker-1.0.plist
+com.adobe.ccxprocess.plist
+com.canon.usa.EWCPairingService.plist
+com.canon.usa.EWCService.plist
+com.displaylink.loginscreen.plist
+com.google.keystone.agent.plist
+com.google.keystone.xpcservice.plist
+com.macrosilicon.usbdisplay.plist
+com.paceap.eden.licensed.agent.plist
+us.zoom.updater.login.check.plist
+us.zoom.updater.plist
+### ---- G. Iris Helper / Prime code: where is the hotkey registered? ----
+ls: /Users/christopherhoffpauir/Applications/*Iris*: No such file or directory
+/Applications/Iris Control.app
+/Applications/Iris Dental.app
+/Applications/Iris GBM.app
+/Applications/Iris Prime (Staged).app
+/Applications/Iris Prime.app
+/Applications/Iris Teacher.app
+/Applications/Iris Vet.app
+/Applications/Project Iris Console.app
+/Applications/Project Iris Kill All.app
+/Applications/Project Iris Restart.app
+/Applications/Project Iris Start All.app
+/Applications/Project Iris.app
+--- /Applications/Iris Prime.app
+/Applications/Iris Prime.app/Contents:
+Frameworks
+Info.plist
+MacOS
+PkgInfo
+Resources
+
+/Applications/Iris Prime.app/Contents/MacOS:
+Iris Prime
+
+/Applications/Iris Prime.app/Contents/Resources:
+af.lproj
+am.lproj
+app.asar
+ar.lproj
+bg.lproj
+bn.lproj
+ca.lproj
+cs.lproj
+da.lproj
+de.lproj
+el.lproj
+en.lproj
+en_GB.lproj
+engine
+es.lproj
+es_419.lproj
+et.lproj
+fa.lproj
+fi.lproj
+fil.lproj
+fr.lproj
+gu.lproj
+he.lproj
+hi.lproj
+hr.lproj
+hu.lproj
+icon.icns
+id.lproj
+it.lproj
+    CFBundleExecutable = "Iris Prime";
+    CFBundleIdentifier = "com.projectiris.desktop";
+    CFBundleShortVersionString = "0.1.0";
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/aiohttp/_cookie_helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/aiohttp/tcp_helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/aiohttp/helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/googleapiclient/_helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/google_auth_oauthlib/helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/proto/datetime_helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/propcache/_helpers_c.cpython-312-darwin.so
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/propcache/_helpers_c.pyx
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/propcache/_helpers_py.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/propcache/_helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/broadlink/helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/pyparsing/helpers.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/PyObjCTest/helpernsobject.cpython-312-darwin.so.dSYM
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/PyObjCTest/helpernsdata.cpython-312-darwin.so.dSYM
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/PyObjCTools/AppHelper.py
+/Applications/Iris Prime.app/Contents/Resources/engine/python-deps/fxpmath/helpers.py
+/Applications/Iris Prime.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers
+/Applications/Iris Prime.app/Contents/Frameworks/Electron Framework.framework/Helpers
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper.app
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper.app/Contents/MacOS/Iris Prime Helper
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper (Renderer).app
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper (Renderer).app/Contents/MacOS/Iris Prime Helper (Renderer)
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper (Plugin).app
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper (Plugin).app/Contents/MacOS/Iris Prime Helper (Plugin)
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper (GPU).app
+/Applications/Iris Prime.app/Contents/Frameworks/Iris Prime Helper (GPU).app/Contents/MacOS/Iris Prime Helper (GPU)
+--- /Applications/Iris Prime (Staged).app
+/Applications/Iris Prime (Staged).app/Contents:
+Frameworks
+Info.plist
+MacOS
+PkgInfo
+Resources
+_CodeSignature
+
+/Applications/Iris Prime (Staged).app/Contents/MacOS:
+Iris Prime
+
+/Applications/Iris Prime (Staged).app/Contents/Resources:
+af.lproj
+am.lproj
+app.asar
+ar.lproj
+bg.lproj
+bn.lproj
+ca.lproj
+cs.lproj
+da.lproj
+de.lproj
+el.lproj
+en.lproj
+en_GB.lproj
+engine
+es.lproj
+es_419.lproj
+et.lproj
+fa.lproj
+fi.lproj
+fil.lproj
+fr.lproj
+gu.lproj
+he.lproj
+hi.lproj
+hr.lproj
+hu.lproj
+icon.icns
+id.lproj
+    CFBundleExecutable = "Iris Prime";
+    CFBundleIdentifier = "com.projectiris.desktop.staged";
+    CFBundleShortVersionString = "0.1.0";
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/aiohttp/_cookie_helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/aiohttp/tcp_helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/aiohttp/helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/_helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/google_auth_oauthlib/helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/proto/datetime_helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/propcache/_helpers_c.cpython-312-darwin.so
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/propcache/_helpers_c.pyx
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/propcache/_helpers_py.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/propcache/_helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/broadlink/helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/pyparsing/helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/PyObjCTest/helpernsobject.cpython-312-darwin.so.dSYM
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/PyObjCTest/helpernsdata.cpython-312-darwin.so.dSYM
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/PyObjCTools/AppHelper.py
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/fxpmath/helpers.py
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Electron Framework.framework/Helpers
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper.app
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper.app/Contents/MacOS/Iris Prime Helper
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper (Renderer).app
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper (Renderer).app/Contents/MacOS/Iris Prime Helper (Renderer)
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper (Plugin).app
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper (Plugin).app/Contents/MacOS/Iris Prime Helper (Plugin)
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper (GPU).app
+/Applications/Iris Prime (Staged).app/Contents/Frameworks/Iris Prime Helper (GPU).app/Contents/MacOS/Iris Prime Helper (GPU)
+--- grep staged engine for hotkey code (read-only)
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/prefs.js.pre-entrycut-20261027:289:    as.append(aToggle("summon.hotkey", "Hotkey summon", "Ctrl+Space or ⌘J"));
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/assist-launch.js:474:  function handleHotkey(e) {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/assist-launch.js:475:    if (!prefs.getPref("summon.hotkey", true)) return;
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/assist-launch.js:498:    document.addEventListener('keydown', handleHotkey);
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/iris-assistant.js:3:   Option+Space (or a click on the avatar) opens it. It speaks through the real /ws/casual, in the room you are in,
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/iris-assistant.js:42:  var orb = document.createElement("div"); orb.id = "ia-orb"; orb.title = "Iris, your Personal Assistant (Option+Space)"; orb.setAttribute("role", "button"); orb.tabIndex = 0;
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/iris-assistant.js:81:  window.__irisAssistant.toggle = function (f) { toggle(f); };   // OPTSPACE-001: Iris Prime app calls this from Mac-wide Option+Space
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/iris-assistant.js:85:    if (open) { panel.querySelector("#ia-foot").textContent = "Speaking in your " + ROOMNAME[room()] + (room() === "forge" ? " (no room armour here)" : ", wearing its armour") + " · Option+Space";
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/prefs.js:289:    as.append(aToggle("summon.hotkey", "Hotkey summon", "Ctrl+Space or ⌘J"));
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tk9.0/demos/en.msg:8:::msgcat::mcset en "Meta+Q"		;# Displayed hotkey
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tk9.0/demos/en.msg:10:::msgcat::mcset en "Ctrl+Q"		;# Displayed hotkey
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tk9.0/demos/nl.msg:8:::msgcat::mcset nl "Meta+Q"    "Meta+E"		;# Displayed hotkey
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tk9.0/demos/nl.msg:10:::msgcat::mcset nl "Ctrl+Q"    "Ctrl+E"		;# Displayed hotkey
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/site-packages/pip/_vendor/pygments/lexers/_mapping.py:40:    'AutohotkeyLexer': ('pip._vendor.pygments.lexers.automation', 'autohotkey', ('autohotkey', 'ahk'), ('*.ahk', '*.ahkl'), ('text/x-autohotkey',)),
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/site-packages/pip/_vendor/pygments/lexers/_mapping.py:77:    'CarbonLexer': ('pip._vendor.pygments.lexers.carbon', 'Carbon', ('carbon',), ('*.carbon',), ('text/x-carbon',)),
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/site-packages/pip/_vendor/rich/pretty.py:999:            "Carbonated spring water",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/mainmenu.py:1:"""Define the menu contents, hotkeys, and event bindings.
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:45:            _tk_type = "carbon"
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:53:    Returns True if IDLE is using a native OS X Tk (Cocoa or Carbon).
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:57:    return _tk_type == "cocoa" or _tk_type == "carbon"
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:59:def isCarbonTk():
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:61:    Returns True if IDLE is using a Carbon Aqua Tk (instead of the
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:66:    return _tk_type == "carbon"
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:226:    if isCarbonTk():
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:227:        # for Carbon AquaTk, replace the default Tk apple menu
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:260:        2. Aqua Carbon Tk (original native, 32-bit only, deprecated)
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/macosx.py:266:    isAquaTk(), isCarbonTk(), isCocoaTk(), isXQuartz() functions which
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/NEWS2x.txt:150:- File menu hotkeys: there were three 'p' assignments.  Reassign the
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/NEWS2x.txt:151:  'Save Copy As' and 'Print' hotkeys to 'y' and 't'.  Change the
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/NEWS2x.txt:152:  Shell hotkey from 's' to 'l'.
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/editor.py:459:      with Alt-hotkey indicator.  A subset of menudefs items.
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/editor.py:504:        if macosx.isCarbonTk():
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/editor.py:917:        Also update hotkeys to current keyset.
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/calltip.py:42:        "The user selected the menu entry or hotkey, open the tip."
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12/idlelib/News3.txt:1056:  4. In macosc, runningAsOSXAPP == isAquaTk; idCarbonAquaTk == isCarbonTk
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/spanner.v1.json:5382:"IndexedHotKey": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/spanner.v1.json:5384:"id": "IndexedHotKey",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/spanner.v1.json:5386:"sparseHotKeys": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/spanner.v1.json:6290:"indexedHotKeys": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/spanner.v1.json:6292:"$ref": "IndexedHotKey"
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/spanner.v1.json:6294:"description": "The (sparse) mapping from time index to an IndexedHotKey message, representing those time intervals for which there are hot keys.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/cloudlocationfinder.v1alpha.json:314:"carbonFreeEnergyPercentage": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/cloudlocationfinder.v1alpha.json:315:"description": "Optional. The carbon free energy percentage of the cloud location. This represents the average percentage of time customers' application will be running on carbon-free energy. See https://cloud.google.com/sustainability/region-carbon for more details. There is a difference between default value 0 and unset value. 0 means the carbon free energy percentage is 0%, while unset value means the carbon footprint data is not available.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/cloudlocationfinder.v1.json:314:"carbonFreeEnergyPercentage": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/cloudlocationfinder.v1.json:315:"description": "Optional. The carbon free energy percentage of the cloud location. This represents the average percentage of time customers' application will be running on carbon-free energy. See https://cloud.google.com/sustainability/region-carbon for more details. There is a difference between default value 0 and unset value. 0 means the carbon free energy percentage is 0%, while unset value means the carbon footprint data is not available.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/recommender.v1beta1.json:5119:"description": "Carbon Footprint generated in kg of CO2 equivalent. Chose kg_c_o2e so that the name renders correctly in camelCase (kgCO2e).",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/mybusinesslodging.v1.json:885:"carbonFreeEnergySources": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/mybusinesslodging.v1.json:886:"description": "Carbon free energy sources. Property sources carbon-free electricity via at least one of the following methods: on-site clean energy generation, power purchase agreement(s) with clean energy generators, green power provided by electricity supplier, or purchases of Energy Attribute Certificates (such as Renewable Energy Certificates or Guarantees of Origin).",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/mybusinesslodging.v1.json:889:"carbonFreeEnergySourcesException": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/mybusinesslodging.v1.json:890:"description": "Carbon free energy sources exception.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/mybusinesslodging.v1.json:926:"description": "Energy efficient heating and cooling systems. The property doesn't use chlorofluorocarbon (CFC)-based refrigerants in heating, ventilating, and air-conditioning systems unless a third-party audit shows it's not economically feasible. The CFC-based refrigerants which are used should have a Global Warming Potential (GWP) \u2264 10. The property uses occupancy sensors on HVAC systems in back-of-house spaces, meeting rooms, and other low-traffic areas.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/mybusinesslodging.v1.json:5559:"description": "Compostable food containers and cutlery. 100% of food service containers and to-go cutlery are compostable, and reusable utensils are offered wherever possible. Compostable materials are capable of undergoing biological decomposition in a compost site, such that material is not visually distinguishable and breaks down into carbon dioxide, water, inorganic compounds, and biomass.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/solar.v1.json:937:"carbonOffsetFactorKgPerMwh": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/solar.v1.json:938:"description": "Equivalent amount of CO2 produced per MWh of grid electricity. This is a measure of the carbon intensity of grid electricity displaced by solar electricity.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/travelimpactmodel.v1.json:6:"description": "Travel Impact Model API lets you query travel carbon emission estimates.",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/recommender.v1.json:4737:"description": "Carbon Footprint generated in kg of CO2 equivalent. Chose kg_c_o2e so that the name renders correctly in camelCase (kgCO2e).",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/dataflow.v1b3.json:3802:"enableHotKeyLogging": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/dataflow.v1b3.json:4619:"HotKeyDebuggingInfo": {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/dataflow.v1b3.json:4621:"id": "HotKeyDebuggingInfo",
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache/documents/dataflow.v1b3.json:4623:"detectedHotKeys": {
+--- helper dir listing
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/.seatguard
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/server
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/server/data
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/docs
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/dental
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/vendor
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/vendor
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/vendor/dtf
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/vendor/ptyprocess
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/vendor/ollama
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/bin
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/include
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/include/python3.12
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/pkgconfig
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/thread3.0.4
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tk9.0
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tcl9.0
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/itcl4.3.5
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/python3.12
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/lib/tcl9
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/share
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/share/man
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/godox_ul60bi_bt-1.1.0.dist-info
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/python_osc-1.10.2.dist-info
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/aiohttp
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/aiohttp/_websocket
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/oauthlib-4.0.0.dist-info
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/oauthlib-4.0.0.dist-info/licenses
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/pyasn1
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/pyasn1/compat
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/pyasn1/codec
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/pyasn1/type
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/httpcore
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/httpcore/_backends
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/httpcore/_async
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/httpcore/_sync
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/websocket
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/websocket/tests
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/googleapiclient/discovery_cache
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/click-8.5.0.dist-info
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/click-8.5.0.dist-info/licenses
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/google_auth_oauthlib-1.5.0.dist-info
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/google_auth_oauthlib-1.5.0.dist-info/licenses
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/fastapi-0.141.1.dist-info
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/fastapi-0.141.1.dist-info/licenses
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/google_auth_oauthlib
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/google_auth_oauthlib/tool
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/sacn
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/sacn/messages
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/sacn/sending
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/sacn/receiving
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/python-deps/bleak
+--- running Iris processes
+  402 03:11:40 /System/Library/PrivateFrameworks/Heimdal.framework/Helpers/kdc
+  420 03:11:40 /usr/libexec/logd_helper
+  423 03:11:39 /usr/libexec/dirhelper
+  480 03:11:39 /System/Library/CoreServices/TimeMachine/backupd-helper -launchd
+  483 03:11:39 /usr/libexec/nehelper
+  511 03:11:38 /usr/sbin/mDNSResponderHelper
+  513 03:11:38 /System/Library/Frameworks/SystemExtensions.framework/Versions/A/Helpers/sysextd
+  532 03:11:38 /System/Library/Frameworks/Security.framework/Versions/A/XPCServices/com.apple.CodeSigningHelper.xpc/Contents/MacOS/com.apple.CodeSigningHelper
+  548 03:11:37 /System/Library/CoreServices/osanalyticshelper server-init
+  585 03:11:35 /Library/PrivilegedHelperTools/licenseDaemon.app/Contents/MacOS/licenseDaemon --launchd --backurl https://activation.paceap.com/InitiateActivation
+  596 03:11:35 /System/Library/Frameworks/CoreAudio.framework/Versions/A/XPCServices/com.apple.audio.DriverHelper.xpc/Contents/MacOS/com.apple.audio.DriverHelper
+  604 03:11:35 /System/Library/CoreServices/Software Update.app/Contents/Resources/suhelperd
+  606 03:11:35 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+  633 03:11:34 /System/Library/Frameworks/GSS.framework/Helpers/GSSCred
+  649 03:11:34 /System/Library/Frameworks/Security.framework/Versions/A/XPCServices/TrustedPeersHelper.xpc/Contents/MacOS/TrustedPeersHelper
+  697 03:11:33 /usr/libexec/AirPlayXPCHelper
+  769 03:11:32 /usr/libexec/kernelmanager_helper
+  805 03:11:32 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 /Users/christopherhoffpauir/.selflight/iris-unit/iris_server_v0.1.py --port 8768 --model llama3.
+  815 03:11:32 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py
+  818 03:11:32 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 /Users/christopherhoffpauir/.selflight/iris-unit/iris_server_v0.1.py --port 8767 --model gemma4:
+  819 03:11:32 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 /Users/christopherhoffpauir/.selflight/iris-unit/iris_server_v0.1.py --port 8766 --listen 0.0.0.
+  832 03:11:32 Contents/Library/LaunchAgents/Perplexity Helper.app/Contents/MacOS/perplexityd
+  838 03:11:32 /opt/homebrew/bin/node /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/bridge/relay/peer_watch.mjs --state-dir /Users/christopherhoffpauir/HIFIDecant/iris-peer-watch
+  878 03:11:31 /Applications/Plaud.app/Contents/Frameworks/Electron Framework.framework/Helpers/chrome_crashpad_handler --no-rate-limit --monitor-self-annotation=ptype=crashpad-handler --database=/Use
+  880 03:11:31 /Applications/Plaud.app/Contents/Frameworks/Plaud Helper (GPU).app/Contents/MacOS/Plaud Helper (GPU) --type=gpu-process --user-data-dir=/Users/christopherhoffpauir/Library/Application S
+  881 03:11:31 /Applications/Plaud.app/Contents/Frameworks/Plaud Helper.app/Contents/MacOS/Plaud Helper --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-ty
+  919 03:11:30 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+  920 03:11:30 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+  922 03:11:30 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+  932 03:11:30 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/deployment/builder_jobs.py
+  937 03:11:30 /Applications/Plaud.app/Contents/Frameworks/Plaud Helper (Renderer).app/Contents/MacOS/Plaud Helper (Renderer) --type=renderer --user-data-dir=/Users/christopherhoffpauir/Library/Applic
+  938 03:11:30 /usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ConnectTimeout=8 -o StrictHostKeyChecking=yes -o HostKeyAlias=project-
+  965 03:11:29 /usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ConnectTimeout=8 -o StrictHostKeyChecking=yes -o HostKeyAlias=project-
+  977 03:11:29 /System/Library/PrivateFrameworks/TextInputUIMacHelper.framework/Versions/A/XPCServices/CursorUIViewService.xpc/Contents/MacOS/CursorUIViewService
+  994 03:11:29 /System/Library/PrivateFrameworks/ProtectedCloudStorage.framework/Helpers/ProtectedCloudKeySyncing
+ 1031 03:11:28 /bin/bash /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/deployment/run-selflight-mbp.sh
+ 1066 03:11:28 /System/Library/PrivateFrameworks/CacheDelete.framework/deleted_helper
+ 1091 03:11:27 /System/Library/PrivateFrameworks/CloudServices.framework/Helpers/com.apple.sbd
+ 1118 03:11:27 /System/Library/Frameworks/MediaExtension.framework/Versions/A/Helpers/MENotificationAgent
+ 1129 03:11:27 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1155 03:11:26 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1166 03:11:26 /System/Library/PrivateFrameworks/AppPredictionFoundation.framework/Versions/A/XPCServices/AppPredictionIntentsHelperService.xpc/Contents/MacOS/AppPredictionIntentsHelperService
+ 1259 03:11:24 /Applications/Plaud.app/Contents/Frameworks/Plaud Helper.app/Contents/MacOS/Plaud Helper --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US --service-sandbox-type=a
+ 1260 03:11:24 /Applications/Plaud.app/Contents/Frameworks/Plaud Helper (Plugin).app/Contents/MacOS/Plaud Helper (Plugin) --type=utility --utility-sub-type=video_capture.mojom.VideoCaptureService --la
+ 1353 03:11:22 /Applications/Elgato Stream Deck.app/Contents/Helpers/crashpad_handler --no-rate-limit --database=/private/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/Sentry_StreamDeck --metrics-di
+ 1357 03:11:22 /Applications/Elgato Stream Deck.app/Contents/Helpers/termination_handler
+ 1358 03:11:22 /usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ConnectTimeout=8 -o StrictHostKeyChecking=yes -o HostKeyAlias=project-
+ 1359 03:11:22 /usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o ConnectTimeout=8 -o StrictHostKeyChecking=yes -o HostKeyAlias=project-
+ 1383 03:11:21 /System/Library/CoreServices/Dock.app/Contents/XPCServices/DockHelper.xpc/Contents/MacOS/DockHelper
+ 1394 03:11:20 /Applications/Elgato Stream Deck.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess --type=renderer --webengine-schemes=s
+ 1395 03:11:20 /Applications/Elgato Stream Deck.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess --type=renderer --webengine-schemes=s
+ 1486 03:11:18 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1487 03:11:18 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1488 03:11:18 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1489 03:11:18 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1490 03:11:18 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 1666 03:11:14 /usr/sbin/systemstats --logger-helper /private/var/db/systemstats
+ 1677 03:11:13 /System/Library/PrivateFrameworks/MobileInstallation.framework/XPCServices/com.apple.MobileInstallationHelperService.xpc/Contents/MacOS/com.apple.MobileInstallationHelperService
+ 1796    11:28 /System/Library/PrivateFrameworks/SoftwareUpdateCore.framework/Versions/A/XPCServices/SUCoreHelperService.xpc/Contents/MacOS/SUCoreHelperService
+ 1813 03:11:09 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/chrome_crashpad_handler --monitor-self-annotation=ptype=crashpad-han
+ 1815 03:11:08 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Hel
+ 1816 03:11:08 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Hel
+ 1819 03:11:08 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Hel
+ 1906 03:11:07 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+ 2445 03:10:48 /System/Library/PrivateFrameworks/SiriSuggestionsSupport.framework/Versions/A/XPCServices/SiriSuggestionsBookkeepingService.xpc/Contents/MacOS/SiriSuggestionsBookkeepingService
+ 2788 03:10:37 /System/Library/CoreServices/CrashReporterSupportHelper server-init
+ 3050 03:10:28 /Applications/Devin.app/Contents/Frameworks/Electron Framework.framework/Helpers/chrome_crashpad_handler --no-rate-limit --monitor-self-annotation=ptype=crashpad-handler --database=/Use
+ 3051 03:10:28 /Applications/Devin.app/Contents/Frameworks/Devin Helper.app/Contents/MacOS/Devin Helper --type=gpu-process --user-data-dir=/Users/christopherhoffpauir/Library/Application Support/Devin
+ 3052 03:10:28 /Applications/Devin.app/Contents/Frameworks/Devin Helper.app/Contents/MacOS/Devin Helper --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-ty
+ 3094 03:10:27 /Applications/Devin.app/Contents/Frameworks/Devin Helper.app/Contents/MacOS/Devin Helper --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=non
+ 3346 03:10:24 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+ 3441 03:10:23 /System/Library/PrivateFrameworks/MobileAccessoryUpdater.framework/Support/fudHelperAgent
+ 3495 01:10:07 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Hel
+ 4116 03:09:55 /Applications/Devin.app/Contents/Frameworks/Devin Helper.app/Contents/MacOS/Devin Helper --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US --service-sandbox-type=a
+ 4123 03:09:54 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 4139 03:09:54 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+ 5100 01:09:13 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py
+ 6194 03:08:33 /System/Library/ExtensionKit/Extensions/SiriSetupSettingsIntents.appex/Contents/MacOS/SiriSetupSettingsIntents -BSServiceDomains {"XPCService":{"Services":{"MainService":{}}}} -LaunchAr
+ 7403    07:16 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Hel
+ 7566    07:08 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+ 8047 01:07:43 /Applications/Devin.app/Contents/Frameworks/Devin Helper (Plugin).app/Contents/MacOS/Devin Helper (Plugin) --import=data:text/javascript,const%20r%3Dprocess.crashReporter%3Bif%28r%29%7B
+ 9340 02:07:47 bash -c cat > ~/HIFIDecant/Selflight/tools/keepers/march-heartbeat.sh <<'EOF'\012#!/bin/bash\012# march-heartbeat — 5-min progress snapshot into garden/ola/PROGRESS.md\012# (Doc's rulin
+ 9342 02:07:47 /bin/bash /Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/march-heartbeat.sh
+ 9946    04:53 /System/Library/PrivateFrameworks/AOSKit.framework/Versions/A/XPCServices/com.apple.iCloudHelper.xpc/Contents/MacOS/com.apple.iCloudHelper
+12135    02:43 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Hel
+12461 01:05:15 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Helpers/AcroCEF/AcroCEF.app/Contents/MacOS/AcroCEF "/Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Helpers/AcroCEF/A
+12471 01:05:14 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Frameworks/AcroCEF Helper (GPU).app/Contents/MacOS/AcroCEF Helper (GPU) --type=gpu-process --log-severity=disable --user-agent-
+12526 01:05:14 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Frameworks/AcroCEF Helper.app/Contents/MacOS/AcroCEF Helper --type=utility --utility-sub-type=network.mojom.NetworkService --la
+12528 01:05:14 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+12532 01:05:13 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Helpers/AdobeResourceSynchronizer.app/Contents/MacOS/AdobeResourceSynchronizer -c
+12599 01:05:10 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Frameworks/AcroCEF Helper.app/Contents/MacOS/AcroCEF Helper --type=utility --utility-sub-type=storage.mojom.StorageService --la
+12600 01:05:10 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Frameworks/AcroCEF Helper (Renderer).app/Contents/MacOS/AcroCEF Helper (Renderer) --type=renderer --log-severity=disable --user
+12601 01:05:10 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Frameworks/AcroCEF Helper (Renderer).app/Contents/MacOS/AcroCEF Helper (Renderer) --type=renderer --log-severity=disable --user
+12605 01:05:10 /Applications/Adobe Acrobat DC/Adobe Acrobat.app/Contents/Frameworks/AcroCEF Helper (Renderer).app/Contents/MacOS/AcroCEF Helper (Renderer) --type=renderer --log-severity=disable --user
+12615 01:05:10 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+12743    02:16 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+13421    01:52 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Hel
+15581    00:54 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+15605    00:52 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Hel
+22157 02:58:16 /Applications/Devin.app/Contents/Frameworks/Devin Helper.app/Contents/MacOS/Devin Helper --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=non
+31582 02:52:16 bash -c tail -5 /tmp/exp8772.log 2>/dev/null; cd ~/HIFIDecant/Selflight/candidates/iris-creative-exp-1 && nohup ./run-exp.sh > /tmp/exp8772.log 2>&1 & sleep 8; curl -s -o /dev/null -w "
+31584 02:52:16 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py
+32137 02:51:59 bash -c cd "/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app" && SELFLIGHT_INSTANCE=staged-verify SELFLIGHT_HOME=/tmp/staged-verify-home SELFLIGHT_PORT=8790 SELFLIGHT
+32139 02:51:59 /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py
+35351 01:50:36 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+36514 02:49:30 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+36524 02:49:30 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+36525 02:49:30 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+36533 02:49:30 /Applications/Claude.app/Contents/Helpers/chrome-native-host chrome-extension://fcoeoabgfenejglbffodgkkbkcdhcgfn/
+36729 02:49:23 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+38092 02:48:36 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+38379 02:48:27 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Hel
+38380 02:48:27 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Hel
+45304 01:42:39 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+45457 01:42:32 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+45978 02:44:02 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+45982 02:44:02 /System/Library/PrivateFrameworks/CallHistory.framework/Support/CallHistoryPluginHelper
+45987 02:44:02 /System/Library/PrivateFrameworks/SafariShared.framework/Versions/A/XPCServices/com.apple.Safari.SearchHelper.xpc/Contents/MacOS/com.apple.Safari.SearchHelper
+45989 02:44:02 /System/Library/PrivateFrameworks/CallHistory.framework/Support/CallHistorySyncHelper
+46049 02:44:01 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+46065 02:44:01 /Library/Apple/System/Library/PrivateFrameworks/RemotePairing.framework/Versions/A/Resources/bin/RemotePairingDataVaultHelper
+46364 02:43:53 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/DictionaryServices.framework/Versions/A/XPCServices/com.apple.DictionaryServiceHelper.xpc/Contents/MacOS/com.appl
+46655 02:43:44 /bin/bash /Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/iris-mdns.sh
+46667 02:43:44 /usr/bin/dns-sd -R app _iris._tcp local 8765 dna_version=0 instance_id=app port=8765 product=app tier=selflight-legacy
+46675 02:43:44 /usr/bin/dns-sd -R app _iris._tcp local 8772 dna_version=0 instance_id=app port=8772 product=prime tier=prime
+54575 01:36:09 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+54600 01:36:08 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+58245 02:37:04 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+61120 02:35:23 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+61179 02:35:21 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+63154 02:34:11 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+63175 02:34:09 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+65123    33:06 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Alerts).app/Contents/MacOS/Google Chr
+66067 01:29:34 /Applications/Devin.app/Contents/Frameworks/Devin Helper (Renderer).app/Contents/MacOS/Devin Helper (Renderer) --type=renderer --user-data-dir=/Users/christopherhoffpauir/Library/Applic
+66122 01:29:33 /Applications/Devin.app/Contents/Frameworks/Devin Helper.app/Contents/MacOS/Devin Helper --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=non
+66123 01:29:33 /Applications/Devin.app/Contents/Frameworks/Devin Helper (Plugin).app/Contents/MacOS/Devin Helper (Plugin) --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --servic
+66188 01:29:32 npm exec @modelcontextprotocol/server-filesystem /Users/christopherhoffpauir/HIFIDecant/Selflight/garden /Users/christopherhoffpauir/HIFIDecant/Selflight/intake /Users/christopherhoffpa
+66274 01:29:31 node /Users/christopherhoffpauir/.npm/_npx/a3241bba59c344f5/node_modules/.bin/mcp-server-filesystem /Users/christopherhoffpauir/HIFIDecant/Selflight/garden /Users/christopherhoffpauir/H
+67728 01:28:43 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+67736 01:28:42 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+74407 01:25:52 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+74410 01:25:52 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+76886 01:24:34 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+81556 01:21:58 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+96254 01:13:37 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google C
+99080 01:12:02 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/chrome_crashpad_handler --monitor-self-annotation=ptype=crashpad-han
+99084 01:12:01 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=
+99085 01:12:01 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=
+99091 01:12:01 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=
+99099 01:12:01 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Hel
+99577 01:11:48 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/156.0.8078.48/Helpers/Google Chrome Helper.app/Contents/MacOS/Google Chrome Helper --type=
+99595 01:11:48 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+99597 01:11:48 /System/Library/PrivateFrameworks/SafariFoundation.framework/Versions/A/XPCServices/CredentialProviderExtensionHelper.xpc/Contents/MacOS/CredentialProviderExtensionHelper
+99659 01:11:47 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+99675 01:11:46 /System/Library/Frameworks/AuthenticationServices.framework/Versions/A/XPCServices/com.apple.AuthenticationServices.Helper.xpc/Contents/MacOS/com.apple.AuthenticationServices.Helper
+--- ports
+COMMAND     PID                 USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+python3.1   815 christopherhoffpauir    7u  IPv4 0x81ae7ca3121f448c      0t0  TCP 127.0.0.1:8765 (LISTEN)
+python3.1  5100 christopherhoffpauir    9u  IPv4 0x575018123e83a59f      0t0  TCP 127.0.0.1:8772 (LISTEN)
+python3.1 32139 christopherhoffpauir    9u  IPv4 0x1922f1532589c3f4      0t0  TCP 127.0.0.1:8790 (LISTEN)
+### ---- H. Accessibility/Input Monitoring grantees (TCC, read-only query) ----
+Error: unable to open database "/Users/christopherhoffpauir/Library/Application Support/com.apple.TCC/TCC.db": unable to open database file
+END-OF-PASS

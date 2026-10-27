@@ -1,0 +1,55 @@
+== RUN TESTS
+== python: /Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/bin/python3 (Python 3.12.13)
+== tests/test_launch_check.py
+test_manifest_matches_prime_sign_manifest (__main__.TestReuse.test_manifest_matches_prime_sign_manifest)
+Same tree → same digest under both implementations (the signed digest is prime_sign's). ... ok
+test_shared_functions_identical_to_prime_sign (__main__.TestReuse.test_shared_functions_identical_to_prime_sign) ... ok
+test_stdlib_only_and_no_tree_imports (__main__.TestReuse.test_stdlib_only_and_no_tree_imports) ... ok
+test_added_and_removed_files_refuse (__main__.TestVerdicts.test_added_and_removed_files_refuse) ... ok
+test_altered_record_refuses (__main__.TestVerdicts.test_altered_record_refuses) ... ok
+test_forged_manifest_file_is_ignored (__main__.TestVerdicts.test_forged_manifest_file_is_ignored) ... ok
+test_hand_written_second_key_counts_for_nothing (__main__.TestVerdicts.test_hand_written_second_key_counts_for_nothing) ... ok
+test_intact_signed_tree_starts (__main__.TestVerdicts.test_intact_signed_tree_starts) ... ok
+test_latest_good_signature_wins_after_resign (__main__.TestVerdicts.test_latest_good_signature_wins_after_resign) ... ok
+test_ledger_line_appended_and_nothing_else_written (__main__.TestVerdicts.test_ledger_line_appended_and_nothing_else_written) ... ok
+test_missing_engine_is_usage_error_not_pass (__main__.TestVerdicts.test_missing_engine_is_usage_error_not_pass) ... ok
+test_missing_signature_refuses (__main__.TestVerdicts.test_missing_signature_refuses) ... ok
+test_no_key_enrolled_refuses (__main__.TestVerdicts.test_no_key_enrolled_refuses) ... ok
+test_signature_by_untrusted_key_refuses (__main__.TestVerdicts.test_signature_by_untrusted_key_refuses) ... ok
+test_signature_for_other_name_does_not_count (__main__.TestVerdicts.test_signature_for_other_name_does_not_count) ... ok
+test_tamper_without_saved_manifest_still_refuses (__main__.TestVerdicts.test_tamper_without_saved_manifest_still_refuses) ... ok
+test_tampered_byte_refuses_and_names_file (__main__.TestVerdicts.test_tampered_byte_refuses_and_names_file) ... ok
+test_user_not_verified_flag_refuses (__main__.TestVerdicts.test_user_not_verified_flag_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.909s
+
+OK
+== tests/test_shell.js (/opt/homebrew/bin/node v26.10.0)
+ok  intact -> code 0 (intact)
+ok  tampered -> code 11 (tampered)
+ok  added -> code 11 (tampered)
+ok  unsigned -> code 10 (unsigned)
+ok  nokey -> code 12 (no key enrolled)
+ok  missing interpreter -> refuse (code 2)
+ok  missing script -> refuse (code 2)
+ok  timeout -> refuse
+ok  exit/JSON disagreement -> refuse
+ok  main.js parses; gate precedes startEngine()
+
+10 shell checks passed
+== asar pack roundtrip
+{
+ "out": "/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/tmp.t8FOzS0beu/app.asar",
+ "files": 6,
+ "bytes": 51269,
+ "header_sha256": "b85d938a79b6fd21aa716dbbb92d430ca7a730d6007d872db0921c794d3ef412"
+}
+     4694  launch_check.js
+    15875  launch_check.py
+    20359  main.js
+      180  package.json
+     1134  preload.js
+     7467  recovery.html
+== result: ALL PASS
+END-OF-PASS

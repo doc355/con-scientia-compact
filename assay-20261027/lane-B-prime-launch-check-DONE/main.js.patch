@@ -1,0 +1,110 @@
+--- ref/main.js.asar-20261027	2026-10-27 16:36:08.708171786 +0000
++++ shell/main.js	2026-10-27 16:49:44.293284831 +0000
+@@ -28,6 +28,9 @@
+ const http = require('http');
+ const net = require('net');
+ const path = require('path');
++// LAUNCH-CHECK-001 (lane-B, 2026-10-27): Doc's fingerprint over the engine tree, checked before every spawn.
++const { launchCheck, recoveryWords, readPin } = require('./launch_check');
++const LAUNCH_CHECK_NAME = 'iris-prime-staged';   // the build name the signature is made under (tools/prime_launch_sign.py)
+ 
+ const IS_MAC = process.platform === 'darwin';
+ const IS_WIN = process.platform === 'win32';
+@@ -67,10 +70,16 @@
+ let restarts = 0;                   // watchdog: one free restart, then recovery
+ let quitting = false;               // true once we begin shutdown — no watchdog
+ let engineExpectedExit = false;     // true while we deliberately stop the engine
++let lastVerdict = null;             // LAUNCH-CHECK-001: last signature verdict (for the recovery screen + IPC)
+ let cleanedUp = false;
+ 
+ const userData = () => app.getPath('userData');
+-const selflightHome = () => path.join(userData(), 'selflight-instance');
++// LAUNCH-CHECK-001 v2: the install step may pin the home the sign page used (launch_check_pin.json
++// {home}) so the engine, the verifier and Doc's enrolment all read ONE prime-sign store.
++const selflightHome = () => {
++  const pin = readPin();
++  return (pin && pin.home) ? pin.home : path.join(userData(), 'selflight-instance');
++};
+ const workspaceRoot = () => path.join(userData(), 'workspace');
+ const engineLogPath = () => path.join(selflightHome(), 'logs', 'engine.log');
+ 
+@@ -282,6 +291,34 @@
+ 
+ const sleep = ms => new Promise(r => setTimeout(r, ms));
+ 
++// ---------------------------------------------------------------------------
++// LAUNCH-CHECK-001 — the engine tree must carry Doc's fingerprint (PRIME-SIGN-001)
++// exactly as it is on disk, or the engine is not spawned and the recovery screen
++// says what changed. Enforced always when packaged. In dev (not packaged) it is
++// enforced too unless IRIS_SKIP_LAUNCH_CHECK=1, and skipping is written to the log.
++// ---------------------------------------------------------------------------
++async function launchCheckGate() {
++  const root = engineRoot();
++  if (!root) return true;                               // startEngine() surfaces "No engine found." itself
++  if (!app.isPackaged && process.env.IRIS_SKIP_LAUNCH_CHECK === '1') {
++    logLine(`[iris] LAUNCH-CHECK skipped (dev, IRIS_SKIP_LAUNCH_CHECK=1) ${new Date().toISOString()}\n`);
++    return true;
++  }
++  const t0 = Date.now();
++  const pin = readPin();
++  logLine(`[iris] LAUNCH-CHECK home=${selflightHome()} pin=${pin && pin.root_fingerprint ? pin.root_fingerprint : 'none'}\n`);
++  const v = await launchCheck({ python: pythonBin(root), appDir: path.join(root, 'app'), home: selflightHome(), name: LAUNCH_CHECK_NAME });
++  lastVerdict = v;
++  logLine(`[iris] LAUNCH-CHECK ${v.ok ? 'PASS' : 'REFUSE'} code=${v.code} (${v.label}) files=${v.files} digest=${v.digest} signed=${v.signed_digest} ${Date.now() - t0}ms\n`);
++  if (v.stderr) logLine(`[iris] LAUNCH-CHECK stderr: ${v.stderr}\n`);
++  if (v.ok) return true;
++  engineState = 'failed';
++  updateTray();
++  const w = recoveryWords(v);
++  showRecovery(w.reason, w.detail, v);
++  return false;
++}
++
+ async function waitForEngine(timeoutMs = 60000, intervalMs = 300) {
+   const deadline = Date.now() + timeoutMs;
+   while (Date.now() < deadline) {
+@@ -304,6 +341,7 @@
+ async function boot() {
+   enginePort = enginePort || await pickPort();
+   if (!engineToken) engineToken = crypto.randomBytes(24).toString('hex');
++  if (!(await launchCheckGate())) return;    // LAUNCH-CHECK-001: refused → recovery screen, engine never spawned
+   startEngine();
+   if (!engineProc) return;                    // startEngine already surfaced why
+   const ok = await waitForEngine();
+@@ -352,9 +390,10 @@
+   mainWin.on('closed', () => { mainWin = null; });
+ }
+ 
+-function showRecovery(reason, detail) {
++function showRecovery(reason, detail, verdict) {
+   const payload = {
+     reason, detail,
++    verdict: verdict || null,          // LAUNCH-CHECK-001 verdict, when the refusal is the signature's
+     log: engineLogTail(40),
+     logPath: engineLogPath(),
+   };
+@@ -366,7 +405,7 @@
+   recoveryWin = new BrowserWindow({
+     width: 860,
+     height: 620,
+-    title: 'Iris Prime — engine recovery',
++    title: verdict ? 'Iris Prime — not started: signature check' : 'Iris Prime — engine recovery',
+     webPreferences: {
+       preload: path.join(__dirname, 'preload.js'),
+       contextIsolation: true,
+@@ -428,6 +467,7 @@
+       ...(IS_MAC ? [{ type: 'separator' }, { role: 'front' }] : [{ role: 'close' }])] },
+     { label: 'Help', submenu: [
+       { label: 'Iris Prime (dev build)', enabled: false },
++      { label: 'Engine starts only when Doc\u2019s fingerprint covers it (LAUNCH-CHECK-001)', enabled: false },
+     ] },
+   ];
+   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+@@ -467,6 +507,7 @@
+   port: enginePort,
+   pid: engineProc ? engineProc.pid : null,
+   restarts,
++  launchCheck: lastVerdict,
+ }));
+ 
+ ipcMain.handle('recovery-action', (_e, action) => {

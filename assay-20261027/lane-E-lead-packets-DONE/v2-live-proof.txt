@@ -1,0 +1,17 @@
+=== 2026-10-27T17:08:27Z v2 live proof on exp :8772
+--- stop old pid 41758 (old main.py, no guard) with SIGTERM
+41758 exited after 1s
+--- start new (run-exp.sh)
+health: {"status":"up","auth_required":false,"session_id":"sess-2026
+new pid(s): 54724 
+new server log lines (BIND-EXIT / keeper / startup):
+1:[selflight] BIND-EXIT-001: preflight ok — 127.0.0.1:8772 is free; this process may become the server
+7:[link] keeper v0.3 registered at /api/link/v1 — 45 targets, state /Users/christopherhoffpauir/.selflight/instances/iris-creative-exp/link-keeper/state.json
+47:[selflight] all-call: GET /api/allcall/v1, POST /hold, POST /clear — holds /Users/christopherhoffpauir/.selflight/instances/iris-creative-exp/allcall/holds.json, ledger /Users/christopherhoffpauir/
+93:INFO:     Uvicorn running on http://127.0.0.1:8772 (Press CTRL+C to quit)
+--- LIVE PROOF: second run-exp.sh on the taken port 8772
+[selflight] BIND-EXIT-001: REFUSING TO START — 127.0.0.1:8772 already has a listener (errno 48 Address already in use). Another instance owns this port; no keeper / all-call / background loop was started; exiting 3 now.
+second instance exit code: 3 after 0s
+processes with SELFLIGHT_INSTANCE=iris-creative-exp now:
+  pid 54724 listens: 127.0.0.1:8772 
+still serving: 200

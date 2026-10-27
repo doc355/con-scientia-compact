@@ -1,0 +1,14 @@
+test_free_port_returns (test_bind_fail_exits.TestPreflight.test_free_port_returns) ... [selflight] BIND-EXIT-001: preflight ok — 127.0.0.1:52539 is free; this process may become the server
+ok
+test_taken_port_exits_3_with_line (test_bind_fail_exits.TestPreflight.test_taken_port_exits_3_with_line) ... ok
+test_main_py_exits_fast_and_starts_no_loop (test_bind_fail_exits.TestSecondInstanceOnTakenPort.test_main_py_exits_fast_and_starts_no_loop) ... ok
+test_clean_stop_with_straggler_exits_0_and_names_it (test_bind_fail_exits.TestServeThenExit.test_clean_stop_with_straggler_exits_0_and_names_it) ... ok
+test_never_started_exits_3 (test_bind_fail_exits.TestServeThenExit.test_never_started_exits_3) ... 
+  second instance on taken port 52541: exit 3 in 1.1s, no stores under /var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/bind-exit-home-zcbz1d9w
+[selflight] BIND-EXIT-001: uvicorn never reached 'started' on 127.0.0.1:1 (SystemExit: 1) — exiting 3 so no background loop outlives a server that is not listening.
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.756s
+
+OK

@@ -1,0 +1,197 @@
+### Gemini containers / group containers
+ls: /Users/christopherhoffpauir/Library/Containers/com.google.GeminiMacOS: No such file or directory
+/Users/christopherhoffpauir/Library/Group Containers/group.com.google.gemini
+--- /Users/christopherhoffpauir/Library/Group Containers/group.com.google.gemini
+Library
+group.com.google.gemini.plist
+/Users/christopherhoffpauir/Library/Group Containers/group.com.google.gemini/Library/Preferences/group.com.google.gemini.plist
+### Claude raw grep
+(end)
+### asar exact extract vs desktop sources
+main.js asar da3d56d4999879f1 desktop da3d56d4999879f1 IDENTICAL
+preload.js asar 232e43bd46c3879f desktop 232e43bd46c3879f IDENTICAL
+recovery.html asar 6e29a8dfa4d29616 desktop 6e29a8dfa4d29616 IDENTICAL
+package.json asar 63f69ee2a2abfffd desktop 82854c9a9a1970a2 DIFFERENT
+/main.js /package.json /preload.js /recovery.html
+### desktop README head + builder yml + assemble script head
+# Project Iris — desktop shell
+
+Electron wrapper around the Selflight engine (`releases/20260922-01/app`) +
+its relocatable CPython (`releases/20260922-01/python`). Christopher's
+rulings: Electron (not Tauri), installer fully bundled with Ollama + a starter
+model, dual-channel builds later, signing later — dev builds are unsigned.
+
+## Layout
+
+```
+desktop/
+  package.json             project-iris-desktop, electron pinned 33.4.11
+  main.js                  main process: engine lifecycle, healthcheck,
+                           watchdog, recovery window, menu, tray, ollama
+  preload.js               contextBridge → window.IRIS (sandboxed)
+  recovery.html            "engine didn't come up" page (log tail + Retry/Quit)
+  electron-builder.yml     com.projectiris.desktop; dmg arm64+x64 unsigned,
+                           nsis, AppImage+deb
+  build/                   icon.png, trayIcon.png (placeholders),
+                           entitlements.plist
+  engine/                  ASSEMBLED — scripts/assemble-engine.sh output:
+                           python/ python-deps/ app/ checksums.txt
+  ollama/                  bundled ollama binary lands here (empty today)
+  models/                  starter model lands here (first-run pull today)
+  scripts/
+    assemble-engine.sh     per-target engine assembly
+    requirements-pinned.txt  dep pins read from the release's dist-info dirs
+    make-icons.js          regenerate placeholder icons
+```
+
+## Dev run (no packaging)
+
+```sh
+cd releases/20260922-01/desktop
+npm install
+IRIS_ENGINE_DIR=/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01 npm start
+```
+
+`IRIS_ENGINE_DIR` points at the release root (it already has `python/`,
+`python-deps/`, `app/`). If unset, `./engine` is used when it exists — so the
+assembled tree can be tested unpackaged too.
+
+What the shell does: single-instance lock → free loopback port → 48-hex-char
+app/vendor`) → poll `/api/health` every 300 ms up to 60 s → load
+unconditionally; the engine never binds off loopback.
+
+Engine env: `SELFLIGHT_HOME=~/Library/Application Support/project-iris-desktop/
+selflight-instance`, `SELFLIGHT_INSTANCE=app`, `SELFLIGHT_HOST=127.0.0.1`,
+`SELFLIGHT_WORKSPACE_ROOT=<userData>/workspace`. Engine stdout/stderr append to
+`<SELFLIGHT_HOME>/logs/engine.log`.
+
+Watchdog: unexpected engine exit → notification + one auto-restart; a second
+exit → recovery window. On timeout: same window with the last 40 log lines and
+Retry/Quit. Quit path: SIGTERM, up to 10 s (uvicorn's graceful drain is
+load-bearing), then SIGKILL.
+
+## Dist
+
+---
+appId: com.projectiris.desktop
+productName: Iris Prime
+copyright: Copyright © 2026
+
+directories:
+  output: dist
+
+asar: true
+
+files:
+  - main.js
+  - preload.js
+  - recovery.html
+  - package.json
+
+# Everything the app needs at runtime, landed under resources/:
+#   resources/engine/{python,python-deps,app}  — assembled by scripts/assemble-engine.sh
+#   resources/ollama/                          — bundled ollama binary (placeholder today)
+#   resources/models/                          — starter model dir (first-run pull today)
+extraResources:
+  - from: engine
+    to: engine
+  - from: ollama
+    to: ollama
+  - from: models
+    to: models
+
+mac:
+  category: public.app-category.productivity
+  icon: build/icon.png
+  identity: null            # dev builds unsigned — signing lands later
+  hardenedRuntime: false
+  entitlements: build/entitlements.plist
+  target:
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+
+dmg:
+  title: Iris Prime
+
+win:
+  icon: build/icon.png
+  target:
+    - nsis
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+
+linux:
+  icon: build/icon.png
+  category: Utility
+  target:
+    - AppImage
+    - deb
+---
+#!/usr/bin/env bash
+# assemble-engine.sh — build desktop/engine/ for a target platform.
+#
+#   scripts/assemble-engine.sh macos-arm64     # works end-to-end today
+#   scripts/assemble-engine.sh macos-x64       # TODO-FILL: python tarball URL+sha
+#   scripts/assemble-engine.sh win-x64         # TODO-FILL
+#   scripts/assemble-engine.sh linux-x64       # TODO-FILL
+#
+# Resulting layout (consumed by electron-builder.yml extraResources → resources/engine):
+#   engine/python/          relocatable CPython (bin/python3; python.exe on win)
+#   engine/python-deps/     pip --target deps, versions pinned to the release's
+#   engine/app/             server/ + client/ + vendor/ from the release
+#   engine/checksums.txt    sha256 of every assembled file
+#
+# Bundled ollama + starter model live in desktop/ollama and desktop/models,
+# not in engine/ — see the OLLAMA / MODELS notes at the bottom.
+
+set -euo pipefail
+
+PLATFORM="${1:-macos-arm64}"
+DESKTOP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+RELEASE_ROOT="$(cd "$DESKTOP_DIR/.." && pwd)"          # releases/20260922-01
+OUT="$DESKTOP_DIR/engine"
+
+# ---------------------------------------------------------------------------
+# Relocatable CPython per target — python-build-standalone "install_only"
+# tarballs. The bundled interpreter reports CPython 3.12.13 (python/BUILD
+# reads 20260310 → the 2026-03-10 PBS release). Fill real URLs + sha256 when
+# cutting non-arm64 builds; placeholder URLs fail loudly by design.
+# ---------------------------------------------------------------------------
+py_url() {
+  case "$1" in
+    macos-arm64) echo "bundled" ;;   # copied from the release below
+    macos-x64)   echo "TODO-FILL https://github.com/astral-sh/python-build-standalone/releases/download/20260310/cpython-3.12.13+20260310-x86_64-apple-darwin-install_only.tar.gz" ;;
+    win-x64)     echo "https://github.com/astral-sh/python-build-standalone/releases/download/20260310/cpython-3.12.13+20260310-x86_64-pc-windows-msvc-install_only.tar.gz" ;;
+    linux-x64)   echo "https://github.com/astral-sh/python-build-standalone/releases/download/20260310/cpython-3.12.13+20260310-x86_64-unknown-linux-gnu-install_only.tar.gz" ;;
+    *) echo ""; return 1 ;;
+  esac
+}
+py_sha256() {
+/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/desktop/build:
+entitlements.plist
+icon.png
+icon.png.pre-irisprimeicon-20261025-195919
+trayIcon.png
+
+/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/desktop/dist:
+Iris Prime-0.1.0-arm64.dmg
+Iris Prime-0.1.0-arm64.dmg.blockmap
+_prior-20261022
+_prior-irisprime-v1-20261025-195919
+_prior-projectiris-20261025
+builder-debug.yml
+mac-arm64
+
+/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/desktop/engine:
+app
+checksums.txt
+python
+python-deps
+### seatguard claim my candidate tree
+claimed /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/option-space-1 (file absent — new)
+mine     /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/option-space-1  (since 2026-10-27T16:38:46.085738Z)
+END-OF-PASS

@@ -1,0 +1,612 @@
+KeyboardShortcuts_toggleVisor = "{\"carbonModifiers\":768,\"carbonKeyCode\":49}"
+macHotkeyManager.hotkeys.v1 = [
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 49,
+   "carbonModifiers": 768
+  },
+  "actionKey": "showCommandBar"
+ },
+ {
+  "actionKey": "voiceToast"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 45,
+   "carbonModifiers": 256
+  },
+  "actionKey": "newThread"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 43,
+   "carbonModifiers": 256
+  },
+  "actionKey": "settings"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 40,
+   "carbonModifiers": 256
+  },
+  "actionKey": "sessionSearch"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 3,
+   "carbonModifiers": 256
+  },
+  "actionKey": "findInPage"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 5,
+   "carbonModifiers": 256
+  },
+  "actionKey": "findNext"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 5,
+   "carbonModifiers": 768
+  },
+  "actionKey": "findPrevious"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 37,
+   "carbonModifiers": 256
+  },
+  "actionKey": "focusFollowUp"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 41,
+   "carbonModifiers": 256
+  },
+  "actionKey": "toggleIncognito"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 1,
+   "carbonModifiers": 4352
+  },
+  "actionKey": "toggleSidebar"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 18,
+   "carbonModifiers": 256
+  },
+  "actionKey": "selectSearchMode"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 19,
+   "carbonModifiers": 256
+  },
+  "actionKey": "selectComputerMode"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 33,
+   "carbonModifiers": 256
+  },
+  "actionKey": "navigateBack"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 30,
+   "carbonModifiers": 256
+  },
+  "actionKey": "navigateForward"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 33,
+   "carbonModifiers": 768
+  },
+  "actionKey": "selectPreviousThread",
+  "alternateShortcut": {
+   "carbonKeyCode": 126,
+   "carbonModifiers": 2304
+  }
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 30,
+   "carbonModifiers": 768
+  },
+  "actionKey": "selectNextThread",
+  "alternateShortcut": {
+   "carbonKeyCode": 125,
+   "carbonModifiers": 2304
+  }
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 69,
+   "carbonModifiers": 256
+  },
+  "actionKey": "increaseTextSize"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 27,
+   "carbonModifiers": 256
+  },
+  "actionKey": "decreaseTextSize"
+ },
+ {
+  "mainShortcut": {
+   "carbonKeyCode": 29,
+   "carbonModifiers": 256
+  },
+  "actionKey": "resetTextSize"
+ }
+]
+macHotkeyManager.migrations.focusFollowUpCmdL.v1 = true
+macHotkeyManager.migrations.historyNavigationCmdArrowRemoval.v1 = true
+macHotkeyManager.migrations.increaseTextSizeShortcut.v1 = true
+macHotkeyManager.migrations.threadNavigationShortcutOrder.v1 = true
+### Perplexity main app running?
+### ---- Gemini settings stores (read-only temp copies) ----
+AvatarService.store
+AvatarService.store-shm
+AvatarService.store-wal
+OnboardingService_OTHER.store
+OnboardingService_OTHER.store-shm
+OnboardingService_OTHER.store-wal
+TOSConsent.store
+TOSConsent.store-shm
+TOSConsent.store-wal
+auth
+--- app-settings.store tables
+ACHANGE          ATRANSACTIONSTRING      Z_METADATA       Z_PRIMARYKEY
+ATRANSACTION     ZPERSISTENTSETTINGS     Z_MODELCACHE
+CREATE TABLE ZPERSISTENTSETTINGS ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZENABLEADDITIONALSANDBOXOPTIONS INTEGER, ZENABLEADVANCEDBACKUPS INTEGER, ZINTERRUPTLIVERESPONSES INTEGER, ZPREVENTSLEEPDURINGTASKS INTEGER, ZSHOWINMENUBAR INTEGER, ZUSEPRECISELOCATION INTEGER, ZCAPTIONSIZE VARCHAR, ZSTATUSBARICONSTYLE VARCHAR, ZTHEME VARCHAR );
+CREATE TABLE Z_PRIMARYKEY (Z_ENT INTEGER PRIMARY KEY, Z_NAME VARCHAR, Z_SUPER INTEGER, Z_MAX INTEGER);
+CREATE TABLE Z_METADATA (Z_VERSION INTEGER PRIMARY KEY, Z_UUID VARCHAR(255), Z_PLIST BLOB);
+CREATE TABLE Z_MODELCACHE (Z_CONTENT BLOB);
+CREATE TABLE ACHANGE ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZCHANGETYPE INTEGER, ZENTITY INTEGER, ZENTITYPK INTEGER, ZTRANSACTIONID INTEGER, ZCOLUMNS BLOB );
+CREATE TABLE ATRANSACTION ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZAUTHORTS INTEGER, ZBUNDLEIDTS INTEGER, ZCONTEXTNAMETS INTEGER, ZPROCESSIDTS INTEGER, ZTIMESTAMP FLOAT, ZAUTHOR VARCHAR, ZBUNDLEID VARCHAR, ZCONTEXTNAME VARCHAR, ZPROCESSID VARCHAR, ZQUERYGEN BLOB );
+CREATE TABLE ATRANSACTIONSTRING ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZNAME VARCHAR );
+CREATE INDEX ACHANGE_ZTRANSACTIONID_INDEX ON ACHANGE (ZTRANSACTIONID);
+CREATE INDEX ATRANSACTION_ZAUTHORTS_INDEX ON ATRANSACTION (ZAUTHORTS);
+CREATE INDEX ATRANSACTION_ZBUNDLEIDTS_INDEX ON ATRANSACTION (ZBUNDLEIDTS);
+CREATE INDEX ATRANSACTION_ZCONTEXTNAMETS_INDEX ON ATRANSACTION (ZCONTEXTNAMETS);
+CREATE INDEX ATRANSACTION_ZPROCESSIDTS_INDEX ON ATRANSACTION (ZPROCESSIDTS);
+CREATE INDEX Z_TRANSACTION_TransactionAuthorIndex ON ATRANSACTION (ZAUTHOR COLLATE BINARY ASC);
+CREATE INDEX Z_TRANSACTION_TransactionTimestampIndex ON ATRANSACTION (ZTIMESTAMP COLLATE BINARY ASC);
+CREATE UNIQUE INDEX Z_TRANSACTIONSTRING_UNIQUE_NAME ON ATRANSACTIONSTRING (ZNAME COLLATE BINARY ASC);
+--- minichat-settings.store tables
+ACHANGE          ATRANSACTIONSTRING     Z_METADATA       Z_PRIMARYKEY
+ATRANSACTION     ZMINICHATSETTINGS      Z_MODELCACHE
+CREATE TABLE ZMINICHATSETTINGS ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZOPENNEWCHATSIN VARCHAR, ZPOSITION VARCHAR, ZRESETINTERVAL VARCHAR );
+CREATE TABLE Z_PRIMARYKEY (Z_ENT INTEGER PRIMARY KEY, Z_NAME VARCHAR, Z_SUPER INTEGER, Z_MAX INTEGER);
+CREATE TABLE Z_METADATA (Z_VERSION INTEGER PRIMARY KEY, Z_UUID VARCHAR(255), Z_PLIST BLOB);
+CREATE TABLE Z_MODELCACHE (Z_CONTENT BLOB);
+CREATE TABLE ACHANGE ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZCHANGETYPE INTEGER, ZENTITY INTEGER, ZENTITYPK INTEGER, ZTRANSACTIONID INTEGER, ZCOLUMNS BLOB );
+CREATE TABLE ATRANSACTION ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZAUTHORTS INTEGER, ZBUNDLEIDTS INTEGER, ZCONTEXTNAMETS INTEGER, ZPROCESSIDTS INTEGER, ZTIMESTAMP FLOAT, ZAUTHOR VARCHAR, ZBUNDLEID VARCHAR, ZCONTEXTNAME VARCHAR, ZPROCESSID VARCHAR, ZQUERYGEN BLOB );
+CREATE TABLE ATRANSACTIONSTRING ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZNAME VARCHAR );
+CREATE INDEX ACHANGE_ZTRANSACTIONID_INDEX ON ACHANGE (ZTRANSACTIONID);
+CREATE INDEX ATRANSACTION_ZAUTHORTS_INDEX ON ATRANSACTION (ZAUTHORTS);
+CREATE INDEX ATRANSACTION_ZBUNDLEIDTS_INDEX ON ATRANSACTION (ZBUNDLEIDTS);
+CREATE INDEX ATRANSACTION_ZCONTEXTNAMETS_INDEX ON ATRANSACTION (ZCONTEXTNAMETS);
+CREATE INDEX ATRANSACTION_ZPROCESSIDTS_INDEX ON ATRANSACTION (ZPROCESSIDTS);
+CREATE INDEX Z_TRANSACTION_TransactionAuthorIndex ON ATRANSACTION (ZAUTHOR COLLATE BINARY ASC);
+CREATE INDEX Z_TRANSACTION_TransactionTimestampIndex ON ATRANSACTION (ZTIMESTAMP COLLATE BINARY ASC);
+CREATE UNIQUE INDEX Z_TRANSACTIONSTRING_UNIQUE_NAME ON ATRANSACTIONSTRING (ZNAME COLLATE BINARY ASC);
+--- app-settings rows (keys + values, shortcut-ish or all if small)
+app-settings.store ZPERSISTENTSETTINGS rows 1
+    1 | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 0 | medium | white | system
+app-settings.store Z_PRIMARYKEY rows 4
+    1 | PersistentSettings | 0 | 1
+    16001 | CHANGE | 0 | 1
+    16002 | TRANSACTION | 0 | 1
+    16003 | TRANSACTIONSTRING | 0 | 2
+app-settings.store Z_METADATA rows 1
+    1 | E07AE7AB-6366-42D9-AC7B-8AAF9922DAE4 | <587b b'bplist00\xd9\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\r\x0e\x0f\x10\x11\n\x14_\x10$NSPersistenceMaximumFrameworkVersion_\x10\x1eNSStoreModelVersionIdentifiers[NSStoreType_\x10\x12_NSAutoVacuumLevel_\x10\x1fNSStoreModelVersionHashesDigest_\x10\x1eNSStoreModelVersionChecksumKey_'>
+app-settings.store Z_MODELCACHE rows 1
+    <2239b b'\xb5V{pT\xd5\x19\xff\xce\xde\xe7\xb9\xe1\xb1y\xf2~\x877\x84<\x80\x10"b @#d\x03lB\x02\x81,wwO\x92\x85\xcd\xee\xf6\xde\xbb\x81E\xd0\x83\xb6\x96NQ\xf0\xd9V\xa7\x9d\x10\x10\x8bTQ@A\x94\x16\xe4\r\xe3L\x05tP\xa8\xd3\xc7P\xb5\xad\xd3A,m\xad\xc5~\xf7\xde$\xa43\xd0\xf2O\xf7\xce\x9d\xbb\xe7\x9c\xefq~\xdf\xefw\x1e\xc1D4bZ\xf9\xf9\x17\x81\x80\x07\x04\x10A\x02\x19\x14\xd0\xear[\x99aF\xe2\xb1\xa5\xb9\xba\x11j\x8e`\xab:\xd7\x8a\'\xear\xe3\xc1U,d\x99\x19@\x1em\x0bx{\xfb\xfc\xf3Y\x8a\x85\xcb:\x8c\xde\x03\x15h\xb5\x11\x8f[\x9c\xec\xf1\xde\x03i\xd0\x03\xfa\xc00\x18\r\x13`"\x14\xc14(\x81\x19'>
+app-settings.store ACHANGE rows 1
+    1 | 16001 | None | 0 | 1 | 1 | 1 | None
+app-settings.store ATRANSACTION rows 1
+    1 | 16002 | None | None | 1 | None | 2 | 812204215.789729 | None | None | None | None | None
+app-settings.store ATRANSACTIONSTRING rows 2
+    1 | 16003 | None | com.google.GeminiMacOS
+    2 | 16003 | None | Gemini
+minichat-settings.store ZMINICHATSETTINGS rows 1
+    1 | 1 | 1 | None | bottom | after10Minutes
+minichat-settings.store Z_PRIMARYKEY rows 4
+    1 | MinichatSettings | 0 | 1
+    16001 | CHANGE | 0 | 1
+    16002 | TRANSACTION | 0 | 1
+    16003 | TRANSACTIONSTRING | 0 | 2
+minichat-settings.store Z_METADATA rows 1
+    1 | 4A165D01-60B8-4555-A7D6-43DB85DBFDE2 | <585b b'bplist00\xd9\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\r\x0e\x0f\x10\x11\n\x14_\x10$NSPersistenceMaximumFrameworkVersion_\x10\x1eNSStoreModelVersionIdentifiers[NSStoreType_\x10\x12_NSAutoVacuumLevel_\x10\x1fNSStoreModelVersionHashesDigest_\x10\x1eNSStoreModelVersionChecksumKey_'>
+minichat-settings.store Z_MODELCACHE rows 1
+    <1929b b'\x95V\x0bp\x15\xd5\x19\xfe\xce\xbe\xce.\xafl\x1e<\x02\xf2\x92\xf0\x86\x90@\x14\x90RL\x13\xa8\x19\x9b\x0b\xe5\xe6E\x80\xac77\x9b\xe4\x92\x9b\xbd\xd7\xbb\x1bh\xc6\xd6\x9e:\x96*\nuJ\x8b\x88\x88\xc9\rH\xadSqp\x10m;\xcet\xeaT;\xd3\xc7hq\x9c\x1a\xad\x8fR\xa4""e\xa8\xb6X\xdb\x7fw\x93\x902\xd0\xda\xbbsf\xf7\x9c\xffq\xfe\xff\xfb\xfe\xf3\x9f\xdb\x9cN&\\\xaf\xa4\xe4\x04\x18$\xc8P\xa0B\x03\xc7\x88\x86\xa2\xadv\xc6M\xa4\x9c\rE\xb1L\xbc=A\xb3\x9a"/\x95n(J5o\xb1\xe3\x9e\x9b\x07\xb6\xbd\xc72s"\xd1[\xedn\xbb\xa5|@\xe9e\xe80j2\xa9\x94\'\xd8\x11\xb3\x0c#1\n\xe31\x1d\xb3\xb1\x00\x0b\xb1\x04\xcb'>
+minichat-settings.store ACHANGE rows 1
+    1 | 16001 | None | 0 | 1 | 1 | 1 | None
+minichat-settings.store ATRANSACTION rows 1
+    1 | 16002 | None | None | 1 | None | 2 | 812204208.78233 | None | None | None | None | None
+minichat-settings.store ATRANSACTIONSTRING rows 2
+    1 | 16003 | None | com.google.GeminiMacOS
+    2 | 16003 | None | Gemini
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/AvatarService.store
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/AvatarService.store-shm
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/AvatarService.store-wal
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/OnboardingService_OTHER.store
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/OnboardingService_OTHER.store-shm
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/OnboardingService_OTHER.store-wal
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/TOSConsent.store
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/TOSConsent.store-shm
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/TOSConsent.store-wal
+--- user1: /Users/christopherhoffpauir/Library/Application Support/com.google.GeminiMacOS/Data/user1/auth
+### Gemini defaults for shortcut (binary strings near GlobalShortcutConfig)
+ custom shortcut recorded keyCode=
+ for the Fn key shortcut. %@ is the feature name.
+ from this menu to prevent system shortcuts from conflicting with %@.
+ shortcut mode changed to 
+%@ always call Gemini keyboard shortcut
+%@ hold while speaking keyboard shortcut
+%@ tap to speak keyboard shortcut
+.launcher.globalShortcutConfigDidChange
+.launcher.pauseShortcutMonitors
+.launcher.shortcutMonitorsPaused
+Accessibility label for the Settings link on the shortcut promotion card.
+Accessibility label for the close button on the shortcut promotion card.
+Alert body for system shortcut conflict.
+Alert for in-app menu item shortcut conflict. %@ is the menu item name. Uses U+201C (
+Alert title for system shortcut conflict.
+Alert when shortcut has no valid modifier. Uses U+2303 (
+Allow Gemini to access system information to enable %@. Once you allow access in System Settings, return to this app to continue your setup. You can manage your permissions anytime. You can also [customize shortcuts](gemini://settings/speak-to-window) in Settings.
+Always call Gemini keyboard shortcut
+Button label to open Gemini Settings to customize the shortcut.
+Button to accept a conflicting shortcut.
+Cancel button in shortcut alert.
+Cannot execute hotkey without a valid target process ID
+Customize keyboard shortcuts
+Customize shortcut
+Customize shortcuts
+Description for Speak to Window discovery flow Step 2 with cancellation shortcut hint. %@ is the shortcut key or key combination. [BACKUP_MESSAGE_ID: 231552865979654892]
+Description of the area screenshot promotion banner explaining the shortcut and what it does.
+Dismiss this shortcut customization card
+Failed to execute hotkey: 
+Full chat keyboard shortcut
+Guidance explaining that the user can preserve their Fn key settings by changing the shortcut in Gemini Settings.
+Hold while speaking keyboard shortcut
+Hotkey combination contains only modifiers (
+Hotkey combinations cannot contain multiple non-modifier action keys: 
+If turned off, shortcuts won
+Keyboard shortcut label prefix for a custom shortcut. %@ is the shortcut combo.
+Keyboard shortcut option prefix: double-tap.
+Keyboard shortcut option prefix: hold.
+Keyboard shortcut option: custom shortcut.
+Keyboard shortcut option: no shortcut.
+### ---- Claude desktop ----
+{}
+['coworkUserFilesPath', 'deploymentMode', 'preferences']
+claude_desktop_config.json
+config.json
+config.json.journal
+### ---- Siri full prefs ----
+{
+    ContinuousSpellCheckingEnabled = 0;
+    GrammarCheckingEnabled = 1;
+    StatusMenuVisible = 0;
+    VoiceTriggerUserEnabled = 1;
+}
+### ---- Services menu key equivalents ----
+### universalaccess hotkey-ish
+    AccessibilityReaderHotkey =     {
+        "AX_READER_HOTKEY_VIEW_IN_READER" =         {
+    closeViewHotkeysEnabled = 0;
+    useStickyKeysShortcutKeys = 0;
+### ---- Iris Helper references in garden ----
+/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/bridge/inbound/gopher_20261027_megaplan-finish-iris/MEGAPLAN-FINISH-IRIS-001.md:26:| C | Agent 3 (cloud Devin) | builder | Option+Space = Iris Helper only; move Gemini's shortcut off (
+/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/COUNCIL-FLOOR.md:361:[lane-C-option-space 2026-10-27] CLAIM: Option+Space = Iris call button. Phase 1 read-only survey of hotkey owners on this MBP (Option+Space / Ctrl+Space / Cmd+J: 
+### ---- seatguard: status + claims ledger ----
+SEATGUARD — Two-Copy Rule enforcement (HOUSE-RULE 2026-10-26).
+
+No seat edits a file in a tree another seat is working. Claim before write;
+foreign = hands off; stale base = merge, never overwrite; frozen = create-only.
+Ledger: <tree>/.seatguard/claims.jsonl — append-only, every event one line.
+
+Usage:
+  seatguard.py claim   <seat> <path...>          register intent; refuse on foreign
+  seatguard.py verify  <seat> <path...>          free | mine(fresh) | mine(STALE) | foreign
+  seatguard.py diff    <seat> <path>             what changed under you since base
+  seatguard.py merge   <seat> <src> <dst>        gated copy + ledger + auto-release
+  seatguard.py release <seat> <path...>          drop claims
+  seatguard.py status  [--tree <root>]           who holds what
+  seatguard.py freeze  <tree> <name> [paths...]  snapshot → <tree>/_frozen/<date>_<name>/
+  seatguard.py servers                           floating Iris servers + their PIDs
+
+mdns-keeper  fresh  2026-10-27T13:50:23.280473Z /Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/MDNS-KEEPER.md
+mdns-keeper  fresh  2026-10-27T13:50:23.279963Z /Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/com.hifidecant.iris-mdns.plist
+natural-philosopher fresh  2026-10-27T02:57:54.557670Z /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/con-scientia-vol-unified
+devin-ola    fresh  2026-10-27T04:39:47.321871Z /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait
+devin        fresh  2026-10-27T00:12:09.744536Z /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/horde
+mdns-keeper  stale  2026-10-27T13:50:23.280944Z /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/ola/muster/project-iris-launch.sh
+devin        fresh  2026-10-27T00:12:09.744919Z /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/quickreach
+devin        stale  2026-10-27T03:57:16.668071Z /Users/christopherhoffpauir/HIFIDecant/Selflight/garden/specs/SPEC_INCADU-last-resort_2026-10-26.md
+devin        fresh  2026-10-27T00:12:09.745352Z /Users/christopherhoffpauir/HIFIDecant/Selflight/intake/inbox
+devin        stale  2026-10-27T00:12:09.743904Z /Users/christopherhoffpauir/HIFIDecant/Selflight/tools/horde/weigh.py
+mdns-keeper  fresh  2026-10-27T13:50:23.278420Z /Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/iris-mdns.sh
+mdns-keeper  fresh  2026-10-27T13:50:23.279440Z /Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/test_iris_mdns.sh
+/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/.seatguard/claims.jsonl
+/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-graft-1/.seatguard/claims.jsonl
+/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/.seatguard/claims.jsonl
+/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/.seatguard/claims.jsonl
+/Users/christopherhoffpauir/HIFIDecant/Selflight/.seatguard/claims.jsonl
+--- /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/.seatguard/claims.jsonl
+{"ev": "claim", "seat": "lane-B-prime-launch-check", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/prime-launch-check-1/README.md", "base_sha": "d181ca7f1a96b1b764131e98c0f3c33bc3c0e1e84120fadf37c6eb56d94e04f9", "ts":
+--- /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-graft-1/.seatguard/claims.jsonl
+{"ev": "claim", "seat": "ola-iris-graft-1", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-graft-1/app/server/iris_graft.py", "base_sha": null, "ts": "2026-10-26T20:30:52.137802Z"}
+{"ev": "claim", "seat": "ola-iris-graft-1", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-graft-1/app/server/test_iris_graft.py", "base_sha": null, "ts": "2026-10-26T20:30:52.138254Z"}
+{"ev": "release", "seat": "ola-iris-graft-1", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-graft-1/app/server/iris_graft.py", "ts": "2026-10-26T20:34:40.151993Z"}
+{"ev": "release", "seat": "ola-iris-graft-1", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-graft-1/app/server/test_iris_graft.py", "ts": "2026-10-26T20:34:40.152607Z"}
+--- /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/.seatguard/claims.jsonl
+{"ev": "claim", "seat": "graft-ceremony", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/tools/graft", "base_sha": null, "ts": "2026-10-27T12:57:36.756251Z"}
+{"ev": "claim", "seat": "graft-ceremony", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/tools/graft/pack_sign.py", "base_sha": null, "ts": "2026-10-27T12:57:36.756883Z"}
+{"ev": "claim", "seat": "graft-ceremony", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/tools/graft/ceremony.py", "base_sha": null, "ts": "2026-10-27T12:57:36.757136Z"}
+{"ev": "claim", "seat": "graft-ceremony", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/tools/graft/README.md", "base_sha": null, "ts": "2026-10-27T12:57:36.757295Z"}
+{"ev": "claim", "seat": "graft-ceremony", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-creative-exp-1/tools/graft/test_graft_ceremony.py", "base_sha": null, "ts": "2026-10-27T12:57:36.757523Z"}
+--- /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/.seatguard/claims.jsonl
+{"ev": "claim", "seat": "ola-iris-dna-1", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/iris_dna.py", "base_sha": null, "ts": "2026-10-26T15:01:42.235960Z"}
+{"ev": "claim", "seat": "ola-iris-dna-1", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/test_iris_dna.py", "base_sha": null, "ts": "2026-10-26T15:01:42.236461Z"}
+{"ev": "claim", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/chromatic_hydra.py", "base_sha": "591e3d68efbbfafc5c7a963dd60ba87a7f8b37315a4bae18d7120682d27ce4d5", "ts": "2026
+{"ev": "release", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/chromatic_hydra.py", "ts": "2026-10-26T20:34:25.034422Z"}
+{"ev": "claim", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/chromatic_hydra.py", "base_sha": "0fc2d0dffd55730f645b62e8dea3b88dba3cf366503458d57ca8e6e73fdd2cb2", "ts": "2026
+{"ev": "claim", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/chromatic_hydra.py", "base_sha": "0fc2d0dffd55730f645b62e8dea3b88dba3cf366503458d57ca8e6e73fdd2cb2", "ts": "2026
+{"ev": "release", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/chromatic_hydra.py", "ts": "2026-10-26T23:50:45.627898Z"}
+{"ev": "claim", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/ola-iris-dna-1/app/server/chromatic_hydra.py", "base_sha": "a23f528c473413791fe7682512fd1ef617689275334f4232929dee1d54a5244e", "ts": "2026
+--- /Users/christopherhoffpauir/HIFIDecant/Selflight/.seatguard/claims.jsonl
+{"ev": "claim", "seat": "natural-philosopher", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/con-scientia-vol-unified", "base_sha": null, "ts": "2026-10-27T02:57:54.557670Z"}
+{"ev": "claim", "seat": "devin", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/specs/SPEC_INCADU-last-resort_2026-10-26.md", "base_sha": "3a56fc19eb28184275482e0421c03f09f4a3d0a8a204ec39a29c57458603d1f0", "ts": "2026-10-2
+{"ev": "claim", "seat": "devin-ola", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait", "base_sha": null, "ts": "2026-10-27T04:39:47.321871Z"}
+{"ev": "claim", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/FRAMEWORK.md", "base_sha": null, "ts": "2026-10-27T04:42:08.340188Z"}
+{"ev": "claim", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/VOICE-NOTES.md", "base_sha": null, "ts": "2026-10-27T04:42:08.341613Z"}
+{"ev": "claim", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/AUTHOR-CARD-NOTES.md", "base_sha": null, "ts": "2026-10-27T04:42:08.342441Z"}
+{"ev": "claim", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/draft/00-skeleton.md", "base_sha": null, "ts": "2026-10-27T04:42:08.343276Z"}
+{"ev": "release", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/FRAMEWORK.md", "ts": "2026-10-27T04:45:38.178224Z"}
+{"ev": "release", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/VOICE-NOTES.md", "ts": "2026-10-27T04:45:38.179569Z"}
+{"ev": "release", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/AUTHOR-CARD-NOTES.md", "ts": "2026-10-27T04:45:38.180518Z"}
+{"ev": "release", "seat": "framework-troop", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/books/the-fire-is-bait/draft/00-skeleton.md", "ts": "2026-10-27T04:45:38.181354Z"}
+{"ev": "claim", "seat": "gopher", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/server/main.py", "base_sha": null, "ts": "2026-10-27T08:08:57.876392Z"}
+{"ev": "claim", "seat": "gopher", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/server/test_history_ground_001.py", "base_sha": null, "ts": "2026-10-27T08:08:57.877291Z"}
+{"ev": "release", "seat": "gopher", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/server/main.py", "ts": "2026-10-27T08:09:08.406642Z"}
+{"ev": "release", "seat": "gopher", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/server/test_history_ground_001.py", "ts": "2026-10-27T08:09:08.407561Z"}
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/iris-mdns.sh", "base_sha": null, "ts": "2026-10-27T13:47:00Z", "note": "direct ledger append — seatguard exec denied in backgroun
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/test_iris_mdns.sh", "base_sha": null, "ts": "2026-10-27T13:47:00Z", "note": "direct ledger append — seatguard exec denied in back
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/com.hifidecant.iris-mdns.plist", "base_sha": null, "ts": "2026-10-27T13:47:00Z", "note": "direct ledger append — seatguard exec deni
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/MDNS-KEEPER.md", "base_sha": null, "ts": "2026-10-27T13:47:00Z", "note": "direct ledger append — seatguard exec denied in background
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/ola/muster/project-iris-launch.sh", "base_sha": null, "ts": "2026-10-27T13:47:00Z", "note": "direct ledger append — seatguard exec denie
+{"ev": "release", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/iris-mdns.sh", "ts": "2026-10-27T13:50:23.242358Z"}
+{"ev": "release", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/test_iris_mdns.sh", "ts": "2026-10-27T13:50:23.243153Z"}
+{"ev": "release", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/com.hifidecant.iris-mdns.plist", "ts": "2026-10-27T13:50:23.243647Z"}
+{"ev": "release", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/MDNS-KEEPER.md", "ts": "2026-10-27T13:50:23.244110Z"}
+{"ev": "release", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/ola/muster/project-iris-launch.sh", "ts": "2026-10-27T13:50:23.244619Z"}
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/iris-mdns.sh", "base_sha": "382674ec50fce953519b7e57793ce9a72fbb0c416badf3752376f878d73f51aa", "ts": "2026-10-27T13:50:23.278420Z
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/tools/keepers/test_iris_mdns.sh", "base_sha": "c44e4a99855d2cf70ba2800c59e9f6c20070e6a96c5e038c59536f9d7ba84476", "ts": "2026-10-27T13:50:23.27
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/com.hifidecant.iris-mdns.plist", "base_sha": "a7d149014a0bfebcb90ffa237f9625d7977fed9901599580e38f573e62d30dde", "ts": "2026-10-27T1
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/deployment/MDNS-KEEPER.md", "base_sha": "ed87a48bcc5a230c279e45cd3a49d5652524c4ee4fb3b1da5e8ce78478fac965", "ts": "2026-10-27T13:50:23.280473Z"
+{"ev": "claim", "seat": "mdns-keeper", "path": "/Users/christopherhoffpauir/HIFIDecant/Selflight/garden/ola/muster/project-iris-launch.sh", "base_sha": "1426f7bc2825a205066a2fae5b590591369263e207d58be9ac765d682f54f2d1", "ts": "2026-10-27T13
+### ---- Electron shell sources ----
+total 16
+drwxr-xr-x   6 christopherhoffpauir  staff   192 Oct 25 17:01 .
+drwxr-xr-x@ 13 christopherhoffpauir  staff   416 Oct 27 11:35 ..
+drwxr-xr-x   6 christopherhoffpauir  staff   192 Oct 25 14:54 build
+drwxr-xr-x   6 christopherhoffpauir  staff   192 Oct 25 17:01 build-exp
+-rw-r--r--   1 christopherhoffpauir  staff  2811 Oct 25 14:54 main.js
+-rw-r--r--   1 christopherhoffpauir  staff   283 Oct 25 14:54 package.json
+{
+  "name": "iris-prime-app",
+  "productName": "Iris Prime",
+  "version": "0.1.0",
+  "description": "Iris Prime in its own app window, over a running Prime (attaches; never starts an engine). PROPOSED 2026-10-25.",
+  "main": "main.js",
+  "private": true,
+  "license": "UNLICENSED"
+}
+total 448
+drwxr-xr-x@  21 christopherhoffpauir  staff     672 Oct 25 19:41 .
+drwx------   49 christopherhoffpauir  staff    1568 Oct 25 23:51 ..
+-rw-r--r--@   1 christopherhoffpauir  staff      48 Oct 14 18:50 .gitignore
+-rw-r--r--@   1 christopherhoffpauir  staff    7290 Oct 14 18:56 README.md
+drwxr-xr-x@   6 christopherhoffpauir  staff     192 Oct 25 19:59 build
+drwxr-xr-x@  10 christopherhoffpauir  staff     320 Oct 25 19:59 dist
+-rw-r--r--    1 christopherhoffpauir  staff    1162 Oct 25 19:41 electron-builder.yml
+-rw-r--r--@   1 christopherhoffpauir  staff    1166 Oct 14 18:49 electron-builder.yml.pre-irisprime-20261025-194100
+drwxr-xr-x    6 christopherhoffpauir  staff     192 Oct 25 19:59 engine
+-rw-r--r--    1 christopherhoffpauir  staff   18074 Oct 25 19:41 main.js
+-rw-r--r--@   1 christopherhoffpauir  staff   18092 Oct 14 18:54 main.js.pre-irisprime-20261025-194100
+drwxr-xr-x@   3 christopherhoffpauir  staff      96 Oct 14 18:49 models
+drwxr-xr-x@ 230 christopherhoffpauir  staff    7360 Oct 14 18:50 node_modules
+drwx------@  99 christopherhoffpauir  staff    3168 Oct 22 09:44 ollama
+-rw-r--r--@   1 christopherhoffpauir  staff  143744 Oct 14 18:50 package-lock.json
+-rw-r--r--    1 christopherhoffpauir  staff     437 Oct 25 19:41 package.json
+-rw-r--r--@   1 christopherhoffpauir  staff     439 Oct 14 18:00 package.json.pre-irisprime-20261025-194100
+-rw-r--r--@   1 christopherhoffpauir  staff    1134 Oct 14 18:49 preload.js
+-rw-r--r--    1 christopherhoffpauir  staff    1808 Oct 25 19:41 recovery.html
+-rw-r--r--@   1 christopherhoffpauir  staff    1810 Oct 14 18:49 recovery.html.pre-irisprime-20261025-194100
+drwxr-xr-x@   7 christopherhoffpauir  staff     224 Oct 22 09:15 scripts
+{
+  "name": "project-iris-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iris Prime — native desktop shell over the Selflight engine",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "^26.15.3"
+  }
+}
+9cbe054566e295ae32be837f6189a25bc0ded3f72fd8ec24436ced289727c477  /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/prime-app/main.js
+da3d56d4999879f15a554cde0ccf36ee79d195175b7e88426d9b643dbfd6681e  /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/desktop/main.js
+shasum: /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/prime-app/preload.js: No such file or directory
+232e43bd46c3879f14286f98bceee6249e351b90971b1d5cc88fc65fa2bf0b51  /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/desktop/preload.js
+--- diff prime-app vs desktop main.js
+1,4c1,26
+< // Iris Prime — its own app window over a running Prime (PROPOSED 2026-10-25, Gopher seat).
+< // Attaches to a Prime that is already running; never starts an engine of its own.
+< const { app, BrowserWindow, shell, nativeTheme } = require('electron');
+< const path = require('path');
+---
+> // Iris Prime — Electron main process.
+> //
+> // One window, one managed engine. The engine is the Selflight FastAPI/uvicorn
+> // spawn the bundled interpreter, wait for /api/health, then load the client.
+> // On the way down we give the engine its full graceful-shutdown window —
+> // uvicorn's timeout_graceful_shutdown is load-bearing; SIGKILL is the last
+> // path, never the first.
+> //
+> // Layout expected beside the packaged app (resources/):
+> //   engine/python/bin/python3    relocatable CPython (win: engine/python/python.exe)
+> //   engine/python-deps/          pip --target deps (PYTHONPATH)
+> //   engine/app/                  server/ + client/ + vendor/
+> //   ollama/ollama                optional bundled ollama binary
+> //   models/                      optional starter model (currently first-run pull)
+> //
+> // Dev mode (app not packaged): IRIS_ENGINE_DIR points at the release root
+> // (releases/20260922-01 — it already has python/, python-deps/, app/). If
+> // unset, ./engine is used when present, so the assembled tree can be tested
+> // without building a dmg.
+> 
+> 'use strict';
+> 
+> const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, shell, nativeImage } = require('electron');
+> const { spawn } = require('child_process');
+> const crypto = require('crypto');
+5a28,30
+> const http = require('http');
+> const net = require('net');
+> const path = require('path');
+7,13c32,33
+< const arg = (k) => { const a = process.argv.find((x) => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : null; };
+< const PORT = Number(arg('port') || process.env.IRIS_PRIME_PORT || 8772);
+< const ORIGIN = `http://127.0.0.1:${PORT}`;
+< const START = arg('path') || '/research';
+< const SNAP = arg('snap');
+< const ICON = path.join(__dirname, 'build', 'icon-1024.png');
+< const inPrime = (u) => String(u || '') === ORIGIN || String(u || '').startsWith(ORIGIN + '/');
+---
+> const IS_MAC = process.platform === 'darwin';
+> const IS_WIN = process.platform === 'win32';
+14a35,36
+> // userData is named after app.name; keep it "Iris Prime" in dev and dist
+> // alike instead of falling back to the package.json `name` field.
+16d37
+< let win = null;
+18,22c39,52
+< function notAnswering() {
+<   const html = `<body style="background:#0a0c16;color:#eef1f8;font:15px -apple-system,sans-serif;padding:56px;line-height:1.6">
+< <h2 style="font-weight:600">Iris Prime isn't answering on port ${PORT}</h2>
+< <p>This app opens a window onto your running Prime. It doesn't start Prime itself.<br>Start Prime, then press &#8984;R.</p></body>`;
+<   return 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+---
+> // ---------------------------------------------------------------------------
+--- asar main.js vs desktop main.js
+d73764ec897a74e40f05f6008ff72712ae97f4f013b7df0b9af98e72db68e3f7 asar:main.js
+4cafdcababc7a8d5a2b9587e21b9f086f1b0e4291577746b761b5e566cff8178 asar:preload.js
+23ca56d482f1bfa7b1d73148284c104a6a9d448d0e2156cfa5e93ba2d99f55ee asar:package.json
+});
+{
+  "name": "project-iris-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iris Prime — native desktop shell over the Selflight engine",
+  "main": "main.j
+8ecc9a3d695ecef338ff923a28f7413d09239376773414267eaaff724936dcb6 asar:recovery.html
+--- node/electron availability
+/opt/homebrew/bin/node
+v26.10.0
+ls: /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/prime-app/node_modules/.bin/electron: No such file or directory
+/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/desktop/node_modules/.bin/electron
+@electron
+@isaacs
+@malept
+@noble
+@peculiar
+@sindresorhus
+@szmarczak
+@types
+@xmldom
+abbrev
+assemble-engine.sh
+make-icons.js
+requirements-pinned.txt
+ls: /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/prime-app/scripts: No such file or directory
+ls: /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/prime-app/dist: No such file or directory
+--- client toggle hook (staged)
+  });
+  (function drag() {
+    var sx, sy, ox, oy, moved = false;
+    orb.addEventListener("pointerdown", function (e) { sx = e.clientX; sy = e.clientY; var r = orb.getBoundingClientRect(); ox = sx - r.left; oy = sy - r.top; moved = false; orb.setPointerCapture(e.pointerId); });
+    orb.addEventListener("pointermove", function (e) { if (sx == null) return; if (!moved && Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) < 5) return; moved = true;
+      orb.style.left = Math.max(4, Math.min(innerWidth - 70, e.clientX - ox)) + "px"; orb.style.top = Math.max(4, Math.min(innerHeight - 70, e.clientY - oy)) + "px"; orb.style.right = orb.style.bottom = "auto"; });
+    orb.addEventListener("pointerup", function () { if (sx == null) return; sx = null; if (moved) { LS.set("pos", { x: parseInt(orb.style.left), y: parseInt(orb.style.top) }); } else toggle(); });
+    orb.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+  })();
+  function room() { return document.body.dataset.room || "personal"; }
+  var ROOMNAME = { personal: "Personal Room", business: "Business Room", forge: "Forge" };
+  window.__irisAssistant.toggle = function (f) { toggle(f); };   // OPTSPACE-001: Iris Prime app calls this from Mac-wide Option+Space
+  function toggle(force) {
+    var open = force != null ? force : !panel.classList.contains("open");
+    panel.classList.toggle("open", open); orb.classList.toggle("listening", open);
+    if (open) { panel.querySelector("#ia-foot").textContent = "Speaking in your " + ROOMNAME[room()] + (room() === "forge" ? " (no room armour here)" : ", wearing its armour") + " · Option+Space";
+      if (!logEl.children.length) note("Hello, Christopher. I'm Iris. Ask me anything, or tell me what you need done."); setTimeout(function () { panel.querySelector("#ia-in").focus(); }, 30); }
+  }
+  addEventListener("keydown", function (e) {
+    if (e.altKey && e.code === "Space") { e.preventDefault(); e.stopPropagation(); toggle(); return; }
+    if (e.key === "Escape" && panel.classList.contains("open")) toggle(false);
+  }, true);
+  panel.querySelector("#ia-x").addEventListener("click", function () { toggle(false); });
+  var logEl = panel.querySelector("#ia-log"), hist = [], conv = null, ws = null, cur = null;
+  function add(cls, t) { var m = document.createElement("div"); m.className = "m " + cls; m.textContent = t; logEl.appendChild(m); logEl.scrollTop = 1e9; return m; }
+  function note(t) { return add("n", t); }
+--- client hotkey handler (staged)
+      summon();
+    });
+  }
+
+  function handleHotkey(e) {
+    if (!prefs.getPref("summon.hotkey", true)) return;
+    if (e.ctrlKey && e.code === 'Space') {
+      e.preventDefault();
+      summon();
+    } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+      e.preventDefault();
+      summon();
+    }
+  }
+
+  function init() {
+    if (window.__irisAssist) return;
+    window.__irisAssist = {
+      summon: summon,
+      open: function(id) {
+        var a = ASSISTANTS.find(a => a.id === id);
+        if (a) a.run();
+      },
+      relevant: getRelevantAssistant
+    };
+
+    createChip();
+
+    document.addEventListener('keydown', handleHotkey);
+
+    window.addEventListener('iris:prefs-changed', function() {
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/hat-desktop.js:331:  window.addEventListener("iris:hat-changed", register);
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/hats.js:83:    try { window.dispatchEvent(new CustomEvent("iris:hat-changed", { detail: { hat: current } })); } catch (_) {}
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/prefs.js:506:  window.addEventListener("iris:hat-changed", function () { if (panel) drawPanel(); });
+/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/client/assets/rooms-tools.js:16:        if (!this.__rt) { this.__rt = 1; var buf = ""; this.addEventListener("message", function (ev) {
+END-OF-PASS

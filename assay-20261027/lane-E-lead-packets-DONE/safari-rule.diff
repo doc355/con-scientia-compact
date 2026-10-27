@@ -1,0 +1,17 @@
+--- /Applications/Iris Control.app/Contents/Resources/project-iris-launch.sh	2026-10-26 00:44:27
++++ /Applications/Project Iris.app/Contents/Resources/project-iris-launch.sh	2026-10-26 22:24:46
+@@ -61,7 +61,10 @@
+ is_up()  { health_json | /usr/bin/grep -Eq '"status": ?"up"'; }
+ is_ours(){ health_json | /usr/bin/grep -Eq "\"instance_id\": ?\"$EXPECT_ID\""; }
+ wait_up(){ local i=0; while [ $i -lt $WAIT ]; do is_up && return 0; sleep 1; i=$((i+1)); done; return 1; }
+-open_page() { [ -n "$URL" ] && act /usr/bin/open "$URL"; return 0; }
++open_page() { [ -n "$URL" ] && act /usr/bin/open -a Safari "$URL"; return 0; }
++# SAFARI-KEYCHAIN-001 (his ruling 2026-10-26): Prime pages open in Safari specifically —
++# Apple Passwords / iCloud Keychain only autofill inside Safari. Default browser stays
++# Chrome for everything else; revert this line to /usr/bin/open "$URL" to undo.
+ # v0.3: which build is live — the last promote line in the release gate's ledger (honest "unknown" if none)
+ build_name() { /usr/bin/python3 -c 'import json,os
+ p=os.path.expanduser("~/.selflight/release-gate/ledger.jsonl"); n="unknown"
+bdbec02bd5c29d22966ca18b2bee1f5dbe8286116b55ee6acafc089932c8b324  /Applications/Project Iris.app/Contents/Resources/project-iris-launch.sh
+57eb08372253b41f33a1502fb33eefca24f6445bc0155f9d6653b3183a1188f5  /Applications/Iris Control.app/Contents/Resources/project-iris-launch.sh
+bdbec02bd5c29d22966ca18b2bee1f5dbe8286116b55ee6acafc089932c8b324  /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/iris-control-1/project-iris-launch.sh

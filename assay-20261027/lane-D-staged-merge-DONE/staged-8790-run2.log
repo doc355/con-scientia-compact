@@ -1,0 +1,755 @@
+[selflight] guest seat (GUEST-SEAT-001 / R-39) attached: guest {seat,models,conversations,history,leave} + owner {enter,link,activity,retire}; partition <home>/guest/<gid>/
+[selflight] prefs (PREFS-001 / R-49) attached: {get,set,reset} under /api/prefs; owner file <home>/prefs.json, guest seats their own partition
+[selflight] hats (HATS-001 / R-54) attached: /api/hats {get,set}; 4 hats, lens-not-lock, choice persisted via /api/prefs
+[selflight] DESK-VAULT-001 attached: /rooms + /api/desk/v1/* (desks personal, business, forge; lease 20s)
+[selflight] Iris Connect: /connect/v1 + /ascended/v1 (IRIS-CONNECT-001, instance 7a1ac220)
+[selflight] Iris Garden: council seats garden:<peer>/<model> enabled; discovery on 239.255.73.77:47377, enrolled=False, hifi=False (IRIS-GARDEN-001)
+[selflight] PHOTO-FRAME-001: frame reads /Users/christopherhoffpauir/Pictures/Iris Frame (read-only, 0 photo(s) now)
+[selflight] OS view retired: /os -> /
+[docker] runtime v0.1 registered at /api/docker/v1 — binary: /usr/local/bin/docker
+[link] keeper v0.3 registered at /api/link/v1 — 45 targets, state /Users/christopherhoffpauir/.selflight/link-keeper/state.json
+[warm-keeper] attached: /api/warm/v1/status
+[release] gate v0.1 registered at /api/release/v1 — live /Applications/Iris Prime (Staged).app/Contents/Resources/engine/app, stability 60 min
+[selflight] Prime sign: promote requires Doc's fingerprint; page /prime-sign (PRIME-SIGN-001)
+[selflight] Budget keeper: WATCH; hooks provider_chat.stream_chat, devin_adapter.answer; page /budget (BUDGET-KEEPER-001)
+[selflight] inflight: /api/chat/inflight
+[selflight] view-switch-keeps-chat: /api/casual/last-for-model
+[selflight] processes-per-model: /api/processes/per-model
+[selflight] outbuf: local num_predict default 32768
+[selflight] councils: 14 types
+[selflight] composite being: /ws/composite
+[selflight] ollama bridge: /api/ollama/v1/chat (cap 25.0 USD/day, ledger /Users/christopherhoffpauir/.selflight/spend.jsonl)
+[selflight] notices: /api/notices/v1
+[selflight] restart button: /api/restart/v1/main
+[selflight] free cloud: 21 runtimes registered; discovery every 6.0 h while INTERNET is on
+[selflight] model list: /api/models/v1/list (T-MODEL-LIST-AUTO, lo 3732)
+[selflight] runtime list: /api/runtimes/v1/models (T-LM-STUDIO-RUNTIME, lo 4088)
+[selflight] council minder: /api/council/v1/run (T-COUNCIL-MINDER, lo 4088)
+[selflight] council spawn: /api/council/v1/{spawn,pool} (R-38, seat_call wired)
+[selflight] skills: /api/skills/v1/{list,name} (R-41)
+[selflight] head health: /api/heads/v1/health (R-43)
+[selflight] ladder: /api/ladder/v1/{plans,<plan>,step,run,approve,receipts} (R-45)
+[selflight] attention: /api/iterations/v1/attention[/read] (R-29)
+[selflight] reader-filter: status lines split for readers (R-40)
+[selflight] armillary: /api/armillary/v1/entries (/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/server/data/armillary_entries.json)
+[selflight] voxel: /api/voxel/v1/field (/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/server/data/voxel_field.json)
+[selflight] workshop: {'attached': True, 'runs': '/Users/christopherhoffpauir/HIFIDecant/workshop/runs'}
+[selflight] business: {'attached': True, 'policy': '/Users/christopherhoffpauir/.selflight/business'}
+[selflight] filebox: {'attached': True, 'folder': '/Users/christopherhoffpauir/HIFIDecant/Selflight/filebox/presentations'}
+[selflight] chat handoff: /api/chat/handoff (the live chat follows you across views)
+[selflight] credentials broker: /api/business/v1/credentials[/have|/request] (secrets stay in the Keychain)
+[selflight] security: /security, /api/security/v1/{cameras,network,discover,snapshot,ptz,record} (UniFi key from Keychain, read-only; PTZ his browser only)
+[selflight] codebot: /ws/codebot, /api/codebot/{state,run,settings,studio-map} (reads term-1, pastes on his command)
+[selflight] business wiki: /business/wiki (/Users/christopherhoffpauir/HIFIDecant/Selflight/business-wiki)
+[selflight] business mail API: /api/business/v1/mail/* (0 accounts) + /business/mail
+[selflight] accounting export API: /accounting + /api/business/v1/acct/{coa,preview,export_qbo,export_list,export_beancount} (COA: none loaded yet; beancount lib: not needed (plain-text emit))
+[selflight] business auth (BUSINESS-AUTH-001) attached: /business/signin, /api/business/v1/{whoami,identities,signin,signout}
+[selflight] board/lane/todo (BOARD-LANE-001) attached: /board, /api/board/v1/{post,read,done,scopes,plot,runner/tick} + runner started
+[selflight] screen-wiggler (WIGGLER-001) attached: /api/wiggler/v1/{status,start,stop} - OFF by default (no auto-start), keep-awake via caffeinate + harmless nudge
+[selflight] nodes door: /nodes/open/{node}, /api/nodes/v1/status, /api/nodes/v1/revive
+[selflight] all-call: GET /api/allcall/v1, POST /hold, POST /clear — holds /tmp/staged-verify-home/allcall/holds.json, ledger /tmp/staged-verify-home/allcall/allcall.jsonl
+[selflight] library registered (/library, /api/library/v1)
+[selflight] servers inventory attached: /api/servers/v1/running
+[selflight] weave field attached: /api/weave/v1/field
+[selflight] weave sentience instrument (WEAVE-SENTIENCE-001 / R-60) attached: /api/weave/v2/{field,being/<id>,history}; ledger /private/tmp/staged-verify-home/weave/scorecard.jsonl; window 400ev/30.0min; rung5 held
+[selflight] imagination unit (IMAGINATION-UNIT-001 / R-62) attached: /api/imagination/v1/{run,runs,models,operators}; records at <home>/imagination/*.jsonl
+[selflight] dental pane at /dental; practice store /api/practice (+merge, +review)
+[selflight] hipaa-bot: sources+summarize+screen+handoff+shred at /api/hipaa/v1/*
+[selflight] dentin connector at /api/dentin/v1/* (domain-locked, any head)
+[selflight] polyglot: translate+vision+vtt at /api/polyglot/v1/* · page /translate (local-only)
+[selflight] dental-kit: auto-update version endpoint at /api/dental/v1/*
+[selflight] accounts: registry+keys+links+endpoints at /api/accounts/v1/* (keys→0600 env, never logged)
+[selflight] consent gate (T-UX-FRICTION-1): /api/consent/v1/{challenge,verify} — informed consent off the trusted local path
+[selflight] keychain pane (T-UX-FRICTION-1): /keychain + /api/keychain/v1/{list,set,delete} — secrets stay in the Keychain, units refused
+[selflight] {'attached': True, 'endpoints': ['/api/iris-search', '/api/iris-ask', '/api/iris-heard'], 'note': 'local index + OLA ask; local search reads names/notes only — no file bodies'}
+[selflight] memory organ: {'attached': True, 'node': 'acb9f309-ff34-4c1b-b39e-cbf69a0a8552', 'stores': ['hyphae', 'voxel'], 'recorder': 'started'}
+[selflight] creative: /creative + /api/creative/v1/{health,propose,rule,learned,ledger} (CREATIVE-001 lane 0)
+[selflight] creative-resolve: /api/creative/v1/resolve/{health,assemble,render,job} (CREATIVE-001 lane 2)
+[selflight] creative-language: /api/creative/v1/language/translate (CREATIVE-001 lane 3)
+[selflight] creative-versions: /api/creative/v1/versions/{targets,build} (CREATIVE-001 lane 5)
+[selflight] creative-channels: /api/creative/v1/{channels,publish/draft} (CREATIVE-001 lane 6, drafts only)
+[selflight] creative-metrics: /api/creative/v1/{ab/read,business/draft} (CREATIVE-001 lane 7, drafts only)
+[selflight] creative studio lane (invoices + studio memberships) attached: drafts only; send/charge gated
+[selflight] creative-camera: /api/creative/v1/camera/{status,shots,shot,go,record} (CREATIVE-001 lane 1, over studio_security)
+[selflight] phone_mirror lane registered
+INFO:     Started server process [27957]
+INFO:     Waiting for application startup.
+[selflight] workspace roots: all declared roots present
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8790 (Press CTRL+C to quit)
+[selflight] instance staged-verify on port 8790
+[selflight] state home: /private/tmp/staged-verify-home  (not the default)
+[selflight] workspace root: /Users/christopherhoffpauir/HIFIDecant/workspace
+[selflight] plaud intake: not armed on extra instance staged-verify
+[selflight] session sess-20261027-114316-b4f153 started
+[selflight] recording to /private/tmp/staged-verify-home/sessions/2026-10-27_11-43-16__sess-20261027-114316-b4f153.jsonl
+[selflight] RAG available: True (err: None)
+[selflight] vocabulary ledger: /private/tmp/staged-verify-home/vocabulary.jsonl (0 entries)
+[selflight] voice input: ready via whisper.cpp
+[selflight] drive: not set up - Missing client_secret.json. Create a Desktop-app OAuth client in Google Cloud Console with the Drive API enabled, then save the downloaded JSON to /private/tmp/staged-verify-home/drive_tokens/client_secret.json.
+INFO:     127.0.0.1:52689 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52717 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52719 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52720 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52721 - "GET /accounting HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52722 - "GET /board HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52723 - "GET /books HTTP/1.1" 302 Found
+INFO:     127.0.0.1:52725 - "GET /business HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52726 - "GET /business/mail HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52727 - "GET /business/signin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52728 - "GET /business/wiki HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52730 - "GET /casual HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52731 - "GET /comms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52732 - "GET /console HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52734 - "GET /creative HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52736 - "GET /files HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52737 - "GET /keychain HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52738 - "GET /library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52739 - "GET /notes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52740 - "GET /os HTTP/1.1" 302 Found
+INFO:     127.0.0.1:52741 - "GET /phone HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52742 - "GET /play HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52743 - "GET /polyglot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52744 - "GET /reading HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52745 - "GET /rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52746 - "GET /security HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52747 - "GET /servers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52748 - "GET /workshop HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52749 - "GET /writer HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52750 - "GET /assets/assist-launch.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52751 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52752 - "GET /assets/glass-topbar.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52753 - "GET /assets/glass-topbar.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52754 - "GET /api/allcall/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52756 - "GET /api/allcall/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52757 - "GET /api/library/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /index.html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /assets/app.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/brand.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/warmth.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/looks.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /assets/glass-topbar.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/glass-panes.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/app.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /assets/iris-eye-v38.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/nodebar.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/model-picker.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /assets/business-model-guard.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/chrome-autohide.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /assets/house-rules.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/prefs.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /assets/notices.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/brand.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/pane-grid.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/composite.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/pane-duplicate.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/research-look.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/pane-chat-link.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/brand/iris-web.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /api/business/v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/panes-menu.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/console-as-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/processes-per-model.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/weave-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /vendor/three.min.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/visualizer-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/voxel3dvenn-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /api/composite/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/filebox-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/codebot-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/drop-zone-inbound.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/imagination-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/tour.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/iris-search.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/biz-ai.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/polyglot-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/hipaa-quick.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/instances HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /assets/assist-launch.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/iris-dial.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/accounts-panel.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /assets/being-card.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /assets/warmth.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /assets/glass-topbar.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /api/accounts/v1/onboarded HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /assets/fleet-capsule.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /assets/being-colours.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /assets/beings-pinned.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/identity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52870 - "WebSocket /ws/chat" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:52823 - "GET /api/chat/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /api/marginalia/recent?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52872 - "WebSocket /ws/terminal/term-1" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:52828 - "GET /api/weave/v2/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/honesty/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/imagination/v1/runs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/voice/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /api/vocabulary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/allcall/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52830 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52828 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52823 - "GET /api/chat/inflight?t=1793119407115 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52824 - "GET /api/processes/per-model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52827 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52898 - "WebSocket /ws/subscribe?label=frontend" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:52829 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52947 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52947 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52829 - "GET /writer.html HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52829 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53074 - "GET /library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53075 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53079 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53081 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53078 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53080 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53080 - "GET /api/library/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53078 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53079 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53075 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53079 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53081 - "GET /api/library/v1/cover/apple%3A361672914 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53078 - "GET /api/library/v1/cover/own%3Aextraction HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /api/library/v1/cover/apple%3A370194515 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53080 - "GET /api/library/v1/cover/own%3Aown-the-chair HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53079 - "GET /api/library/v1/cover/own%3Aam-i-even-human HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53081 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /api/library/v1/cover/apple%3A395547695 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53081 - "GET /api/library/v1/cover/apple%3A3ECB6984AA37142EDF1179D488938571 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /api/library/v1/cover/apple%3A361710812 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53078 - "GET /api/library/v1/cover/apple%3A361563597 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53081 - "GET /api/library/v1/cover/apple%3A361565787 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53074 - "GET /api/library/v1/cover/apple%3ABDCF4D0E958CD855D13F2BB74E48182F HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53075 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53075 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53075 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53075 - "GET /rooms.html HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53191 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53566 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /index.html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /assets/app.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53591 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/looks.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53594 - "GET /assets/glass-topbar.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53590 - "GET /assets/app.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53591 - "GET /assets/iris-eye-v38.svg HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/nodebar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/model-picker.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/business-model-guard.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53594 - "GET /assets/chrome-autohide.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53594 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /api/business/v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /assets/brand.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53594 - "GET /assets/prefs.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/pane-grid.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/composite.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/research-look.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53594 - "GET /assets/pane-duplicate.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /assets/pane-chat-link.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /assets/panes-menu.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/console-as-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/processes-per-model.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /vendor/three.min.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/weave-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/visualizer-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/voxel3dvenn-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/filebox-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/codebot-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/imagination-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/drop-zone-inbound.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/tour.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/iris-search.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/biz-ai.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/polyglot-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/hipaa-quick.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/instances HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "GET /assets/accounts-panel.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/being-card.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53593 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53591 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53595 - "GET /assets/glass-topbar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53592 - "GET /api/accounts/v1/onboarded HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /assets/beings-pinned.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /assets/being-colours.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/identity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53623 - "WebSocket /ws/chat" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:53591 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/chat/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/composite/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/marginalia/recent?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53626 - "WebSocket /ws/terminal/term-1" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:53591 - "GET /api/honesty/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/weave/v2/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /api/imagination/v1/runs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /api/voice/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "GET /api/allcall/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/vocabulary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/processes/per-model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53658 - "WebSocket /ws/subscribe?label=frontend" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:53594 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53593 - "GET /api/identity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53595 - "GET /api/chat/inflight?t=1793119480892 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53594 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53685 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53781 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53781 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53781 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53781 - "GET /writer.html HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53781 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53862 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53863 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53864 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53867 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53865 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53866 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53862 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53863 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53865 - "GET /api/library/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53866 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53864 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53864 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53864 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /rooms.html HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54206 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /index.html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /assets/app.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54278 - "GET /assets/looks.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/glass-topbar.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54279 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54276 - "GET /assets/app.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54278 - "GET /assets/iris-eye-v38.svg HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/nodebar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/business-model-guard.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/chrome-autohide.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54279 - "GET /assets/model-picker.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/brand.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/pane-grid.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54279 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /api/business/v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /assets/prefs.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/composite.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54279 - "GET /assets/research-look.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/pane-chat-link.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54279 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /assets/pane-duplicate.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/panes-menu.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54277 - "GET /assets/console-as-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /assets/processes-per-model.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /vendor/three.min.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/weave-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/visualizer-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/voxel3dvenn-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/codebot-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/filebox-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/drop-zone-inbound.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/imagination-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/tour.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/biz-ai.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/polyglot-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/iris-search.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/accounts-panel.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/hipaa-quick.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54277 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /assets/being-card.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54277 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /api/accounts/v1/onboarded HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54277 - "GET /assets/being-colours.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /assets/beings-pinned.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /assets/glass-topbar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54280 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/identity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54302 - "WebSocket /ws/chat" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:54280 - "GET /api/chat/history HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/marginalia/recent?limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54303 - "WebSocket /ws/terminal/term-1" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:54280 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/honesty/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/weave/v2/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/imagination/v1/runs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54279 - "GET /api/composite/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54279 - "GET /api/voice/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54279 - "GET /api/vocabulary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54278 - "GET /api/instances HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54279 - "GET /api/processes/per-model HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/chat/inflight?t=1793119544670 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54277 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54277 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54345 - "WebSocket /ws/subscribe?label=frontend" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:54280 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/identity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54277 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54278 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/identity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/internet HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54280 - "GET /api/workspace HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/workspace/ops HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54279 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54279 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54276 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/allcall/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/processes/per-model?model=gemma4%3A12b HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /api/iterations/v1/attention HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /writer HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54436 - "GET /assets/iris-polish.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54434 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54435 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54410 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54437 - "GET /assets/prefs.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54281 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54410 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54434 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54434 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54434 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54281 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54537 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54574 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54576 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54578 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54575 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54577 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54577 - "GET /api/library/v1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54410 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54574 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54576 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54575 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54577 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54576 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54576 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54576 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54642 - "GET /assets/rooms.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /assets/rooms.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54641 - "GET /assets/glass-topbar.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54643 - "GET /assets/rooms-float.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54639 - "GET /assets/styles-catalog.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54640 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54641 - "GET /assets/rooms-curios.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54640 - "GET /assets/rooms-tools.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54642 - "GET /assets/iris-assistant.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54643 - "GET /assets/glass-topbar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54575 - "GET /assets/room-maker.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54639 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54642 - "GET /api/desk/v1/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54642 - "GET /api/frame/v1/photos HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /assets/iris-icon.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54642 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54575 - "GET /api/desk/v1/access?room=personal HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55290 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /assets/brand.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /assets/brand.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/warmth.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/looks.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/nodebar.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /assets/glass-panes.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/notices.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /assets/chrome-autohide.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/pane-duplicate.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/view-switch-keeps-chat.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /assets/panes-menu.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /assets/house-rules.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/console-as-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/brand/iris-web.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/research-panes-in-casual.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /assets/pane-grid.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /assets/prefs.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /api/casual/limits HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /api/chat/inflight?t=1793119642652 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/iris-search.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/drop-zone-inbound.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/tour.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /assets/biz-ai.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/polyglot-pane.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/hipaa-quick.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/assist-launch.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/accounts-panel.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/iris-dial.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/being-card.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55307 - "GET /assets/warmth.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /api/accounts/v1/onboarded HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /assets/fleet-capsule.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /assets/beings-pinned.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /assets/being-colours.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55303 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55307 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55304 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/iterations?role=ola HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /api/casual/history/c-20261027164723-8fd308 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55305 - "GET /api/chat/handoff HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/models/v1/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/chat/inflight?t=1793119644194 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/casual/last-for-model?model=iris%3Ahydra HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/chat/inflight?t=1793119645708 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/chat/inflight?t=1793119647215 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/chat/inflight?t=1793119648723 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55432 - "GET /assets/looks.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55434 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55302 - "GET /assets/brand.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55435 - "GET /assets/nodebar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55306 - "GET /assets/chrome-autohide.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55432 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55302 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55434 - "GET /assets/pane-duplicate.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /assets/panes-menu.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55435 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55432 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55433 - "GET /assets/console-as-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55302 - "GET /assets/view-switch-keeps-chat.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55434 - "GET /assets/research-panes-in-casual.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55435 - "GET /assets/pane-grid.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55432 - "GET /assets/prefs.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /api/casual/limits HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /api/chat/inflight?t=1793119649194 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /assets/drop-zone-inbound.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55432 - "GET /assets/tour.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55302 - "GET /assets/iris-search.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55435 - "GET /assets/polyglot-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55432 - "GET /assets/biz-ai.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /assets/hipaa-quick.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55302 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55432 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /assets/accounts-panel.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55435 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55432 - "GET /assets/being-card.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55435 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55433 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55302 - "GET /api/accounts/v1/onboarded HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55433 - "GET /assets/being-colours.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /assets/beings-pinned.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55432 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55433 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55432 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55434 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55432 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55434 - "GET /api/iterations?role=ola HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /api/casual/history/c-20261027164723-8fd308 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55434 - "GET /api/models/v1/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55302 - "GET /api/chat/handoff HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/casual/last-for-model?model=iris%3Ahydra HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/chat/inflight?t=1793119650724 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/chat/inflight?t=1793119652228 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/chat/inflight?t=1793119653733 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55435 - "GET /api/chat/inflight?t=1793119655240 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/chat/inflight?t=1793119656801 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/chat/inflight?t=1793119658306 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/chat/inflight?t=1793119659813 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55515 - "GET /api/chat/inflight?t=1793119661319 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56972 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56974 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57220 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57220 - "GET /assets/brand.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57221 - "GET /assets/looks.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57224 - "GET /assets/nodebar.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57223 - "GET /assets/glass-panes.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57225 - "GET /assets/chrome-autohide.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /assets/warmth.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57221 - "GET /assets/brand.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57224 - "GET /assets/notices.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57220 - "GET /assets/house-rules.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57223 - "GET /assets/pane-duplicate.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /assets/panes-menu.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57225 - "GET /assets/view-switch-keeps-chat.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57223 - "GET /assets/console-as-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57221 - "GET /assets/research-panes-in-casual.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57220 - "GET /assets/pane-grid.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57223 - "GET /assets/prefs.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57220 - "GET /assets/tour.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57225 - "GET /assets/drop-zone-inbound.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57221 - "GET /assets/iris-search.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /assets/biz-ai.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57223 - "GET /api/casual/limits HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57220 - "GET /api/chat/inflight?t=1793119832705 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /assets/polyglot-pane.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /assets/hipaa-quick.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57223 - "GET /assets/assist-launch.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57220 - "GET /assets/brand/iris-web.webp HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57221 - "GET /api/guest/seat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57223 - "GET /assets/heads.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57222 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57220 - "GET /assets/accounts-panel.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57221 - "GET /assets/iris-dial.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /api/accounts/v1/onboarded HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /assets/being-card.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57220 - "GET /api/prefs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57223 - "GET /assets/warmth.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57222 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /assets/fleet-capsule.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57220 - "GET /assets/beings-pinned.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57223 - "GET /assets/being-colours.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57223 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /api/weave/v1/field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57225 - "GET /api/casual/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /api/iterations?role=ola HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57225 - "GET /api/casual/history/c-20261027164723-8fd308 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57225 - "GET /api/chat/handoff HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57221 - "GET /api/models/v1/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57220 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/nodes/v1/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/casual/last-for-model?model=iris%3Ahydra HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/chat/inflight?t=1793119834249 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/chat/inflight?t=1793119835756 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/iris-heard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/chat/inflight?t=1793119837262 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/iterations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/chat/inflight?t=1793119838769 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/notices/v1?since=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/chat/inflight?t=1793119840277 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57224 - "GET /api/iris-heard HTTP/1.1" 200 OK

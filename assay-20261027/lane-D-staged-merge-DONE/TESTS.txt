@@ -1,0 +1,51 @@
+== TESTS (release python, PYTHONPATH like :8790)
+--- test_t_heads_star_001
+PASS every client HTML screen at depth <=2 loads assist-launch.js
+PASS heads.json parses and ids are unique — 14 entries
+PASS every status is supported
+PASS no unlaunchable head is marked live or page
+PASS every builtin launch id exists in ASSISTANTS
+5 of 5 pass
+--- test_library (unittest)
+/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python-deps/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.285s
+
+OK
+--- test_allcall (unittest)
+  File "/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/lib/python3.12/unittest/mock.py", line 1437, in get_original
+    raise AttributeError(
+AttributeError: <module 'link_keeper' from '/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app/server/link_keeper.py'> does not have the attribute '_allcall_skip_logged'
+
+----------------------------------------------------------------------
+Ran 16 tests in 1.213s
+
+FAILED (errors=2)
+--- test_history_ground_001
+PASS continuation rule is injected
+PASS line 2332 chunk is injected as Chang Yu commentary
+PASS III.18 sentence is injected under AUTHOR TEXT
+PASS unnumbered III.18 continuation follows commentary
+PASS numbered III.18 paragraph keeps plain AUTHOR TEXT label
+PASS bracketed non-commentator block is an editor note
+PASS strongest passage is nearest the instructions
+PASS no-head preamble remains the legacy identity-only result
+PASS search ranks the Sun Tzu III.18 lines in the top two
+PASS live wording also finds the Sun Tzu III.18 lines
+PASS empty and stopword-only queries return no passages
+RESULT test_history_ground_001 ok 2 fail 0
+--- test_history_panel_001
+PASS no-iteration/no-head preamble matches the legacy output
+PASS history-general injects without an iteration
+PASS history-general is first, deduplicated, and capped at two
+PASS no-head selection matches the legacy select(... )[:2] result
+RESULT test_history_panel_001 ok 2 fail 0
+--- test_history_record_001
+PASS head continuity reads only history-general
+PASS non-head continuity reads only the shared app record
+PASS head writes only history-general and preserves its prefix
+PASS non-head writes only app and preserves its prefix
+PASS both records remain append-only across later writes
+RESULT test_history_record_001 ok 1 fail 0

@@ -1,0 +1,36 @@
+=== 2026-10-27T17:00:15Z orphan exp process: pid 31584 (started 08:41:25, SELFLIGHT_HOME=iris-creative-exp, env port 8772, NOT listening) — old keeper code still writing exp's allcall store + shared link-keeper store. Stopping it (exp lane).
+31584 Tue Oct 27 08:41:25 2026     /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py
+still alive
+=== re-clear the two holds (re-raised by the orphan at 16:59:38Z) with the note
+hold-20261027-080506-018 -> False no matching open hold
+hold-20261027-080509-019 -> False no matching open hold
+open holds now: []
+=== watch 80s for any re-raise / still-held
+ledger lines after 2026-10-27T17:00:18Z:
+HAL state now:
+  http://100.106.102.44:8765/api/health {'state': 'UP', 'sight': 'seeing', 'fails': 0, 'last_reason': 'http 200 via ssh root@100.106.102.44', 'last_check': '2026-10-27T17:00:52Z'}
+  http://172.20.1.130:8765/api/health {'state': 'UP', 'sight': 'seeing', 'fails': 0, 'last_reason': 'http 200 via ssh root@100.106.102.44', 'last_check': '2026-10-27T17:00:53Z'}
+shared store (live Prime's) last writer check: Oct 27 12:01
+exp log errors after restart (line>1580):
+=== 2026-10-27T17:02:05Z orphan 31584 follow-up
+still alive after SIGTERM -> SIGKILL
+31584 gone
+ledger lines after 17:00:18Z:
+{"id": "hold-20261027-080506-018", "emitter": "link-keeper", "machine": "100.106.102.44", "what_failed": "hal-9000 project-iris is down", "kind": "re-raised", "utc": "2026-10-27T17:01:42Z"}
+{"id": "hold-20261027-080509-019", "emitter": "link-keeper", "machine": "172.20.1.130", "what_failed": "hal-9000 project-iris @LAN is down", "kind": "re-raised", "utc": "2026-10-27T17:01:45Z"}
+{"id": "hold-20261027-080506-018", "emitter": "link-keeper", "machine": "100.106.102.44", "how": "target back up", "kind": "resolved", "utc": "2026-10-27T17:01:55Z"}
+{"id": "hold-20261027-080509-019", "emitter": "link-keeper", "machine": "172.20.1.130", "how": "target back up", "kind": "resolved", "utc": "2026-10-27T17:01:55Z"}
+open holds: ModuleNotFoundError: No module named 'fastapi'
+main.py processes now:
+  pid 815 SELFLIGHT_PORT=8765 SELFLIGHT_INSTANCE=mbp-hifidecant  listens: 127.0.0.1:8765 
+  pid 27957 SELFLIGHT_INSTANCE=staged-verify SELFLIGHT_PORT=8790  listens: 
+  pid 37952 SELFLIGHT_PORT=8790 SELFLIGHT_INSTANCE=staged-verify  listens: 127.0.0.1:8790 
+  pid 41758 SELFLIGHT_PORT=8772 SELFLIGHT_INSTANCE=iris-creative-exp  listens: 127.0.0.1:8772 
+=== 2026-10-27T17:02:41Z final watch after SIGKILL of orphan 31584 at 17:02:05Z (orphan ticked every 60s; 17:01:42Z re-raise was its last breath)
+ledger lines after 17:02:05Z:
+(end of list)
+open holds: []
+HAL via-ssh state:
+  http://100.106.102.44:8765/api/health {'state': 'UP', 'sight': 'seeing', 'fails': 0, 'last_reason': 'http 200 via ssh root@100.106.102.44', 'last_check': '2026-10-27T17:03:56Z'}
+  http://172.20.1.130:8765/api/health {'state': 'UP', 'sight': 'seeing', 'fails': 0, 'last_reason': 'http 200 via ssh root@100.106.102.44', 'last_check': '2026-10-27T17:03:56Z'}
+shared store transitions last line: {"utc": "2026-10-27T13:41:30Z", "target": "http://127.0.0.1:8772/api/health", "name": "candidate:skeleton-4", "from": "DOWN", "to": "UP", "reason": "http 200", 

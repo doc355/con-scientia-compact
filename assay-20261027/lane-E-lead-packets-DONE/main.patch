@@ -1,0 +1,31 @@
+--- main.py.pre-laneE-20261027	2026-10-27 10:22:16
++++ main.py	2026-10-27 12:08:01
+@@ -571,6 +571,16 @@
+ AUTH_TOKEN = os.environ.get("SELFLIGHT_TOKEN", "").strip()
+ BIND_HOST = os.environ.get("SELFLIGHT_HOST", "127.0.0.1").strip() or "127.0.0.1"
+ PORT = int(os.environ.get("SELFLIGHT_PORT", "8765"))
++# BIND-EXIT-001 (lane-E-lead-packets v2, 2026-10-27): a process that cannot own its port must not live on as a
++# loop-runner. Checked HERE, before any keeper / all-call / beacon module below is registered, so a second instance on a
++# taken port exits 3 with one log line and starts nothing. Only on the `python main.py` path; imports are unchanged.
++if __name__ == "__main__":
++    try:
++        import bind_guard as _bind_guard
++        _bind_guard.preflight(BIND_HOST, PORT)
++    except ImportError as _bg_exc:
++        print(f"[selflight] BIND-EXIT-001 guard NOT attached (bind_guard missing: {_bg_exc}); serving as before", flush=True)
++        _bind_guard = None
+ 
+ # Paths that must stay open so a browser can load the page and be told it
+ # needs a token, rather than getting an unexplained blank screen.
+@@ -5756,5 +5766,9 @@
+               "Every endpoint would answer unauthenticated on the network. "
+               "Set SELFLIGHT_TOKEN, or bind to 127.0.0.1." % BIND_HOST, flush=True)
+         raise SystemExit(2)
+-    uvicorn.run(app, host=BIND_HOST, port=PORT,
+-                timeout_graceful_shutdown=10)
++    # BIND-EXIT-001: run uvicorn through the guard — never started -> exit 3; stopped -> exit with the socket, never after it.
++    if _bind_guard is not None:
++        _bind_guard.serve_then_exit(uvicorn, app, host=BIND_HOST, port=PORT, timeout_graceful_shutdown=10)
++    else:
++        uvicorn.run(app, host=BIND_HOST, port=PORT,
++                    timeout_graceful_shutdown=10)

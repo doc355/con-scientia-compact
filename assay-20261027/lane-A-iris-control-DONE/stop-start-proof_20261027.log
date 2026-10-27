@@ -1,0 +1,76 @@
+=== STOP/START PROOF 2026-10-27T16:38:50Z — run on MBP by lane-A-iris-control via ssh; script = candidates/iris-control-1/iris-control-staged.sh (the same file the GUI buttons call) ===
+--- LISTEN ports BEFORE (lsof) ---
+python3.1 805 127.0.0.1:8768
+python3.1 815 127.0.0.1:8765
+python3.1 818 127.0.0.1:8767
+python3.1 819 *:8766
+ollama 987 *:11434
+exo 1151 *:52415
+python3.1 5100 127.0.0.1:8772
+python3.1 32139 127.0.0.1:8790
+--- 8765 pid before: 815 ; 8772 pid before: 5100
+--- STOP ALL (kill-all) ---
+2026-10-27T16:38:50Z kill-all start (app=/Applications/Iris Prime (Staged).app port=8790 instance=staged-verify dry=0)
+2026-10-27T16:38:51Z kill-all ports before: :8790=32139 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:38:51Z kill-all staged app window: not running
+2026-10-27T16:38:51Z kill-all run: kill -TERM 32139
+2026-10-27T16:38:51Z kill-all rc=0
+2026-10-27T16:38:51Z kill-all :8790 closed (pid 32139 gone after SIGTERM)
+2026-10-27T16:38:52Z kill-all ports after: :8790=closed :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:38:52Z kill-all live Prime :8765: still up (untouched)
+exit=0
+--- LISTEN ports AFTER STOP ---
+python3.1 805 127.0.0.1:8768
+python3.1 815 127.0.0.1:8765
+python3.1 818 127.0.0.1:8767
+python3.1 819 *:8766
+ollama 987 *:11434
+exo 1151 *:52415
+python3.1 5100 127.0.0.1:8772
+--- :8790 health after stop: 000 (000 = down)
+--- :8765 health after stop: {"status":"up","auth_required":false,"session_id":"sess-2026
+--- :8772 health after stop: {"status":"up","auth_required":false,"session_id":"sess-2026
+--- START ALL (start-all) ---
+2026-10-27T16:38:52Z start-all start (app=/Applications/Iris Prime (Staged).app port=8790 instance=staged-verify dry=0)
+2026-10-27T16:38:53Z start-all ports before: :8790=closed :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:38:53Z start-all spawn: (cd /Applications/Iris Prime (Staged).app/Contents/Resources/engine/app; SELFLIGHT_INSTANCE=staged-verify SELFLIGHT_HOME=/tmp/staged-verify-home SELFLIGHT_PORT=8790 SELFLIGHT_SHARED_HOME=/Users/christopherhoffpauir/.selflight SELFLIGHT_HOST=127.0.0.1 PYTHONPATH=<engine vendor:server:release python-deps> nohup /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py >> /Users/christopherhoffpauir/Library/Logs/HIFIDecant/iris-staged-8790.log)
+2026-10-27T16:38:53Z start-all spawned pid 22761
+2026-10-27T16:38:56Z start-all :8790 healthy as staged-verify
+2026-10-27T16:38:56Z start-all ports after: :8790=22762 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:38:56Z start-all open -a Safari http://localhost:8790/
+exit=0
+--- LISTEN ports AFTER START ---
+python3.1 805 127.0.0.1:8768
+python3.1 815 127.0.0.1:8765
+python3.1 818 127.0.0.1:8767
+python3.1 819 *:8766
+ollama 987 *:11434
+exo 1151 *:52415
+python3.1 5100 127.0.0.1:8772
+python3.1 22762 127.0.0.1:8790
+--- :8790 health after start: {"status":"up","auth_required":false,"session_id":"sess-20261027-113855-d0fffe","instance":{"instance_id":"staged-verify","home":"/private/tmp/staged-verify-home","shared":"/Users/christopherhoffpauir/.selflight","workspace_root":"/Users/christopherhoffpauir/Desktop/Homonian Accords","workspace_root_source":"fallback:legacy-name","archive_root_found":"","is_default_home":false},"port":8790}
+--- 8765 pid after: 815 ; 8772 pid after: 5100  (must equal before)
+--- RESTART ---
+2026-10-27T16:38:56Z restart start (app=/Applications/Iris Prime (Staged).app port=8790 instance=staged-verify dry=0)
+2026-10-27T16:38:57Z restart ports before: :8790=22762 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:38:58Z restart run: kill -TERM 22762
+2026-10-27T16:38:58Z restart rc=0
+2026-10-27T16:38:58Z restart :8790 closed (pid 22762 gone after SIGTERM)
+./iris-control-staged.sh: line 86: 22762 Terminated: 15          SELFLIGHT_INSTANCE="$INSTANCE" SELFLIGHT_HOME="$SHOME" SELFLIGHT_PORT="$PORT" SELFLIGHT_SHARED_HOME="$SHARED" SELFLIGHT_HOST=127.0.0.1 PYTHONPATH="$ENGINE_APP/vendor:$ENGINE_APP/server:$RELEASE/python-deps" nohup "$PY" server/main.py >> "$ENGLOG" 2>&1 < /dev/null
+2026-10-27T16:38:58Z restart spawn: (cd /Applications/Iris Prime (Staged).app/Contents/Resources/engine/app; SELFLIGHT_INSTANCE=staged-verify SELFLIGHT_HOME=/tmp/staged-verify-home SELFLIGHT_PORT=8790 SELFLIGHT_SHARED_HOME=/Users/christopherhoffpauir/.selflight SELFLIGHT_HOST=127.0.0.1 PYTHONPATH=<engine vendor:server:release python-deps> nohup /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py >> /Users/christopherhoffpauir/Library/Logs/HIFIDecant/iris-staged-8790.log)
+2026-10-27T16:38:58Z restart spawned pid 23122
+2026-10-27T16:39:01Z restart :8790 healthy as staged-verify
+2026-10-27T16:39:01Z restart ports after: :8790=23123 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:39:01Z restart open -a Safari http://localhost:8790/
+exit=0
+--- :8790 health after restart: {"status":"up","auth_required":false,"session_id":"sess-20261027-113900-c75965","instance":{"instance_id":"staged-verify
+--- frozen app mtime check: Oct 25 20:00:16 2026 /Applications/Iris Prime.app / engine: Oct 27 11:39:00 2026
+--- new :8790 process env (SELFLIGHT keys):
+SELFLIGHT_SHARED_HOME=/Users/christopherhoffpauir/.selflight
+SELFLIGHT_PORT=8790
+SELFLIGHT_HOME=/tmp/staged-verify-home
+SELFLIGHT_INSTANCE=staged-verify
+PYTHONPATH=/Applications/Iris
+SELFLIGHT_HOST=127.0.0.1
+=== END PROOF 2026-10-27T16:39:01Z ===
+./iris-control-staged.sh: line 86: 23123 Killed: 9               SELFLIGHT_INSTANCE="$INSTANCE" SELFLIGHT_HOME="$SHOME" SELFLIGHT_PORT="$PORT" SELFLIGHT_SHARED_HOME="$SHARED" SELFLIGHT_HOST=127.0.0.1 PYTHONPATH="$ENGINE_APP/vendor:$ENGINE_APP/server:$RELEASE/python-deps" nohup "$PY" server/main.py >> "$ENGLOG" 2>&1 < /dev/null

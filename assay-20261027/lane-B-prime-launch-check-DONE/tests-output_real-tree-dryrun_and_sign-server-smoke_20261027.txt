@@ -1,0 +1,62 @@
+== retire stray pyc (no deletes)
+README.md
+ref-__pycache__
+== real-tree dry run (read-only; temp home; --no-ledger)
+{
+ "ship": "LAUNCH-CHECK-001",
+ "name": "iris-prime-staged",
+ "purpose": "promote",
+ "app_dir": "/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app",
+ "home": "/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/tmp.OT82svvfSg",
+ "digest": "fe47c513eb7c758345720681b45ed711ce4a22767e78c05cd8b1857d7117799a",
+ "files": 416,
+ "signed_digest": null,
+ "key_fingerprint": null,
+ "signed_utc": null,
+ "ok": false,
+ "code": 12,
+ "why": "no Touch ID key enrolled \u2014 Doc has not enrolled on this Mac yet",
+ "utc": "2026-10-27T16:43:25Z"
+}
+exit=12
+
+real	0m0.409s
+user	0m0.124s
+sys	0m0.114s
+== real-tree dry run against the staged app's OWN home (read-only: --no-ledger)
+{
+ "ship": "LAUNCH-CHECK-001",
+ "name": "iris-prime-staged",
+ "purpose": "promote",
+ "app_dir": "/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app",
+ "home": "/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/_staged-home/prime-staged-userdata/selflight-instance",
+ "digest": "fe47c513eb7c758345720681b45ed711ce4a22767e78c05cd8b1857d7117799a",
+ "files": 416,
+ "signed_digest": null,
+ "key_fingerprint": null,
+ "signed_utc": null,
+ "ok": false,
+ "code": 12,
+ "why": "no Touch ID key enrolled \u2014 Doc has not enrolled on this Mac yet",
+ "utc": "2026-10-27T16:43:25Z"
+}
+exit=12
+== sign-server smoke test (loopback 127.0.0.1:8796, temp home, ~8 s, then stopped)
+pid=28208
+GET / -> 200 5694 bytes
+<h1>Sign this build of Iris Prime</h1>
+{"name":"iris-prime-staged","app_dir":"/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app","home":"/private/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/tmp.Uu5mEQ5iWT","digest":"fe47c513eb7c758345720681b45ed711ce4a22767e78c05cd8b1857d7117799a","files":416,"launch_check":{"ship":"LAUNCH-CHECK-001","name":"iris-prime-staged","purpose":"promote","app_dir":"/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app","home":"/private/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/tmp.Uu5mEQ5iWT","digest":"fe47c513eb7c758345720681b45ed711ce4a22767e78c05cd8b1857d7117799a","files":416,"signed_digest":null,"key_fingerprint":null,"signed_utc":null,"ok":false,"code":12,"why":"no Touch ID key enrolled — Doc has not enrolled on this Mac yet","utc":"2026-10-27T16:43:32Z"}}
+{"ship":"PRIME-SIGN-001","enrolled":false,"fingerprint":null,"keys":[],"signatures":[]}
+<!doctype html><meta charset=utf-8><title>Iris Prime · fingerprint</title>
+<style>body{font:15px -apple-system,system-u
+bash: line 12: kill: (28208) - No such process
+stopped
+bash: line 12: 28208 Terminated: 15          "$PY" $D/tools/prime_launch_sign.py --app-dir "$APP" --home "$T2" --port 8796 > /tmp/laneB-sign.log 2>&1
+port 8796 closed
+-- server log:
+[launch-sign] Prime sign: promote requires Doc's fingerprint; page /prime-sign (PRIME-SIGN-001)
+[launch-sign] open http://localhost:8796/   (loopback only; app=/Applications/Iris Prime (Staged).app/Contents/Resources/engine/app; home=/private/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/tmp.Uu5mEQ5iWT; name=iris-prime-staged)
+== staged :8790 and :8765 untouched:
+python3.1   815 christopherhoffpauir    7u  IPv4 0x81ae7ca3121f448c      0t0  TCP 127.0.0.1:8765 (LISTEN)
+python3.1 27957 christopherhoffpauir    9u  IPv4 0x9af776d4c2edad05      0t0  TCP 127.0.0.1:8790 (LISTEN)
+END-OF-PASS

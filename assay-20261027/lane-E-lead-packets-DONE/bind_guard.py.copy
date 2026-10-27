@@ -1,0 +1,82 @@
+"""bind_guard.py — BIND-EXIT-001 (lane-E-lead-packets v2, 2026-10-27; Gopher's follow-up to the orphan finding).
+
+A server that does not own its socket must not keep living. Three orphans on 2026-10-27 (exp pid 31584, staged-verify
+pid 27957, last night's) were `server/main.py` processes whose uvicorn had lost or never got the port, while their
+daemon loops (link-keeper, all-call, warm-keeper, garden beacons) kept ticking old code into the instance's stores —
+double "still-held" lines, raise/resolve flaps, a state.tmp race, and false HAL alarms re-raised a minute after they
+were cleared. Two shapes, two guards, both in main.py's `__main__` path only (importing main for tests is unchanged):
+
+  1. preflight(host, port) — runs right after BIND_HOST/PORT are known and BEFORE any keeper/all-call module is
+     registered: try to bind the exact address once; if it is taken, print one clear line and os._exit(EXIT_TAKEN).
+     Nothing has started yet, so nothing can outlive us.
+  2. serve_then_exit(uvicorn, app, host, port, **kw) — the uvicorn run itself. If uvicorn never reached `started`
+     (lost the race, EADDRINUSE, any startup error) -> one line, os._exit(EXIT_TAKEN). When uvicorn returns after a
+     normal shutdown (SIGTERM, Stop all), give non-daemon threads a short grace, then os._exit(0) with the names of any
+     stragglers in the log — the process ends with its socket, never after it.
+
+os._exit (not sys.exit) is deliberate: SystemExit only ends the main thread; the interpreter then waits for every
+non-daemon thread, which is exactly how the orphans stayed alive. Stdout is flushed first so the line is in the log.
+"""
+import os, socket, sys, threading, time
+
+EXIT_TAKEN = 3          # distinct from 1 (python error) and 2 (SEC-07 refuse-to-serve)
+GRACE_S = 5.0
+
+
+def _log(msg: str) -> None:
+    print(f"[selflight] BIND-EXIT-001: {msg}", flush=True)
+    try: sys.stderr.flush()
+    except Exception: pass
+
+
+def port_taken(host: str, port: int) -> str | None:
+    """None if we can bind host:port right now, else the OS's reason (text). Closes its socket either way."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind((host, int(port)))
+        return None
+    except OSError as e:
+        return f"errno {e.errno} {e.strerror or e}"
+    finally:
+        try: s.close()
+        except Exception: pass
+
+
+def preflight(host: str, port: int, *, _exit=os._exit) -> None:
+    """Guard 1. Returns if the address is free; otherwise logs one line and exits the process with EXIT_TAKEN."""
+    why = port_taken(host, port)
+    if why is None:
+        _log(f"preflight ok — {host}:{port} is free; this process may become the server")
+        return
+    _log(f"REFUSING TO START — {host}:{port} already has a listener ({why}). Another instance owns this port; "
+         f"no keeper / all-call / background loop was started; exiting {EXIT_TAKEN} now.")
+    _exit(EXIT_TAKEN)
+
+
+def _stragglers() -> list[str]:
+    me = threading.current_thread()
+    return [t.name for t in threading.enumerate() if t is not me and t.is_alive() and not t.daemon]
+
+
+def serve_then_exit(uvicorn, app, *, host: str, port: int, _exit=os._exit, **kw) -> None:
+    """Guard 2. Runs uvicorn; whatever happens, the process does not outlive its socket."""
+    server = uvicorn.Server(uvicorn.Config(app, host=host, port=port, **kw))
+    err = None
+    try:
+        server.run()
+    except BaseException as e:          # SystemExit from uvicorn's own bind failure path lands here too
+        err = e
+    if not getattr(server, "started", False):
+        _log(f"uvicorn never reached 'started' on {host}:{port} ({type(err).__name__ if err else 'no exception'}: "
+             f"{str(err)[:160] if err else 'startup failed'}) — exiting {EXIT_TAKEN} so no background loop outlives a server that is not listening.")
+        _exit(EXIT_TAKEN)
+        return
+    deadline = time.time() + GRACE_S
+    while _stragglers() and time.time() < deadline:
+        time.sleep(0.2)
+    left = _stragglers()
+    code = 0 if err is None or isinstance(err, (SystemExit, KeyboardInterrupt)) else 1
+    _log(f"server on {host}:{port} stopped ({'clean' if code == 0 else type(err).__name__}); "
+         + (f"{len(left)} non-daemon thread(s) still alive after {GRACE_S:.0f}s grace {left} — " if left else "no straggler threads — ")
+         + f"exiting {code} now so the process cannot outlive its socket.")
+    _exit(code)

@@ -1,0 +1,131 @@
+--- ref/recovery.html.asar-20261027	2026-10-27 16:36:08.709171782 +0000
++++ shell/recovery.html	2026-10-27 16:39:45.779345350 +0000
+@@ -4,38 +4,115 @@
+ <meta charset="UTF-8">
+ <title>Iris Prime — engine recovery</title>
+ <style>
+-  body { font-family: -apple-system, system-ui, sans-serif; background:#14151a; color:#e8e8ec;
+-         margin:0; padding:32px; }
+-  h1 { font-size:20px; font-weight:600; }
+-  .detail { color:#9a9aa5; margin:8px 0 20px; }
+-  pre { background:#0c0d10; border:1px solid #2a2b33; border-radius:8px; padding:14px;
++  :root { --bg:#131313; --pane:#191919; --pane2:#242424; --line:#2a2b33; --ink:#e8e8ec; --dim:#9a9aa5; --faint:#6a6a76;
++          --accent:#aac8ff; --warn:#f0b35a; --bad:#ff7b72; --good:#7ee2a8; }
++  body { font-family: -apple-system, system-ui, sans-serif; background:var(--bg); color:var(--ink);
++         margin:0; padding:32px; -webkit-font-smoothing:antialiased; }
++  h1 { font-size:20px; font-weight:600; margin:0 0 6px; display:flex; align-items:center; gap:10px; }
++  h1 .dot { width:10px; height:10px; border-radius:50%; background:var(--warn); box-shadow:0 0 0 3px rgba(240,179,90,.18); flex:none; }
++  h1 .dot.bad { background:var(--bad); box-shadow:0 0 0 3px rgba(255,123,114,.18); }
++  .detail { color:var(--dim); margin:8px 0 20px; line-height:1.5; max-width:62ch; }
++  pre { background:#0c0d10; border:1px solid var(--line); border-radius:8px; padding:14px;
+         font-size:11px; line-height:1.45; max-height:340px; overflow:auto; white-space:pre-wrap;
+-        word-break:break-all; }
+-  .path { color:#6a6a76; font-size:11px; margin-top:6px; }
+-  .row { margin-top:20px; display:flex; gap:10px; }
++        word-break:break-all; margin:0; }
++  .path { color:var(--faint); font-size:11px; margin-top:6px; }
++  .row { margin-top:20px; display:flex; gap:10px; align-items:center; }
++  .row .spacer { flex:1; }
+   button { font-size:14px; padding:8px 22px; border-radius:8px; border:1px solid #3a3b45;
+-           background:#22232b; color:#e8e8ec; cursor:pointer; }
++           background:var(--pane2); color:var(--ink); cursor:pointer; }
+   button.primary { background:#4a6fd6; border-color:#4a6fd6; color:#fff; }
+   button:hover { filter:brightness(1.15); }
++  button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
++  /* LAUNCH-CHECK-001: the signature verdict pane (hidden unless the verdict carries one) */
++  #sig { display:none; background:var(--pane); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:0 0 18px; }
++  #sig.show { display:block; }
++  #sig h2 { font-size:13px; font-weight:600; margin:0 0 10px; color:var(--dim); letter-spacing:.02em; text-transform:uppercase; }
++  .kv { display:grid; grid-template-columns:max-content 1fr; gap:4px 14px; font-size:12px; }
++  .kv .k { color:var(--faint); }
++  .kv code { font-family:ui-monospace, Menlo, monospace; font-size:11px; color:var(--ink); word-break:break-all; }
++  .files { margin-top:10px; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
++  .files > div { background:#0c0d10; border:1px solid var(--line); border-radius:8px; padding:8px 10px; min-width:0; }
++  .files b { display:block; font-size:11px; font-weight:600; margin-bottom:4px; }
++  .files ul { margin:0; padding:0; list-style:none; font-family:ui-monospace, Menlo, monospace; font-size:11px; line-height:1.5;
++              max-height:120px; overflow:auto; word-break:break-all; }
++  .files .changed b { color:var(--warn); } .files .added b { color:var(--bad); } .files .removed b { color:var(--accent); }
++  .files li.none { color:var(--faint); font-style:italic; }
++  .note { font-size:11px; color:var(--faint); margin-top:8px; }
++  #logWrap { margin-top:4px; }
++  #logWrap summary { color:var(--dim); font-size:12px; cursor:pointer; margin-bottom:8px; }
+ </style>
+ </head>
+ <body>
+-  <h1 id="reason">The engine didn't come up.</h1>
++  <h1><span class="dot" id="dot"></span><span id="reason">The engine didn't come up.</span></h1>
+   <div class="detail" id="detail"></div>
+-  <pre id="log">(loading log…)</pre>
+-  <div class="path" id="logPath"></div>
++
++  <section id="sig" aria-live="polite">
++    <h2 id="sigTitle">Signature check</h2>
++    <div class="kv">
++      <span class="k">Verdict</span><span id="sigVerdict"></span>
++      <span class="k">Engine tree</span><code id="sigApp"></code>
++      <span class="k">Files hashed</span><span id="sigFiles"></span>
++      <span class="k">Digest now</span><code id="sigDigest"></code>
++      <span class="k">Digest signed</span><code id="sigSigned"></code>
++      <span class="k">Signed</span><span id="sigWhen"></span>
++    </div>
++    <div class="files" id="sigLists">
++      <div class="changed"><b id="chT">Changed</b><ul id="chL"></ul></div>
++      <div class="added"><b id="adT">Added</b><ul id="adL"></ul></div>
++      <div class="removed"><b id="rmT">Removed</b><ul id="rmL"></ul></div>
++    </div>
++    <div class="note" id="sigNote"></div>
++  </section>
++
++  <details id="logWrap" open><summary>Engine log</summary>
++    <pre id="log">(loading log…)</pre>
++    <div class="path" id="logPath"></div>
++  </details>
+   <div class="row">
+-    <button class="primary" onclick="window.IRIS && window.IRIS.recovery('retry')">Retry</button>
++    <button class="primary" id="retry" onclick="window.IRIS && window.IRIS.recovery('retry')">Retry</button>
+     <button onclick="window.IRIS && window.IRIS.recovery('quit')">Quit</button>
++    <span class="spacer"></span>
++    <button id="copy" onclick="copyVerdict()" title="Copy the verdict as text">Copy details</button>
+   </div>
+ <script>
+   // main.js injects the payload after load (and again on repeat failures).
++  var lastPayload = null;
++  function fill(id, list) {
++    var ul = document.getElementById(id); ul.innerHTML = '';
++    if (!list || !list.length) { var li = document.createElement('li'); li.className = 'none'; li.textContent = 'none'; ul.appendChild(li); return; }
++    list.forEach(function (f) { var li = document.createElement('li'); li.textContent = f; ul.appendChild(li); });
++  }
++  function count(id, label, list) { document.getElementById(id).textContent = label + ' (' + ((list && list.length) || 0) + ')'; }
+   window.showRecovery = function (d) {
++    lastPayload = d;
+     document.getElementById('reason').textContent = d.reason || "The engine didn't come up.";
+     document.getElementById('detail').textContent = d.detail || '';
+     document.getElementById('log').textContent = d.log || '(engine.log is empty)';
+     document.getElementById('logPath').textContent = d.logPath || '';
++    var v = d.verdict, sig = document.getElementById('sig'), dot = document.getElementById('dot');
++    if (!v) { sig.className = ''; dot.className = 'dot'; document.getElementById('logWrap').open = true; return; }
++    sig.className = 'show';
++    dot.className = 'dot' + (v.code === 11 || v.code === 13 ? ' bad' : '');
++    document.getElementById('sigVerdict').textContent = (v.label || ('code ' + v.code)) + ' — ' + (v.why || '');
++    document.getElementById('sigApp').textContent = v.app_dir || '';
++    document.getElementById('sigFiles').textContent = (v.files != null) ? String(v.files) : '—';
++    document.getElementById('sigDigest').textContent = v.digest || '—';
++    document.getElementById('sigSigned').textContent = v.signed_digest || 'none on file';
++    document.getElementById('sigWhen').textContent = v.signed_utc ? (v.signed_utc + (v.key_fingerprint ? ' · key ' + v.key_fingerprint : '')) : '—';
++    var hasLists = v.changed || v.added || v.removed;
++    document.getElementById('sigLists').style.display = hasLists ? 'grid' : 'none';
++    if (hasLists) { count('chT', 'Changed', v.changed); count('adT', 'Added', v.added); count('rmT', 'Removed', v.removed);
++                    fill('chL', v.changed); fill('adL', v.added); fill('rmL', v.removed); }
++    document.getElementById('sigNote').textContent = v.note || (v.code === 11 && !hasLists ? '' : '') ;
++    // the engine never ran, so its log is not the story here — fold it
++    document.getElementById('logWrap').open = false;
++    document.getElementById('retry').textContent = 'Check again';
+   };
++  function copyVerdict() {
++    if (!lastPayload) return;
++    var t = JSON.stringify(lastPayload.verdict || lastPayload, null, 1);
++    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t);
++  }
+ </script>
+ </body>
+ </html>

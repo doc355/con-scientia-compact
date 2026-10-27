@@ -1,0 +1,68 @@
+### files
+95b1aa075672bccfb6539b5d75ffdde22b0268499829e8746b50cac4acd73217  ./CHANGE-LIST.md
+1b08dec5aa295b35804891ae78ec4477ac782c11f03c4d35c5f7e8e8d76e71e5  ./README.md
+bf9261e58aaf8ac65e30f1c9d51e97e00bb006c83b326bd1f60cda12da275b32  ./client/iris-assistant.optspace.patch
+55ffbf05c56322f585e2a0cc79b141fe7db637fd85b20034270adc307c58f330  ./hotkey.js
+f9d8b51e5f3d4a3ec96760d3ba7fb65a86e6e92e9896dc28adeb37e4dd1ab42a  ./main.js
+82854c9a9a1970a2cb898266520315c2227b2f064322fe69e0963ee42a6fcf31  ./package.json
+7c027dc184e911dcce78b9c4f6c9ae3596abd0a095c7c9754377b72a312d750c  ./preload.js
+44ae377fb88007c705e61e3e361372caf222787709b21f3f80fecd00bb53dd0a  ./probe/optspace-probe.js
+6e29a8dfa4d2961606d62774da5c07f05579d3805d3862bed294ffa9e96158df  ./recovery.html
+9b46ff1e108e05aeea230fc83d11ab618762263bf0614655cbd5fda7efe631d1  ./rollback.sh
+0ac2ca1da01ddc3f4b1ac05861d2bbb5eb3d88bc7026f8dd5b9f92bba495f120  ./test/hotkey.test.js
+### tests
+✔ accelerator is Option+Space in Electron spelling (3.00125ms)
+✔ registers Option+Space and the press reaches onCall (2.106292ms)
+✔ reports held-by-another-app when the OS refuses (Gemini holds it today) (2.823666ms)
+✔ second registration is idempotent (already-mine), no double register (0.3785ms)
+✔ unregister gives the key back and is safe when not held (0.439ms)
+✔ callIris: with a window → restore, show, focus, send iris:call (0.464083ms)
+✔ callIris: no window → opens one (0.187792ms)
+✔ onCall must be a function (1.00025ms)
+✔ main.js wires the hotkey: register on ready, unregister on will-quit, tray label, IPC (1.371125ms)
+✔ preload.js forwards iris:call to the page as postMessage (0.656917ms)
+✔ main.js, preload.js, hotkey.js parse (node --check) (840.082958ms)
+✔ client patch targets the real staged listener line (0.961459ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1285.735125
+### checks
+syntax-ok
+24c24,26
+< const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, shell, nativeImage } = require('electron');
+---
+> const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, shell, nativeImage, globalShortcut } = require('electron');
+> // OPTSPACE-001 (lane-C-option-space, 2026-10-27): Option+Space = the Iris call button, Mac-wide.
+> const hotkey = require('./hotkey');
+70a73
+> let callButton = null;             // OPTSPACE-001: result of hotkey.registerCallButton
+441a445
+>     { label: hotkey.trayLabel(callButton), enabled: false },   // OPTSPACE-001
+464a469,471
+> // OPTSPACE-001: the page can ask whether the Mac-wide call button is live.
+> ipcMain.handle('call-button-state', () => callButton);
+> 
+494a502
+>     hotkey.unregisterCallButton({ globalShortcut });   // OPTSPACE-001: give Option+Space back on the way out
+508a517,529
+>   // OPTSPACE-001: Option+Space calls Iris from anywhere on the Mac. If another
+>   // app (Gemini today) still holds it, register() returns false and the tray
+>   // says so — nothing is fought over, nothing is taken silently.
+>   callButton = hotkey.registerCallButton({
+>     globalShortcut,
+>     log: logLine,
+>     onCall: () => hotkey.callIris({
+>       mainWin,
+>       openMainWindow,
+>       send: ch => mainWin && mainWin.webContents.send(ch),
+>     }),
+>   });
+>   updateTray();
+### seatguard
+free     /Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/option-space-1
+END-OF-PASS

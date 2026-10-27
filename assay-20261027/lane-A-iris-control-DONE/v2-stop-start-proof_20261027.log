@@ -1,0 +1,51 @@
+=== v2 STOP/START PROOF 2026-10-27T16:52:48Z — one stop, one start (CYCLE-ASK-FLOOR-001: lane-D DONE on floor line 375, no newer CLAIM on the staged tree) ===
+--- LISTEN before:
+python3.1 805 127.0.0.1:8768
+python3.1 815 127.0.0.1:8765
+python3.1 818 127.0.0.1:8767
+python3.1 819 *:8766
+ollama 987 *:11434
+exo 1151 *:52415
+python3.1 5100 127.0.0.1:8772
+python3.1 27957 127.0.0.1:8790
+--- :8790 before: pid 27957 home=/private/tmp/staged-verify-home
+--- STOP (kill-all)
+2026-10-27T16:52:49Z kill-all start (app=/Applications/Iris Prime (Staged).app port=8790 instance=staged-verify dry=0)
+2026-10-27T16:52:49Z kill-all ports before: :8790=27957 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:52:49Z kill-all staged app window: not running
+2026-10-27T16:52:49Z kill-all run: kill -TERM 27957
+2026-10-27T16:52:49Z kill-all rc=0
+2026-10-27T16:52:50Z kill-all :8790 closed (pid 27957 gone after SIGTERM)
+2026-10-27T16:52:50Z kill-all ports after: :8790=closed :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:52:50Z kill-all live Prime :8765: still up (untouched)
+exit=0
+--- :8790 health after stop: 000 (000 = down)
+--- START (start-all)
+2026-10-27T16:52:51Z start-all start (app=/Applications/Iris Prime (Staged).app port=8790 instance=staged-verify dry=0)
+2026-10-27T16:52:51Z start-all ports before: :8790=closed :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:52:51Z start-all spawn: (cd /Applications/Iris Prime (Staged).app/Contents/Resources/engine/app; SELFLIGHT_INSTANCE=staged-verify SELFLIGHT_HOME=/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/_staged-home/prime-staged-userdata/selflight-instance SELFLIGHT_PORT=8790 SELFLIGHT_SHARED_HOME=/Users/christopherhoffpauir/.selflight SELFLIGHT_HOST=127.0.0.1 SELFLIGHT_OLLAMA_URL=http://127.0.0.1:8766 OLLAMA_HOST=http://127.0.0.1:8766 SELFLIGHT_WORKSPACE_ROOT=/Users/christopherhoffpauir/HIFIDecant/workspace PYTHONPATH=<engine vendor:server:release python-deps> nohup /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python/bin/python3 server/main.py >> /Users/christopherhoffpauir/Library/Logs/HIFIDecant/iris-staged-8790.log)
+2026-10-27T16:52:51Z start-all spawned pid 37951
+2026-10-27T16:52:53Z start-all :8790 healthy as staged-verify
+2026-10-27T16:52:54Z start-all ports after: :8790=37952 :8765=815 :8772=5100 :8773=closed :8766=819 :8767=818
+2026-10-27T16:52:54Z start-all open -a Safari http://localhost:8790/
+exit=0
+--- LISTEN after:
+python3.1 805 127.0.0.1:8768
+python3.1 815 127.0.0.1:8765
+python3.1 818 127.0.0.1:8767
+python3.1 819 *:8766
+ollama 987 *:11434
+exo 1151 *:52415
+python3.1 5100 127.0.0.1:8772
+python3.1 37952 127.0.0.1:8790
+--- :8790 health after start: {"status":"up","auth_required":false,"session_id":"sess-20261027-115253-ec84d9","instance":{"instance_id":"staged-verify","home":"/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/_staged-home/prime-staged-userdata/selflight-instance","shared":"/Users/christopherhoffpauir/.selflight","workspace_root":"/Users/christopherhoffpauir/HIFIDecant/workspace","workspace_root_source":"env:SELFLIGHT_WORKSPACE_ROOT","archive_root_found":"","is_default_home":false},"port":8790}
+--- new :8790 pid 37952 env:
+SELFLIGHT_HOME=/Users/christopherhoffpauir/HIFIDecant/Selflight/candidates/_staged-home/prime-staged-userdata/selflight-instance
+SELFLIGHT_INSTANCE=staged-verify
+SELFLIGHT_OLLAMA_URL=http://127.0.0.1:8766
+SELFLIGHT_WORKSPACE_ROOT=/Users/christopherhoffpauir/HIFIDecant/workspace
+OLLAMA_HOST=http://127.0.0.1:8766
+--- merged tree still served? /library → 200 ; /api/allcall/v1 → 200
+--- :8765 pid 815 ; :8772 pid 5100 (expect 815 / 5100)
+--- models list via engine (iris-ola present?): iris-ola:latest
+=== END v2 PROOF 2026-10-27T16:52:55Z ===
