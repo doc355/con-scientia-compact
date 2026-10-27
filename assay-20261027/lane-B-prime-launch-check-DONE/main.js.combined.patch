@@ -1,0 +1,167 @@
+--- ref/main.js.asar-20261027	2026-10-27 16:36:08.708171786 +0000
++++ shell/main.js	2026-10-27 17:35:12.401459057 +0000
+@@ -21,13 +21,18 @@
+ 
+ 'use strict';
+ 
+-const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, shell, nativeImage } = require('electron');
++const { app, BrowserWindow, Menu, Tray, ipcMain, Notification, shell, nativeImage, globalShortcut } = require('electron');
++// OPTSPACE-001 (lane-C-option-space, 2026-10-27): Option+Space = the Iris call button, Mac-wide.
++const hotkey = require('./hotkey');
+ const { spawn } = require('child_process');
+ const crypto = require('crypto');
+ const fs = require('fs');
+ const http = require('http');
+ const net = require('net');
+ const path = require('path');
++// LAUNCH-CHECK-001 (lane-B, 2026-10-27): Doc's fingerprint over the engine tree, checked before every spawn.
++const { launchCheck, recoveryWords, readPin } = require('./launch_check');
++const LAUNCH_CHECK_NAME = 'iris-prime-staged';   // the build name the signature is made under (tools/prime_launch_sign.py)
+ 
+ const IS_MAC = process.platform === 'darwin';
+ const IS_WIN = process.platform === 'win32';
+@@ -67,10 +72,17 @@
+ let restarts = 0;                   // watchdog: one free restart, then recovery
+ let quitting = false;               // true once we begin shutdown — no watchdog
+ let engineExpectedExit = false;     // true while we deliberately stop the engine
++let lastVerdict = null;             // LAUNCH-CHECK-001: last signature verdict (for the recovery screen + IPC)
+ let cleanedUp = false;
++let callButton = null;             // OPTSPACE-001: result of hotkey.registerCallButton
+ 
+ const userData = () => app.getPath('userData');
+-const selflightHome = () => path.join(userData(), 'selflight-instance');
++// LAUNCH-CHECK-001 v2: the install step may pin the home the sign page used (launch_check_pin.json
++// {home}) so the engine, the verifier and Doc's enrolment all read ONE prime-sign store.
++const selflightHome = () => {
++  const pin = readPin();
++  return (pin && pin.home) ? pin.home : path.join(userData(), 'selflight-instance');
++};
+ const workspaceRoot = () => path.join(userData(), 'workspace');
+ const engineLogPath = () => path.join(selflightHome(), 'logs', 'engine.log');
+ 
+@@ -282,6 +294,34 @@
+ 
+ const sleep = ms => new Promise(r => setTimeout(r, ms));
+ 
++// ---------------------------------------------------------------------------
++// LAUNCH-CHECK-001 — the engine tree must carry Doc's fingerprint (PRIME-SIGN-001)
++// exactly as it is on disk, or the engine is not spawned and the recovery screen
++// says what changed. Enforced always when packaged. In dev (not packaged) it is
++// enforced too unless IRIS_SKIP_LAUNCH_CHECK=1, and skipping is written to the log.
++// ---------------------------------------------------------------------------
++async function launchCheckGate() {
++  const root = engineRoot();
++  if (!root) return true;                               // startEngine() surfaces "No engine found." itself
++  if (!app.isPackaged && process.env.IRIS_SKIP_LAUNCH_CHECK === '1') {
++    logLine(`[iris] LAUNCH-CHECK skipped (dev, IRIS_SKIP_LAUNCH_CHECK=1) ${new Date().toISOString()}\n`);
++    return true;
++  }
++  const t0 = Date.now();
++  const pin = readPin();
++  logLine(`[iris] LAUNCH-CHECK home=${selflightHome()} pin=${pin && pin.root_fingerprint ? pin.root_fingerprint : 'none'}\n`);
++  const v = await launchCheck({ python: pythonBin(root), appDir: path.join(root, 'app'), home: selflightHome(), name: LAUNCH_CHECK_NAME });
++  lastVerdict = v;
++  logLine(`[iris] LAUNCH-CHECK ${v.ok ? 'PASS' : 'REFUSE'} code=${v.code} (${v.label}) files=${v.files} digest=${v.digest} signed=${v.signed_digest} ${Date.now() - t0}ms\n`);
++  if (v.stderr) logLine(`[iris] LAUNCH-CHECK stderr: ${v.stderr}\n`);
++  if (v.ok) return true;
++  engineState = 'failed';
++  updateTray();
++  const w = recoveryWords(v);
++  showRecovery(w.reason, w.detail, v);
++  return false;
++}
++
+ async function waitForEngine(timeoutMs = 60000, intervalMs = 300) {
+   const deadline = Date.now() + timeoutMs;
+   while (Date.now() < deadline) {
+@@ -304,6 +344,7 @@
+ async function boot() {
+   enginePort = enginePort || await pickPort();
+   if (!engineToken) engineToken = crypto.randomBytes(24).toString('hex');
++  if (!(await launchCheckGate())) return;    // LAUNCH-CHECK-001: refused → recovery screen, engine never spawned
+   startEngine();
+   if (!engineProc) return;                    // startEngine already surfaced why
+   const ok = await waitForEngine();
+@@ -352,9 +393,10 @@
+   mainWin.on('closed', () => { mainWin = null; });
+ }
+ 
+-function showRecovery(reason, detail) {
++function showRecovery(reason, detail, verdict) {
+   const payload = {
+     reason, detail,
++    verdict: verdict || null,          // LAUNCH-CHECK-001 verdict, when the refusal is the signature's
+     log: engineLogTail(40),
+     logPath: engineLogPath(),
+   };
+@@ -366,7 +408,7 @@
+   recoveryWin = new BrowserWindow({
+     width: 860,
+     height: 620,
+-    title: 'Iris Prime — engine recovery',
++    title: verdict ? 'Iris Prime — not started: signature check' : 'Iris Prime — engine recovery',
+     webPreferences: {
+       preload: path.join(__dirname, 'preload.js'),
+       contextIsolation: true,
+@@ -428,6 +470,7 @@
+       ...(IS_MAC ? [{ type: 'separator' }, { role: 'front' }] : [{ role: 'close' }])] },
+     { label: 'Help', submenu: [
+       { label: 'Iris Prime (dev build)', enabled: false },
++      { label: 'Engine starts only when Doc\u2019s fingerprint covers it (LAUNCH-CHECK-001)', enabled: false },
+     ] },
+   ];
+   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+@@ -439,6 +482,7 @@
+ function trayMenu() {
+   return Menu.buildFromTemplate([
+     { label: `Engine: ${engineState}`, enabled: false },
++    { label: hotkey.trayLabel(callButton), enabled: false },   // OPTSPACE-001
+     { type: 'separator' },
+     { label: 'Open Iris Prime', click: () => (mainWin ? mainWin.focus() : openMainWindow()) },
+     { label: 'Quit', click: () => app.quit() },
+@@ -462,11 +506,15 @@
+ // ---------------------------------------------------------------------------
+ // IPC
+ // ---------------------------------------------------------------------------
++// OPTSPACE-001: the page can ask whether the Mac-wide call button is live.
++ipcMain.handle('call-button-state', () => callButton);
++
+ ipcMain.handle('engine-state', () => ({
+   state: engineState,
+   port: enginePort,
+   pid: engineProc ? engineProc.pid : null,
+   restarts,
++  launchCheck: lastVerdict,
+ }));
+ 
+ ipcMain.handle('recovery-action', (_e, action) => {
+@@ -492,6 +540,7 @@
+   e.preventDefault();
+   (async () => {
+     quitting = true;
++    hotkey.unregisterCallButton({ globalShortcut });   // OPTSPACE-001: give Option+Space back on the way out
+     await stopEngine();      // SIGTERM → wait ≤10s → SIGKILL
+     stopOllama();
+     if (engineLogStream) engineLogStream.end();
+@@ -506,6 +555,21 @@
+ app.whenReady().then(() => {
+   buildMenu();
+   makeTray();
++  // OPTSPACE-001: Option+Space calls Iris from anywhere on the Mac. If another
++  // app (Gemini today) still holds it, register() returns false and the tray
++  // says so — nothing is fought over, nothing is taken silently.
++  callButton = hotkey.registerCallButton({
++    globalShortcut,
++    log: logLine,
++    onCall: () => hotkey.callIris({
++      mainWin,
++      // LAUNCH-CHECK-001 ∩ OPTSPACE-001: while the engine is refused/not running there is no page to
++      // call — bring the recovery window forward instead of opening a window onto a dead port.
++      openMainWindow: () => (engineState === 'running' ? openMainWindow() : (recoveryWin && recoveryWin.focus())),
++      send: ch => mainWin && mainWin.webContents.send(ch),
++    }),
++  });
++  updateTray();
+   startOllama();      // managed only if bundled; otherwise system/model-less
+   boot();
+ });

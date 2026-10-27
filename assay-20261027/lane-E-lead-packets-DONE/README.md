@@ -118,3 +118,57 @@ guard; whoever cycles it next, check the log tail for it.)
 - Other launchers (iris-control-staged.sh, Project Iris.app launch script) still background-start without checking the exit code; with this guard a refused start
   is exit 3 in the log, but nothing yet surfaces it in Iris Control's UI — a candidate for lane-A: show "port taken by pid X" instead of a silent non-start.
 - Guard 2's 5 s grace is a constant (GRACE_S); if a legitimate shutdown task needs longer, raise it there — the log names the thread that was still running.
+
+---
+# v3 (append-only, 2026-10-27) — Assayer SEND-BACK E1 + E2, both accepted and fixed
+
+## v3.0 VISIBLE CORRECTION to v1 (section 0 LIABILITY and section 3)
+v1 said: "the user@host shape is regex-validated … anything else is refused as BLIND and never shelled." That was TRUE for `via` and FALSE for
+`via_url`: via_url went into the remote ssh command unquoted and unvalidated, so a targets.json row (local-only POST /api/link/v1/targets, but still a file
+anyone with the Mac can edit) could have run a command as root on HAL. The claim is struck; v1's test only covered `via`. Fixed in v3.1 with tests.
+
+## v3.1 E1 — LINK-SSH-002: via_url allow-list + shlex.quote (link_keeper.py)
+- `VIA_URL_RE = ^http://127\.0\.0\.1:[0-9]{1,5}/[A-Za-z0-9/_.-]*$`; a via_url that does not match is refused BEFORE any subprocess call, as BLIND with
+  reason `via_url refused: '…' (want http://127.0.0.1:<port>/<path>, LINK-SSH-002)` — state/fails untouched, no hold.
+- Every word of the remote command is `shlex.quote`d (curl, flags, '%{http_code}', url) and user@host too; the remote string is now
+  `curl -s -m 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:8765/api/health`.
+- Empty via_url means "use the default loopback URL from port+path" (not hostile); default is asserted to match the allow-list.
+- Tests (test_link_keeper_via_ssh.TestViaUrlAllowList): 11 hostile via_urls (`;`, `$( )`, backticks, space, `&&`, `|`, `>`, `?`, non-loopback host,
+  https, file://) each refused with subprocess.run mocked to raise — never reached; hostile via_url inside check_all -> BLIND not DOWN, no hold; good url
+  passes and the remote string is exactly the quoted form; default/empty via_url.
+
+## v3.2 E2 — SO_REUSEADDR on the probe socket (bind_guard.port_taken)
+- `setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)` before bind, matching uvicorn/asyncio's listener. Without it a port whose last connection sat in TIME_WAIT
+  after a graceful stop read "taken" and Stop all -> Start all would have exited 3 falsely.
+- Tests (test_bind_fail_exits.TestTimeWaitAndReuse): make a real TIME_WAIT (server closes first) -> port_taken is None; the control (a plain socket)
+  is refused with errno 48 on the MBP, proving the window is real; an active listener that itself has SO_REUSEADDR is still reported taken.
+
+## v3.3 Files (exp tree app/server/; backups beside, v2 state)
+| file | sha256 after | backup |
+|---|---|---|
+| link_keeper.py | b2781a82851a6f7a58243801097451abff6ccbc6365bd8e24b2f428dcdb0ebe6 | link_keeper.py.pre-laneE-v3-20261027 (= v2 c50652f2…) |
+| bind_guard.py | 122bea9a2b5a3afb674ba0be5e291aac9edd76a8b5e580325431eec10bda0da9 | bind_guard.py.pre-laneE-v3-20261027 (= v2 8734c510…) |
+| test_link_keeper_via_ssh.py | e5be84b35f8d60f8e55ebd468b3a217b21697023536af033f6922195913fb095 | test_link_keeper_via_ssh.py.pre-laneE-v3-20261027 |
+| test_bind_fail_exits.py | 76591e85ac74c017de1c8e823edf4908ac9f8bd4dea264354afcbba2ee9235b6 | test_bind_fail_exits.py.pre-laneE-v3-20261027 |
+Diffs: v3-link_keeper.patch, v3-bind_guard.patch. main.py unchanged from v2.
+
+## v3.4 Tests — tests-v3.txt
+`python3 -m unittest test_link_keeper_via_ssh test_bind_fail_exits test_allcall -v` -> Ran 39 tests, OK (16 keeper-via-ssh incl. 4 new, 7 bind-guard incl. 2 new, 16 all-call).
+
+## v3.5 Live proof (E2) on exp :8772 — v3-live-proof.txt (NOTICE first)
+Stopped pid 54724 (v2 main.py) with SIGTERM — exited in 1 s; `netstat` showed 1 TIME_WAIT socket on :8772 at that moment; started IMMEDIATELY via
+run-exp.sh — log: `BIND-EXIT-001: preflight ok — 127.0.0.1:8772 is free`, Uvicorn running, health 200, new pid 88029. Then a second `bash run-exp.sh` on
+the taken port: refusal line, exit 3 in 1 s, exactly one iris-creative-exp process, still serving 200. E2's false-exit shape is gone.
+
+### v3.5a VISIBLE CORRECTION to v2.4 ("the guard-2 'stopped … exiting 0' line will appear at the NEXT stop")
+It did not, and it will not on SIGTERM: this release's uvicorn (0.53.0, python-deps/uvicorn/server.py lines 332-352 `capture_signals`) records the signal
+during serve() and, once serve() returns, RE-RAISES it (`signal.raise_signal`) with the default handler — the process dies by SIGTERM right there, before
+`serve_then_exit` gets control back. Consequences, stated plainly: (a) a signal stop ends the whole process, threads included, so that path cannot
+make an orphan with this uvicorn; (b) guard 2's "stopped" branch is reached only when uvicorn returns WITHOUT a captured signal (startup/lifespan failure,
+Ctrl-C handled inside, programmatic should_exit) — the never-started branch is the one the tests and the live proof exercise. The 27957 orphan was
+therefore not a "survived SIGTERM" shape; its socket was taken while it was alive — which is guard 1's territory on the NEXT start, and why guard 1 is the
+load-bearing half. v2's sentence is struck, not rewritten.
+
+## v3.6 Compliance
+SEALS none; PII none; COST $0; LIABILITY: one announced cycle of exp :8772; :8765/:8790 untouched; HAL port still closed. E1 reduces liability (no
+root-on-HAL command path from a targets row).

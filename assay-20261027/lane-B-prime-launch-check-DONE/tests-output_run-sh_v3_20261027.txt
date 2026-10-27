@@ -1,0 +1,89 @@
+== python: /Applications/Iris Prime (Staged).app/Contents/Resources/engine/python/bin/python3 (Python 3.12.13)
+== tests/test_launch_check.py
+test_home_is_a_file_refuses_not_crashes (__main__.TestPinAndHome.test_home_is_a_file_refuses_not_crashes) ... ok
+test_missing_home_refuses_and_creates_nothing (__main__.TestPinAndHome.test_missing_home_refuses_and_creates_nothing) ... ok
+test_pin_absent_behaviour_unchanged (__main__.TestPinAndHome.test_pin_absent_behaviour_unchanged) ... ok
+test_pin_matches_root_starts (__main__.TestPinAndHome.test_pin_matches_root_starts) ... ok
+test_pin_mismatch_after_keys_json_replaced (__main__.TestPinAndHome.test_pin_mismatch_after_keys_json_replaced) ... ok
+test_pin_mismatch_refuses_even_if_signature_valid (__main__.TestPinAndHome.test_pin_mismatch_refuses_even_if_signature_valid) ... ok
+test_pin_present_but_no_key_enrolled_is_still_12 (__main__.TestPinAndHome.test_pin_present_but_no_key_enrolled_is_still_12) ... ok
+test_manifest_matches_prime_sign_manifest (__main__.TestReuse.test_manifest_matches_prime_sign_manifest)
+Same tree → same digest under both implementations (the signed digest is prime_sign's). ... ok
+test_shared_functions_identical_to_prime_sign (__main__.TestReuse.test_shared_functions_identical_to_prime_sign) ... ok
+test_stdlib_only_and_no_tree_imports (__main__.TestReuse.test_stdlib_only_and_no_tree_imports) ... ok
+test_added_and_removed_files_refuse (__main__.TestVerdicts.test_added_and_removed_files_refuse) ... ok
+test_altered_record_refuses (__main__.TestVerdicts.test_altered_record_refuses) ... ok
+test_forged_manifest_file_is_ignored (__main__.TestVerdicts.test_forged_manifest_file_is_ignored) ... ok
+test_hand_written_second_key_counts_for_nothing (__main__.TestVerdicts.test_hand_written_second_key_counts_for_nothing) ... ok
+test_intact_signed_tree_starts (__main__.TestVerdicts.test_intact_signed_tree_starts) ... ok
+test_latest_good_signature_wins_after_resign (__main__.TestVerdicts.test_latest_good_signature_wins_after_resign) ... ok
+test_ledger_line_appended_and_nothing_else_written (__main__.TestVerdicts.test_ledger_line_appended_and_nothing_else_written) ... ok
+test_missing_engine_is_usage_error_not_pass (__main__.TestVerdicts.test_missing_engine_is_usage_error_not_pass) ... ok
+test_missing_signature_refuses (__main__.TestVerdicts.test_missing_signature_refuses) ... ok
+test_no_key_enrolled_refuses (__main__.TestVerdicts.test_no_key_enrolled_refuses) ... ok
+test_signature_by_untrusted_key_refuses (__main__.TestVerdicts.test_signature_by_untrusted_key_refuses) ... ok
+test_signature_for_other_name_does_not_count (__main__.TestVerdicts.test_signature_for_other_name_does_not_count) ... ok
+test_tamper_without_saved_manifest_still_refuses (__main__.TestVerdicts.test_tamper_without_saved_manifest_still_refuses) ... ok
+test_tampered_byte_refuses_and_names_file (__main__.TestVerdicts.test_tampered_byte_refuses_and_names_file) ... ok
+test_user_not_verified_flag_refuses (__main__.TestVerdicts.test_user_not_verified_flag_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 3.295s
+
+OK
+== tests/test_shell.js (/opt/homebrew/bin/node v26.10.0)
+ok  intact -> code 0 (intact)
+ok  tampered -> code 11 (tampered)
+ok  added -> code 11 (tampered)
+ok  unsigned -> code 10 (unsigned)
+ok  nokey -> code 12 (no key enrolled)
+ok  pin file matches root -> starts
+ok  pin mismatch -> refuse (14)
+ok  unreadable pin file -> no pin, unchanged
+ok  missing home -> refuse (15)
+ok  missing interpreter -> refuse (code 2)
+ok  missing script -> refuse (code 2)
+ok  timeout -> refuse
+ok  exit/JSON disagreement -> refuse
+ok  main.js parses; gate precedes startEngine()
+ok  main.js selflightHome() honours launch_check_pin.json home
+ok  main.js is the combined shell (LAUNCH-CHECK-001 + OPTSPACE-001)
+ok  install-into-staged.sh --check-markers: accepts combined, refuses lane-B-only / lane-C-only / base (exit 3)
+
+17 shell checks passed
+== tests/hotkey.test.js (lane C's OPTSPACE-001 tests, node --test)
+✔ accelerator is Option+Space in Electron spelling (0.917917ms)
+✔ registers Option+Space and the press reaches onCall (1.085541ms)
+✔ reports held-by-another-app when the OS refuses (Gemini holds it today) (2.021375ms)
+✔ second registration is idempotent (already-mine), no double register (0.651583ms)
+✔ unregister gives the key back and is safe when not held (0.408208ms)
+✔ callIris: with a window → restore, show, focus, send iris:call (0.364125ms)
+✔ callIris: no window → opens one (0.484084ms)
+✔ onCall must be a function (0.4795ms)
+✔ main.js wires the hotkey: register on ready, unregister on will-quit, tray label, IPC (0.700583ms)
+✔ preload.js forwards iris:call to the page as postMessage (0.843458ms)
+✔ main.js, preload.js, hotkey.js parse (node --check) (803.574416ms)
+✔ client patch targets the real staged listener line (0.60975ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1129.376
+== asar pack roundtrip
+{
+ "out": "/var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/tmp.3UwKEQtXLd/app.asar",
+ "files": 7,
+ "bytes": 58391,
+ "header_sha256": "cf44cf82fd80e94fad4e5675c5824010510e30d69be110bb7b88d94c234101c1"
+}
+     2438  hotkey.js
+     6031  launch_check.js
+    16848  launch_check.py
+    22103  main.js
+      180  package.json
+     1516  preload.js
+     7467  recovery.html
+== result: ALL PASS

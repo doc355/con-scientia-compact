@@ -1,0 +1,35 @@
+--- link_keeper.v1.py	2026-10-27 17:34:38.950967800 +0000
++++ link_keeper.py	2026-10-27 17:34:55.637852602 +0000
+@@ -67,7 +67,7 @@
+ TIMEOUT_S = float(os.environ.get("SELFLIGHT_LINK_TIMEOUT_S", "3"))
+ RECOVER = BASE / "recovery.jsonl"
+ _allcall_skip_logged: set[tuple[str, str, str, str]] = set()
+-import re, subprocess, struct, shutil
++import re, subprocess, struct, shutil, shlex
+ STEP_RE = {
+     "local_kickstart": re.compile(r"^[A-Za-z0-9._-]{3,80}$"),
+     "local_systemctl": re.compile(r"^[A-Za-z0-9@._-]{3,80}$"),
+@@ -77,6 +77,10 @@
+ }
+ CLASS_FOR = {"local_kickstart": "restart", "local_systemctl": "restart", "ssh_restart": "ssh", "wol": "network", "notify": None}
+ VIA_RE = re.compile(r"^ssh:([a-z_][a-z0-9_-]{0,31}@[A-Za-z0-9.-]{3,80})$")      # LINK-SSH-001: the one shape of `via`
++# LINK-SSH-002 (lane-E v3, Assayer send-back E1): via_url is an allow-list, not free text — loopback http, digits port, a
++# plain path. Anything else is refused as BLIND before any subprocess call. Every remote word is shlex-quoted as well, so a
++# targets.json row can never become a command on the far box (it runs as root@HAL).
++VIA_URL_RE = re.compile(r"^http://127\.0\.0\.1:[0-9]{1,5}/[A-Za-z0-9/_.-]*$")
+ SSH_CHECK_TEXT = "Tailscale SSH requires an additional check"
+ SSH_URL_RE = re.compile(r"https://login\.tailscale\.com/\S+")
+ 
+@@ -96,8 +100,10 @@
+     if not uh:
+         return None, f"via malformed: {str(t.get('via'))[:60]} (want ssh:user@host)", 0.0
+     url = via_url(t)
+-    args = ["ssh", "-n", "-o", "BatchMode=yes", "-o", f"ConnectTimeout={max(1, int(TIMEOUT_S * 2))}", uh,
+-            f"curl -s -m {int(TIMEOUT_S)} -o /dev/null -w '%{{http_code}}' {url}"]
++    if not VIA_URL_RE.match(url):
++        return None, f"via_url refused: {url[:60]!r} (want http://127.0.0.1:<port>/<path>, LINK-SSH-002)", 0.0
++    remote = " ".join(shlex.quote(w) for w in ["curl", "-s", "-m", str(int(TIMEOUT_S)), "-o", "/dev/null", "-w", "%{http_code}", url])
++    args = ["ssh", "-n", "-o", "BatchMode=yes", "-o", f"ConnectTimeout={max(1, int(TIMEOUT_S * 2))}", shlex.quote(uh), remote]
+     try:
+         r = subprocess.run(args, capture_output=True, text=True, timeout=TIMEOUT_S * 4 + 2)
+     except subprocess.TimeoutExpired:

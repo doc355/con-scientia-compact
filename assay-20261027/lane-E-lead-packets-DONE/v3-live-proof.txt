@@ -1,0 +1,16 @@
+=== 2026-10-27T17:35:38Z v3 live proof (E2): stop -> immediate start -> second instance
+old pid 54724 (runs v2 main.py with guard 2)
+old pid exited after 1s
+guard-2 line from the old server:
+TIME_WAIT on :8772 right now: 1 socket(s)
+--- start immediately
+health: 200
+new pid: 88029 
+[selflight] BIND-EXIT-001: preflight ok — 127.0.0.1:8772 is free; this process may become the server
+INFO:     Uvicorn running on http://127.0.0.1:8772 (Press CTRL+C to quit)
+--- second run-exp.sh on the taken port
+[selflight] BIND-EXIT-001: REFUSING TO START — 127.0.0.1:8772 already has a listener (errno 48 Address already in use). Another instance owns this port; no keeper / all-call / background loop was started; exiting 3 now.
+second instance exit code: 3 after 1s
+iris-creative-exp processes:
+  pid 88029 listens: 127.0.0.1:8772 
+still serving: 200

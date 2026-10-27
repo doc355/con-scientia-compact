@@ -15,3 +15,4 @@ second instance exit code: 3 after 0s
 processes with SELFLIGHT_INSTANCE=iris-creative-exp now:
   pid 54724 listens: 127.0.0.1:8772 
 still serving: 200
+bash: line 16: 54724 Terminated: 15          nohup bash run-exp.sh < /dev/null >> /private/tmp/exp8772.log 2>&1

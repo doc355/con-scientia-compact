@@ -1,0 +1,21 @@
+--- ref/preload.js.asar-20261027	2026-10-27 16:36:08.710171778 +0000
++++ shell/preload.js	2026-10-27 17:35:12.378459123 +0000
+@@ -20,6 +20,8 @@
+   engineState: () => ipcRenderer.invoke('engine-state'),
+   // Used by recovery.html's Retry/Quit buttons.
+   recovery: action => ipcRenderer.invoke('recovery-action', action),
++  // OPTSPACE-001: {ok, accelerator, state} of the Mac-wide call button, or null.
++  callButtonState: () => ipcRenderer.invoke('call-button-state'),
+ });
+ 
+ // Menu → page: hat choices are forwarded as window.postMessage so the web
+@@ -27,3 +29,9 @@
+ ipcRenderer.on('iris:hat', (_e, hat) => {
+   window.postMessage({ type: 'iris:hat', hat }, '*');
+ });
++
++// OPTSPACE-001: Mac-wide Option+Space (main process globalShortcut) → page.
++// iris-assistant.js opens the assistant on {type:'iris:call'}.
++ipcRenderer.on('iris:call', () => {
++  window.postMessage({ type: 'iris:call' }, '*');
++});

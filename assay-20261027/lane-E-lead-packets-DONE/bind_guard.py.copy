@@ -32,6 +32,9 @@ def _log(msg: str) -> None:
 def port_taken(host: str, port: int) -> str | None:
     """None if we can bind host:port right now, else the OS's reason (text). Closes its socket either way."""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # v3 (Assayer send-back E2): SO_REUSEADDR, as uvicorn/asyncio set on the real listener — otherwise a port whose last
+    # connection sits in TIME_WAIT after a graceful stop reads "taken" and Stop all -> Start all exits 3 falsely.
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
         s.bind((host, int(port)))
         return None

@@ -1,0 +1,54 @@
+test_blind_keeps_state_and_fails_and_raises_nothing (test_link_keeper_via_ssh.TestBlindInCheckAll.test_blind_keeps_state_and_fails_and_raises_nothing) ... ok
+test_down_three_times_then_notify_raises_hold_without_http_resolve (test_link_keeper_via_ssh.TestBlindInCheckAll.test_down_three_times_then_notify_raises_hold_without_http_resolve) ... ok
+test_seeing_returns_then_judges (test_link_keeper_via_ssh.TestBlindInCheckAll.test_seeing_returns_then_judges) ... ok
+test_curl_refused_is_down (test_link_keeper_via_ssh.TestProbeDispatch.test_curl_refused_is_down) ... ok
+test_malformed_via_refused_not_shelled (test_link_keeper_via_ssh.TestProbeDispatch.test_malformed_via_refused_not_shelled) ... ok
+test_plain_http_target_unchanged (test_link_keeper_via_ssh.TestProbeDispatch.test_plain_http_target_unchanged) ... ok
+test_ssh_failure_is_blind (test_link_keeper_via_ssh.TestProbeDispatch.test_ssh_failure_is_blind) ... ok
+test_ssh_timeout_is_blind (test_link_keeper_via_ssh.TestProbeDispatch.test_ssh_timeout_is_blind) ... ok
+test_tailscale_check_mode_carries_url (test_link_keeper_via_ssh.TestProbeDispatch.test_tailscale_check_mode_carries_url) ... ok
+test_via_target_uses_ssh_not_get (test_link_keeper_via_ssh.TestProbeDispatch.test_via_target_uses_ssh_not_get) ... ok
+test_base_follows_selflight_home (test_link_keeper_via_ssh.TestTargetsAndScope.test_base_follows_selflight_home) ... ok
+test_write_targets_keeps_via_and_allcall (test_link_keeper_via_ssh.TestTargetsAndScope.test_write_targets_keeps_via_and_allcall) ... ok
+test_default_via_url_is_loopback_from_port_and_path (test_link_keeper_via_ssh.TestViaUrlAllowList.test_default_via_url_is_loopback_from_port_and_path) ... ok
+test_good_via_url_passes_and_remote_words_are_quoted (test_link_keeper_via_ssh.TestViaUrlAllowList.test_good_via_url_passes_and_remote_words_are_quoted) ... ok
+test_hostile_via_url_in_check_all_is_blind_not_down (test_link_keeper_via_ssh.TestViaUrlAllowList.test_hostile_via_url_in_check_all_is_blind_not_down) ... ok
+test_hostile_via_url_refused_never_shelled (test_link_keeper_via_ssh.TestViaUrlAllowList.test_hostile_via_url_refused_never_shelled) ... ok
+test_free_port_returns (test_bind_fail_exits.TestPreflight.test_free_port_returns) ... [selflight] BIND-EXIT-001: preflight ok — 127.0.0.1:64338 is free; this process may become the server
+ok
+test_taken_port_exits_3_with_line (test_bind_fail_exits.TestPreflight.test_taken_port_exits_3_with_line) ... ok
+test_main_py_exits_fast_and_starts_no_loop (test_bind_fail_exits.TestSecondInstanceOnTakenPort.test_main_py_exits_fast_and_starts_no_loop) ... ok
+test_clean_stop_with_straggler_exits_0_and_names_it (test_bind_fail_exits.TestServeThenExit.test_clean_stop_with_straggler_exits_0_and_names_it) ... ok
+test_never_started_exits_3 (test_bind_fail_exits.TestServeThenExit.test_never_started_exits_3) ... 
+  second instance on taken port 64340: exit 3 in 0.5s, no stores under /var/folders/t9/ws4qf3md441_wzmlhpcylk140000gn/T/bind-exit-home-96fti353
+[selflight] BIND-EXIT-001: uvicorn never reached 'started' on 127.0.0.1:1 (SystemExit: 1) — exiting 3 so no background loop outlives a server that is not listening.
+ok
+test_active_listener_with_reuseaddr_still_taken (test_bind_fail_exits.TestTimeWaitAndReuse.test_active_listener_with_reuseaddr_still_taken) ... ok
+test_time_wait_port_is_free (test_bind_fail_exits.TestTimeWaitAndReuse.test_time_wait_port_is_free) ... ok
+test_clear_by_emitter_and_machine (test_allcall.TestClear.test_clear_by_emitter_and_machine) ... ok
+test_ledger_is_append_only_jsonl (test_allcall.TestClear.test_ledger_is_append_only_jsonl) ... ok
+test_manual_clear_by_id (test_allcall.TestClear.test_manual_clear_by_id) ... ok
+test_clear_one_same_machine_leaves_other_open (test_allcall.TestClearSelection.test_clear_one_same_machine_leaves_other_open) ... ok
+test_clear_skips_resolved_hold_for_open_sibling (test_allcall.TestClearSelection.test_clear_skips_resolved_hold_for_open_sibling) ... ok
+test_get_lists_holds (test_allcall.TestDoors.test_get_lists_holds) ... /Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python-deps/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+/Users/christopherhoffpauir/HIFIDecant/Selflight/releases/20260922-01/python-deps/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+  _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+ok
+test_posts_are_localhost_only (test_allcall.TestDoors.test_posts_are_localhost_only) ... ok
+test_emit_creates_hold_with_card_fields (test_allcall.TestEmitAndList.test_emit_creates_hold_with_card_fields) ... ok
+test_no_cross_talk_between_emitters_or_machines (test_allcall.TestEmitAndList.test_no_cross_talk_between_emitters_or_machines) ... ok
+test_repeat_fault_refreshes_not_duplicates (test_allcall.TestEmitAndList.test_repeat_fault_refreshes_not_duplicates) ... ok
+test_reraise_after_resolved_reopens_same_card (test_allcall.TestEmitAndList.test_reraise_after_resolved_reopens_same_card) ... ok
+test_allcall_false_target_never_emits (test_allcall.TestLinkKeeperAllcall.test_allcall_false_target_never_emits) ... ok
+test_candidate_target_never_emits (test_allcall.TestLinkKeeperAllcall.test_candidate_target_never_emits) ... ok
+test_failed_probe_counts_and_stays_held (test_allcall.TestResolveProbe.test_failed_probe_counts_and_stays_held) ... ok
+test_hold_without_probe_stays_until_manual (test_allcall.TestResolveProbe.test_hold_without_probe_stays_until_manual) ... ok
+test_probe_self_clears (test_allcall.TestResolveProbe.test_probe_self_clears) ... ok
+
+----------------------------------------------------------------------
+Ran 39 tests in 2.367s
+
+OK
+
+  TIME_WAIT control: plain bind refused (48) — TIME_WAIT window is real
